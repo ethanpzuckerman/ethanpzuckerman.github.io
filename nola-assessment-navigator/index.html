@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>NOLA Assessment Navigator</title>
+  <meta name="description" content="Student prototype chatbot that explains New Orleans property assessments, exemptions, and appeals, with a source on every answer." />
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="banner" role="note">
+    <strong>Student prototype.</strong> Not an official government tool, and not legal or tax advice. Confirm everything with the
+    <a href="https://www.nolaassessor.com/" target="_blank" rel="noopener">Orleans Parish Assessor's Office</a>.
+  </div>
+
+  <header class="top">
+    <div class="wrap">
+      <p class="eyebrow">Orleans Parish · Layer 1: General guidance</p>
+      <h1>NOLA Assessment Navigator</h1>
+      <p class="lede">Ask how assessments, millage, exemptions, and appeals work in the City of New Orleans. Every answer lists its sources.</p>
+    </div>
+  </header>
+
+  <main class="wrap chat">
+    <section id="log" class="log" aria-live="polite"></section>
+
+    <form id="ask" class="ask" autocomplete="off">
+      <label for="q" class="sr-only">Your question</label>
+      <input id="q" name="q" type="text" placeholder="e.g. How do I apply for the homestead exemption?" />
+      <button type="submit">Ask</button>
+    </form>
+
+    <section class="suggest">
+      <p class="label">Common questions</p>
+      <div id="chips" class="chips"></div>
+    </section>
+  </main>
+
+  <footer class="wrap foot">
+    <p>Built by Ethan Zuckerman as a student project. Facts last researched Oct. 19, 2026. Answers come from a curated knowledge base, not live government data.</p>
+  </footer>
+
+  <script src="kb.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

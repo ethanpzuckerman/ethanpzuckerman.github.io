@@ -3,3 +3,6 @@
 serve.py
 *.zip
 .DS_Store
+
+# NOLA Assessment Navigator raw assessment rolls (may contain owner names)
+nola-assessment-navigator/data/raw/
