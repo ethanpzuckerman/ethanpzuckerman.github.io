@@ -130,6 +130,7 @@ show this caveat every time it gives a dollar estimate.
 | **Special Assessment Level ("the freeze")** | Freezes the **assessed value** (not the bill) at the level when you qualified. Millage can still rise. | Has homestead **and** is (a) 65 or older, (b) permanently and totally disabled, (c) a veteran with a service-connected disability rating of **50% or more**, or (d) certain surviving spouses or military families. Household adjusted gross income at or below the limit: base **$100,000**, indexed. One source reports **$102,700 for 2026**. `VERIFY` | Apply at OPAO with proof of age or disability and an income document (tax return). Some under-65 owners must re-certify income each year. | [S1][S7][S24] |
 | **Disabled veteran additional exemption** | On top of homestead. **50–69% rating: +$2,500 AV. 70–99%: +$4,500 AV. 100% total and permanent: full exemption** of the homestead. `VERIFY` tiers with OPAO. | Veteran with a VA service-connected rating of 50% or more. A qualifying surviving spouse may keep it. | OPAO, with VA rating letter, proof of homestead, ID, and utility bill. | [S7][S25] |
 | **First responder additional exemption** | About **+$25,000 of FMV** (+$2,500 AV) on a homestead. | Qualifying first responders. | OPAO, with an employment verification letter on agency letterhead. | [S7] |
+| **Heirs and surviving spouses** | A surviving spouse who keeps living in the home keeps the exemption (as owner, usufructuary, or through a qualifying trust). An heir who lives in the home gets a share of the exemption matching their ownership share. | Surviving spouse, or heirs who occupy the home. | Contact OPAO. A **succession** may be needed if title isn't in the heir's name. `VERIFY` what OPAO requires and whether it grants the exemption before a judgment of possession. | [S2][S28][S29] |
 | **Other** (nonprofit or religious use, Restoration Tax Abatement, ITEP, etc.) | Varies. | Mostly non-homestead property. | Out of scope for Layer 1. Say "I don't know the details" and refer to OPAO. | — |
 
 **On the ballot, November 3, 2026 (outcome unknown as of this file):** PAR's guide lists
@@ -233,9 +234,11 @@ hearings and elections [S11][S13].
 | S25 | Jefferson Parish Assessor, Homestead Exemption (2022 disabled-veteran amendment; neighboring parish, secondary) | https://www.jpassessor.net/Resources/HomesteadExemption |
 | S26 | BGR, "PolicyWatch: Revisiting Assessment Issues in New Orleans" | https://www.bgr.org/report-index/policywatch-revisiting-assessment-issues-in-new-orleans/ |
 | S27 | City of New Orleans, Pay Property Tax | https://nola.gov/property-tax/ |
+| S28 | LouisianaLawHelp, "Homestead Exemption for Property Taxes in Louisiana" | https://louisianalawhelp.org/resource/homestead-exemption-for-property-taxes-in-louisiana |
+| S29 | Loyola Law Pro Bono Desk Manual §6.5, "Considerations with Immovable Property" (undated practice note) | https://probonodeskmanual.loyno.edu/node/1044 |
 
-**How to rank sources:** official government sources (S1–S15, S27) outrank everything else. Use news
-and nonprofit sources (S16–S26) for context, or when no official source exists. Label
+**How to rank sources:** official government sources (S1–S15, S27) outrank everything else. Use news,
+nonprofit and legal-aid sources (S16–S26, S28–S29) for context, or when no official source exists. Label
 them as such in answers. Never cite commercial "property tax appeal" sites or
 data-aggregator sites. During research they gave dates that contradicted the Assessor.
 
@@ -399,14 +402,19 @@ nola-assessment-navigator/
   app.js             ← retrieval, guardrails, rendering
   style.css
   data/README.md     ← data notes (Section 3)
-  docs/sample-questions.md, docs/screenshots/
+  docs/sample-questions.md, docs/verification-checklist.md, docs/screenshots/
 ```
 
-**How Layer 1 works:** `app.js` scores the question against each `kb.js` entry by
-keyword and phrase overlap. Guardrails run first: advice requests, property lookups,
-personal data, and out-of-scope topics. Below a score threshold, the bot says "I don't
-know" and gives contacts. Every entry **must** list at least one source ID. A check in
-`app.js` refuses to render an entry without one.
+**How Layer 1 works:** `app.js` scores the question against each `kb.js` entry: +1 per
+keyword, +2 per `core` subject word, +3 per phrase. Guardrails run first: personal data,
+advice requests, property lookups, and other parishes. After an advice or lookup
+refusal, the matching general entry is still shown. Below a score threshold, the bot says
+"I don't know" and gives contacts. If the question uses a word the knowledge base never
+mentions (e.g. "installments"), the bot says it doesn't know about that term **before**
+showing the closest entry, so it never silently answers a different question. Deadline
+and bill dates are computed from today's date and the `APPEAL_WINDOWS` table in
+`app.js`; add each new roll there when the Assessor announces it. Every entry **must**
+list at least one source ID. A check in `app.js` refuses to render an entry without one.
 
 **Planned upgrade:** replace keyword retrieval with an LLM (Claude API) that answers only
 from retrieved `kb.js` passages, using Section 4 as the system prompt. Keep the
@@ -439,17 +447,16 @@ code. That requires a small server or serverless function.
 
 ## 8. Sample questions and known gaps
 
-Full write-up and screenshots: `docs/sample-questions.md`, `docs/screenshots/`.
+Full write-up and screenshots: `docs/sample-questions.md`, `docs/screenshots/` (version 1 failures in
+`docs/screenshots/v1/`).
 
-| # | Question | Result |
-|---|---|---|
-| 1 | How is my property tax bill calculated? | ✅ Formula + $300,000 worked example, caveats, 5 sources |
-| 2 | How do I apply for the homestead exemption? | ✅ Amount, eligibility, in-person filing, documents, 5 sources |
-| 3 | What does the 2027 reassessment mean for me? | ⚠️ Correct, date-aware ("window closed"), but leans on secondary sources |
-| 4 | Should I appeal? My house is worth less than what the Assessor says. | ⚠️ Refuses advice correctly but leaves out the general appeal steps it promises |
-| 5 | Can I pay my property taxes in installments? | ❌ Returns due-date info instead of saying "I don't know" |
+| # | Question | Version 1 (Oct. 19) | Version 2 (Oct. 21) |
+|---|---|---|---|
+| 1 | How is my property tax bill calculated? | ✅ Formula + $300,000 worked example, caveats, 5 sources | ✅ Same |
+| 2 | How do I apply for the homestead exemption? | ✅ Amount, eligibility, in-person filing, documents, 5 sources | ✅ Same |
+| 3 | What does the 2027 reassessment mean for me? | ⚠️ Correct and date-aware, but leans on secondary sources | ⚠️ Same |
+| 4 | Should I appeal? My house is worth less than what the Assessor says. | ⚠️ Refused advice but left out the appeal steps it promised | ✅ Refuses advice, then shows appeal steps, status and contacts |
+| 5 | Can I pay my property taxes in installments? | ❌ Answered with due dates instead of "I don't know" | ⚠️ Says "I don't know about installments" first, then the closest topic |
 
-**Next fixes, in priority order:** (1) don't answer when the question's key term is missing from the entry (Q5);
-(2) after an advice refusal, still show the matching general entry (Q4); (3) add entries for heir and succession
-homesteads and for "my bill rose despite the freeze"; (4) verify every `VERIFY` item and the 121.20-mill figure
-against official pages.
+**Still open:** a sourced entry on payment plans (Q5); official sources to replace the secondary ones in
+Q3; checking the 121.20-mill figure and every other `VERIFY` item using `docs/verification-checklist.md`.

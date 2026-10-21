@@ -29,17 +29,21 @@ const SOURCES = {
   S24: { label: "AARP Foundation — Louisiana property tax relief", url: "https://my.aarpfoundation.org/property-taxes/taxpayer-states/louisiana/", official: false },
   S25: { label: "Jefferson Parish Assessor — Homestead Exemption (disabled-veteran amendment)", url: "https://www.jpassessor.net/Resources/HomesteadExemption", official: true },
   S26: { label: "Bureau of Governmental Research — PolicyWatch: Revisiting Assessment Issues", url: "https://www.bgr.org/report-index/policywatch-revisiting-assessment-issues-in-new-orleans/", official: false },
-  S27: { label: "City of New Orleans — Pay Property Tax", url: "https://nola.gov/property-tax/", official: true }
+  S27: { label: "City of New Orleans — Pay Property Tax", url: "https://nola.gov/property-tax/", official: true },
+  S28: { label: "LouisianaLawHelp — Homestead Exemption for Property Taxes in Louisiana", url: "https://louisianalawhelp.org/resource/homestead-exemption-for-property-taxes-in-louisiana", official: false },
+  S29: { label: "Loyola Law Pro Bono Desk Manual §6.5 — Considerations with Immovable Property", url: "https://probonodeskmanual.loyno.edu/node/1044", official: false }
 };
 
-/* keywords: single stemmed-ish words (weight 1). phrases: multi-word strings (weight 3). */
+/* keywords: single words (weight 1). core: the entry's main subject words (weight 2 more).
+   phrases: multi-word strings (weight 3). */
 const ENTRIES = [
   /* ---------- 5.1 How values are set ---------- */
   {
     id: "how-value-set", topic: "How values are set",
     title: "How the Assessor decides what a property is worth",
+    core: ["appraisal"],
     keywords: ["decide", "worth", "value", "determine", "mass", "appraisal", "cama", "model", "comparable", "sales", "estimate", "calculate", "figure"],
-    phrases: ["how does the assessor", "what my house is worth", "how is my value", "mass appraisal", "how are values set", "how is value determined", "market value determined"],
+    phrases: ["assessment based on", "value based on", "how does the assessor", "what my house is worth", "how is my value", "mass appraisal", "how are values set", "how is value determined", "market value determined"],
     answer: `<p>The Orleans Parish Assessor must value property at <strong>fair market value</strong>, roughly what it would sell for between a willing buyer and seller <cite>S1</cite>.</p>
 <p>Because there are far too many parcels to appraise one by one, the office uses <strong>computer-assisted mass appraisal (CAMA)</strong>. The model looks at sales of similar properties nearby, your property's features (size, age, condition, use, building type), location, and market trends. Sales comparison is the preferred method. The cost and income approaches are used for some property types <cite>S10</cite><cite>S15</cite>.</p>
 <p>For the 2024 reappraisal the office split the parish into <strong>393 valuation neighborhoods</strong> <cite>S15</cite><cite>S16</cite>. The Constitution requires a full reappraisal at least every four years <cite>S1</cite>.</p>
@@ -59,6 +63,7 @@ const ENTRIES = [
   {
     id: "assessed-vs-market", topic: "How values are set",
     title: "Assessed value vs. market value",
+    core: ["assessed"],
     keywords: ["assessed", "market", "same", "difference", "sell", "ratio", "percent", "10", "15", "fmv"],
     phrases: ["assessed value", "market value", "same as what i could sell", "fair market value", "what is assessed value", "difference between assessed"],
     answer: `<p>They are different numbers.</p>
@@ -71,6 +76,7 @@ const ENTRIES = [
   {
     id: "audit", topic: "How values are set",
     title: "The state audit of the 2024 reappraisal",
+    core: ["audit"],
     keywords: ["audit", "auditor", "chasing", "fair", "accurate", "accuracy", "dispersion", "bgr", "criticism", "legislative"],
     phrases: ["sales chasing", "legislative auditor", "are assessments fair", "is the assessor accurate"],
     answer: `<p>At the City Council's request, the Louisiana Legislative Auditor reviewed the tax year 2024 reappraisal <cite>S15</cite>. Reported findings:</p>
@@ -85,6 +91,7 @@ const ENTRIES = [
   {
     id: "bill-calc", topic: "From value to tax bill",
     title: "How your property tax bill is calculated (worked example)",
+    core: ["calculate"],
     keywords: ["bill", "calculate", "calculated", "compute", "formula", "how", "much", "owe", "pay", "taxes", "example", "estimate"],
     phrases: ["how is my tax bill calculated", "how is my property tax calculated", "how much tax", "worked example", "tax bill calculated", "how are taxes calculated", "calculate my taxes"],
     answer: `<p><strong>Tax = (assessed value − exemptions) × millage ÷ 1,000</strong>, added up across every millage that applies to the property <cite>S11</cite><cite>S17</cite>.</p>
@@ -101,6 +108,7 @@ const ENTRIES = [
   {
     id: "mill", topic: "From value to tax bill",
     title: "What a mill (millage rate) is",
+    core: ["mill","millage"],
     keywords: ["mill", "mills", "millage", "rate", "rates", "who", "sets", "levy"],
     phrases: ["what is a mill", "what is millage", "millage rate", "who sets the millage", "tax rate"],
     answer: `<p>A <strong>mill</strong> is one-tenth of one percent: <strong>$1 of tax per $1,000 of taxable assessed value</strong> <cite>S13</cite><cite>S11</cite>.</p>
@@ -111,6 +119,7 @@ const ENTRIES = [
   {
     id: "rollback", topic: "From value to tax bill",
     title: "Rollback and roll-forward",
+    core: ["rollback"],
     keywords: ["rollback", "roll", "forward", "back", "neutral", "revenue", "reduce", "lower"],
     phrases: ["roll back", "roll forward", "rollback", "revenue neutral"],
     answer: `<p>When a reassessment raises total property values, Louisiana law requires each taxing body to <strong>roll back</strong> its millage so it collects about the same revenue. It may then vote to <strong>roll forward</strong>, raising the rate back up toward its prior maximum <cite>S11</cite>.</p>
@@ -120,10 +129,11 @@ const ENTRIES = [
   {
     id: "bill-due", topic: "From value to tax bill",
     title: "When the bill comes and how to pay",
+    core: ["due","pay"],
     keywords: ["due", "when", "pay", "payment", "mailed", "late", "interest", "penalty", "treasury", "online", "january"],
     phrases: ["when is my tax bill due", "who do i pay", "how do i pay", "pay my property tax", "when are taxes due", "late payment"],
     answer: `<p>The City of New Orleans <strong>Bureau of the Treasury</strong> sends bills and collects payment. The Assessor sets values but doesn't collect taxes <cite>S12</cite><cite>S27</cite>.</p>
-<ul><li>Bills usually go out in <strong>late December</strong>, and payment is usually due <strong>January 31</strong>. For example, the bill for the 2027 roll should arrive about December 2026 and be due about January 31, 2027 <cite>S12</cite>. The City has extended the deadline in some years (to Feb. 28 in 2025), so check the current notice.</li>
+<ul><li>Bills usually go out in <strong>late December</strong>, and payment is usually due <strong>January 31</strong>. {{NEXT_BILL}} <cite>S12</cite>. The City has extended the deadline in some years (to Feb. 28 in 2025), so check the current notice.</li>
 <li>After the due date, interest accrues (1% per month in the City's 2022 notice), and not receiving a bill doesn't excuse a late payment <cite>S12</cite>.</li>
 <li>Pay online or find payment options at nola.gov/property-tax <cite>S27</cite>.</li></ul>`,
     sources: ["S12", "S27"]
@@ -140,8 +150,9 @@ const ENTRIES = [
   {
     id: "commercial", topic: "From value to tax bill",
     title: "Commercial and rental property",
+    core: ["commercial","rental"],
     keywords: ["commercial", "business", "rental", "landlord", "income", "apartment", "investment", "office", "store"],
-    phrases: ["commercial property", "rental property", "income property", "business property", "homestead on my rental", "rent out", "rental house"],
+    phrases: ["commercial building", "commercial property", "rental property", "income property", "business property", "homestead on my rental", "rent out", "rental house"],
     answer: `<p>Land is assessed at <strong>10%</strong> of FMV. Commercial buildings and other non-residential property are assessed at <strong>15%</strong> <cite>S1</cite>. For income-producing property the Assessor may use the income approach as well as sales and cost <cite>S10</cite>.</p>
 <p>A rental you don't live in <strong>can't get the homestead exemption</strong>, because homestead requires that you own and occupy the home <cite>S2</cite><cite>S7</cite>. How residential rentals are classified in the roll is something I don't know for certain. Ask the Assessor's Office.</p>`,
     sources: ["S1", "S10", "S2", "S7"], contact: true
@@ -151,6 +162,7 @@ const ENTRIES = [
   {
     id: "homestead-apply", topic: "Exemptions",
     title: "How to apply for the homestead exemption",
+    core: ["homestead"],
     keywords: ["homestead", "apply", "application", "bring", "documents", "file", "sign", "need", "proof", "register", "claim"],
     phrases: ["apply for homestead", "homestead exemption", "what do i bring", "how do i get homestead", "file for homestead", "sign up for homestead"],
     answer: `<p>The <strong>homestead exemption</strong> takes <strong>$7,500 off your assessed value</strong>, which equals the first <strong>$75,000 of market value</strong>. It applies only to the home you <strong>own and live in</strong> as your primary residence, and you must own and occupy it by <strong>December 31</strong> of the tax year <cite>S2</cite><cite>S3</cite><cite>S7</cite>.</p>
@@ -165,6 +177,7 @@ const ENTRIES = [
   {
     id: "homestead-renew", topic: "Exemptions",
     title: "Do you need to reapply every year?",
+    core: ["reapply","renew"],
     keywords: ["reapply", "renew", "every", "year", "annual", "annually", "permanent", "again", "keep"],
     phrases: ["reapply every year", "renew my homestead", "do i have to reapply", "every year"],
     answer: `<p><strong>No.</strong> Once your homestead exemption is granted, it stays on. The Assessor's Office says you don't need to reapply every year <cite>S8</cite>.</p>
@@ -175,8 +188,9 @@ const ENTRIES = [
   {
     id: "sal", topic: "Exemptions",
     title: "Special Assessment Level (\"the freeze\") for seniors, disabled owners, and veterans",
+    core: ["freeze","sal"],
     keywords: ["freeze", "frozen", "senior", "65", "older", "elderly", "age", "disabled", "disability", "sal", "special", "level", "income", "limit"],
-    phrases: ["special assessment level", "over 65", "freeze my assessment", "senior freeze", "assessment frozen", "income limit"],
+    phrases: ["special assessment level", "over 65", "freeze my assessment", "senior freeze", "assessment frozen", "income limit", "have the freeze", "with the freeze", "frozen but", "freeze but"],
     answer: `<p>The <strong>Special Assessment Level (SAL)</strong> freezes your home's <strong>assessed value</strong> at the level when you qualified <cite>S1</cite><cite>S7</cite>.</p>
 <p><strong>Who qualifies:</strong> you must already have the homestead exemption and be (a) 65 or older, (b) permanently and totally disabled, (c) a veteran with a service-connected disability rating of 50% or more, or (d) certain surviving spouses or military families <cite>S1</cite><cite>S24</cite>. Your household adjusted gross income must be at or below a limit: a <strong>$100,000 base, indexed for inflation</strong>. One source reports about $102,700 for 2026, so <strong>please confirm the current figure</strong> with the Assessor <cite>S24</cite>.</p>
 <p><strong>Important:</strong> the freeze locks your <em>assessed value</em>, not your bill. If millage rates rise, your taxes can still go up <cite>S24</cite>.</p>
@@ -186,6 +200,7 @@ const ENTRIES = [
   {
     id: "veteran", topic: "Exemptions",
     title: "Disabled veteran exemptions",
+    core: ["veteran"],
     keywords: ["veteran", "veterans", "va", "military", "service", "disabled", "rating", "100"],
     phrases: ["disabled veteran", "100 percent disabled", "veteran exemption", "service connected"],
     answer: `<p>Veterans with a VA service-connected disability rating of <strong>50% or more</strong> can get an additional exemption on top of homestead. Reported tiers: <strong>50–69%: +$2,500</strong> of assessed value; <strong>70–99%: +$4,500</strong>; <strong>100% total and permanent: full exemption</strong> of the homestead <cite>S25</cite><cite>S7</cite>. Confirm the exact amounts with the Assessor's Office, because I took the tiers from a secondary source.</p>
@@ -196,6 +211,7 @@ const ENTRIES = [
   {
     id: "first-responder", topic: "Exemptions",
     title: "First responder exemption",
+    core: ["responder"],
     keywords: ["first", "responder", "firefighter", "police", "officer", "emt", "paramedic"],
     phrases: ["first responder", "firefighter exemption", "police officer exemption"],
     answer: `<p>The Assessor's Office lists an additional <strong>first responder exemption</strong> of about <strong>$25,000 of market value</strong> (about $2,500 of assessed value) on top of homestead. To apply, bring an <strong>employment verification letter on your agency's letterhead</strong> <cite>S7</cite>. Ask the office which positions qualify.</p>`,
@@ -204,6 +220,7 @@ const ENTRIES = [
   {
     id: "amendments-2026", topic: "Exemptions",
     title: "Property tax amendments on the November 2026 ballot",
+    core: ["amendment"],
     keywords: ["amendment", "amendments", "ballot", "vote", "election", "november", "proposed"],
     phrases: ["constitutional amendment", "on the ballot", "november election", "amendment 9", "amendment 6", "amendment 1"],
     answer: `<p>PAR Louisiana's guide to the fall 2026 ballot lists several property tax measures <cite>S20</cite>:</p>
@@ -230,6 +247,7 @@ const ENTRIES = [
   {
     id: "why-2027", topic: "2027 reassessment",
     title: "What the 2027 reassessment is",
+    core: ["reassessment"],
     keywords: ["2027", "reassessment", "reappraisal", "why", "quadrennial", "new", "values", "what"],
     phrases: ["why is there a reassessment", "2027 reassessment", "what is the reassessment", "what does the 2027", "reassessment mean"],
     answer: `<p>The <strong>2027 assessment roll</strong>, posted for inspection July 15 – Aug. 17, 2026, carries <strong>new market values</strong> from a parish-wide reappraisal <cite>S4</cite><cite>S21</cite>. The last one, for tax year 2024, raised total assessed value about 20% <cite>S26</cite>. The Louisiana Constitution requires reappraisal <strong>at least every four years</strong> <cite>S1</cite>.</p>
@@ -241,6 +259,7 @@ const ENTRIES = [
   {
     id: "cap", topic: "2027 reassessment",
     title: "Is there a cap on assessment increases?",
+    core: ["cap"],
     keywords: ["cap", "limit", "maximum", "capped", "10%", "percent", "limited"],
     phrases: ["is there a cap", "cap on assessment", "limit on how much", "10 percent cap", "how much can my assessment"],
     answer: `<p><strong>There's no general yearly cap in Orleans Parish.</strong> In 2022 voters narrowly <strong>rejected</strong> Amendment 6, which would have capped yearly increases on Orleans homesteads at 10% (642,462 against, 635,559 for) <cite>S23</cite>.</p>
@@ -265,8 +284,9 @@ const ENTRIES = [
   {
     id: "appeal-how", topic: "Appeals",
     title: "How to appeal your assessment, and the deadlines",
-    keywords: ["appeal", "appeals", "contest", "dispute", "challenge", "deadline", "protest", "lower", "file", "board", "review"],
-    phrases: ["how do i appeal", "appeal my assessment", "appeal deadline", "board of review", "dispute my assessment", "challenge my value", "contest my assessment"],
+    core: ["appeal"],
+    keywords: ["appeal", "appeals", "contest", "dispute", "challenge", "deadline", "protest", "lower", "file", "board", "review", "online", "system", "efile"],
+    phrases: ["how do i appeal", "appeal my assessment", "appeal deadline", "board of review", "dispute my assessment", "challenge my value", "contest my assessment", "appeal online", "online appeal"],
     answer: `<p>{{APPEAL_STATUS}}</p>
 <ol><li><strong>Check the roll</strong> during the open-roll period, usually mid-July to mid-August. For the 2027 roll it ran July 15 – Aug. 17, 2026 <cite>S4</cite>.</li>
 <li><strong>Informal review with the Assessor.</strong> Book an appraiser at <strong>(504) 754-8811</strong> or online, at least 24 hours ahead <cite>S4</cite>. Appeals filed online go first to Assessor staff, who may ask for documents or offer a settlement <cite>S6</cite>.</li>
@@ -291,6 +311,7 @@ const ENTRIES = [
   {
     id: "appeal-evidence", topic: "Appeals",
     title: "What evidence helps an appeal",
+    core: ["evidence"],
     keywords: ["evidence", "proof", "documents", "support", "appraisal", "photos", "comps", "comparable", "win", "case"],
     phrases: ["what evidence", "what do i need to appeal", "documents for appeal", "support my appeal", "comparable sales"],
     answer: `<p>The Assessor's staff may ask for documents when they review an online appeal <cite>S6</cite>. Paper Board of Review filings must include <strong>four copies</strong> of the form and every supporting document <cite>S4</cite><cite>S22</cite>.</p>
@@ -301,6 +322,7 @@ const ENTRIES = [
   {
     id: "appeal-missed", topic: "Appeals",
     title: "If you missed the appeal deadline",
+    core: ["missed"],
     keywords: ["missed", "late", "passed", "too", "after", "now", "closed", "over", "next"],
     phrases: ["missed the deadline", "too late", "deadline passed", "what can i do now", "after the deadline"],
     answer: `<p>{{APPEAL_STATUS}}</p>
@@ -313,6 +335,7 @@ const ENTRIES = [
   {
     id: "ltc", topic: "Appeals",
     title: "Appealing to the Louisiana Tax Commission",
+    core: ["commission"],
     keywords: ["tax", "commission", "ltc", "state", "after", "decision", "disagree", "next", "level", "court"],
     phrases: ["louisiana tax commission", "tax commission", "disagree with the board", "after the board of review", "go to court", "what happens after", "lose at the board"],
     answer: `<p>If you disagree with the Board of Review's decision, you can appeal to the <strong>Louisiana Tax Commission</strong>. File within <strong>30 calendar days</strong> of the earlier of (a) when the Board's written decision was properly sent to you or (b) when you actually received it <cite>S14</cite>. The Constitution provides for this review <cite>S1</cite>.</p>
@@ -322,6 +345,7 @@ const ENTRIES = [
   {
     id: "contacts", topic: "Contacts",
     title: "Who to contact",
+    core: ["contact"],
     keywords: ["contact", "phone", "call", "number", "talk", "human", "person", "help", "email", "who", "assessor", "office"],
     phrases: ["who do i call", "talk to a person", "phone number", "contact the assessor", "speak to someone", "real person"],
     answer: `<ul><li><strong>Orleans Parish Assessor's Office</strong> (values, exemptions, informal appeals): City Hall, 1300 Perdido St., Room 4E01 <cite>S9</cite>. Appraiser appointments: <strong>(504) 754-8811</strong>. Website: nolaassessor.com <cite>S4</cite>.</li>
@@ -339,5 +363,16 @@ const ENTRIES = [
     answer: `<p>The homestead exemption doesn't move with you. It's tied to the home you own and occupy <cite>S2</cite>. After buying, apply <strong>in person</strong> at the Assessor's Office with your act of sale, a Louisiana ID showing the new address, and a current Entergy bill <cite>S8</cite>. You must own and occupy the home by <strong>Dec. 31</strong> of the tax year <cite>S3</cite>.</p>
 <p>Only one homestead is allowed per person or married couple <cite>S9</cite>. Tell the Assessor if you leave a home that has your homestead on it.</p>`,
     sources: ["S2", "S8", "S3", "S9"], contact: true
+  },
+  {
+    id: "heirs", topic: "Exemptions",
+    title: "When an owner dies: heirs, surviving spouses, and the homestead",
+    core: ["heir", "inherit", "died", "death", "succession"],
+    keywords: ["heir", "heirs", "inherit", "inherited", "died", "dies", "death", "passed", "away", "succession", "estate", "spouse", "widow", "widower", "mother", "father", "parent", "family"],
+    phrases: ["passed away", "inherited a house", "inherited property", "surviving spouse", "owner died", "heir property", "my mother died", "my father died"],
+    answer: `<p>The Louisiana Constitution extends the homestead exemption to a <strong>surviving spouse who keeps living in the home</strong>, whether the spouse owns an interest, holds a usufruct (the right to use the property), or the home is in a qualifying trust <cite>S2</cite>.</p>
+<p>For <strong>heirs</strong>, a Loyola Law practice manual says an heir who lives in the home is entitled to a share of the homestead exemption matching their share of ownership. For example, two of three heirs living there would get two-thirds of the benefit <cite>S29</cite>. If you live in an inherited home but the title isn't in your name, you may need to open a <strong>succession</strong>, the court process that transfers a deceased person's property <cite>S28</cite>.</p>
+<p><strong>What I don't know:</strong> exactly what the Orleans Parish Assessor asks heirs to bring, or whether they'll grant the exemption before a succession is finished. The manual says some assessors wrongly wait for a court judgment <cite>S29</cite>. Ask the Assessor's Office, and for the succession itself, talk to a lawyer or a legal aid office.</p>`,
+    sources: ["S2", "S29", "S28"], contact: true
   }
 ];

@@ -5,9 +5,13 @@
 (function () {
   const MIN_SCORE = 3;
 
-  // 2027 roll appeal window (CLAUDE.md §2.6, source S4). Times are Central (CDT, UTC-5).
-  const APPEAL_OPENS = new Date("2026-07-22T00:00:00-05:00");
-  const APPEAL_CLOSES = new Date("2026-08-20T16:00:00-05:00");
+  // Known appeal windows (CLAUDE.md §2.6). Times are Central (CDT, UTC-5).
+  // Add each new roll here when the Assessor announces it.
+  const APPEAL_WINDOWS = [
+    { roll: 2025, opens: "2024-07-15T00:00:00-05:00", closes: "2024-08-20T16:00:00-05:00", closesText: "4 p.m. on Aug. 20, 2024", src: "S22" },
+    { roll: 2026, opens: "2025-07-15T00:00:00-05:00", closes: "2025-08-20T16:00:00-05:00", closesText: "Aug. 20, 2025", src: "S6" },
+    { roll: 2027, opens: "2026-07-15T00:00:00-05:00", closes: "2026-08-20T16:00:00-05:00", closesText: "4 p.m. on Thursday, Aug. 20, 2026", src: "S4" }
+  ].map(w => ({ ...w, opens: new Date(w.opens), closes: new Date(w.closes) }));
 
   const CONTACTS_HTML = `<div class="contacts"><strong>Talk to a person:</strong>
 <ul><li>Orleans Parish Assessor's Office, City Hall, 1300 Perdido St., Room 4E01. Appraiser appointments: <span class="tel">(504) 754-8811</span>. <a href="https://www.nolaassessor.com/" target="_blank" rel="noopener">nolaassessor.com</a></li>
@@ -15,7 +19,8 @@
 <li>Tax bills and payments: <a href="https://nola.gov/property-tax/" target="_blank" rel="noopener">nola.gov/property-tax</a></li>
 <li>Free legal help: Southeast Louisiana Legal Services, <a href="https://slls.org/" target="_blank" rel="noopener">slls.org</a></li></ul></div>`;
 
-  const STOP = new Set("a an the is are was were be been i my me we our you your it its of to in on for and or with do does did can could would should will how what when where why who which this that there their about am if at by from as so just get".split(" "));
+  const STOP = new Set(("a an the is are was were be been i my me we our you your it its of to in on for and or with do does did can could would should will how what when where why who which this that there their about am if at by from as so just get " +
+    "please hi hey hello thanks thank ok okay know tell want like much many also any still really need new orleans nola property house home tax taxes have has had im i'm").split(" "));
 
   function stem(w) {
     return w.replace(/'s$/, "").replace(/(ing|ed|es|s)$/, "");
@@ -27,29 +32,67 @@
   }
 
   function appealStatus(now) {
-    if (now < APPEAL_OPENS) {
-      return `<strong>Status:</strong> the online appeal window for the 2027 roll opens July 22, 2026 and closes at 4 p.m. on Aug. 20, 2026 <cite>S4</cite>.`;
+    const open = APPEAL_WINDOWS.find(w => now >= w.opens && now <= w.closes);
+    if (open) {
+      return `<strong>Status: the appeal window for the ${open.roll} roll is open now.</strong> It closes at <strong>${open.closesText}</strong> <cite>${open.src}</cite>.`;
     }
-    if (now <= APPEAL_CLOSES) {
-      return `<strong>Status: the appeal window is open now.</strong> It closes at <strong>4 p.m. on Thursday, Aug. 20, 2026</strong> <cite>S4</cite>.`;
+    const upcoming = APPEAL_WINDOWS.find(w => now < w.opens);
+    if (upcoming) {
+      return `<strong>Status:</strong> the appeal window for the ${upcoming.roll} roll hasn't opened yet. It closes at ${upcoming.closesText} <cite>${upcoming.src}</cite>.`;
     }
-    return `<strong>Status: the appeal window for the 2027 roll closed at 4 p.m. on Aug. 20, 2026</strong> <cite>S4</cite>. The next window, for the 2028 roll, should open in summer 2027 (it usually runs mid-July to mid-August). The exact dates haven't been announced, so I don't know them yet.`;
+    const last = APPEAL_WINDOWS[APPEAL_WINDOWS.length - 1];
+    const y = now.getFullYear();
+    const midJuly = new Date(y, 6, 15), lateAug = new Date(y, 7, 21);
+    if (now >= midJuly && now < lateAug) {
+      return `<strong>Status: the appeal window for the ${y + 1} roll may be open right now.</strong> It usually runs mid-July to mid-August <cite>S4</cite><cite>S5</cite>, but I don't have this year's dates. Check nolaassessor.com today.`;
+    }
+    if (now >= lateAug && last.roll < y + 1) {
+      return `<strong>Status: the appeal window for the ${y + 1} roll has most likely closed.</strong> It usually ends in mid-to-late August <cite>S4</cite><cite>S5</cite>, but I don't have this year's exact dates. The next window, for the ${y + 2} roll, should open in summer ${y + 1}.`;
+    }
+    const nextYear = now < midJuly ? y : y + 1;
+    return `<strong>Status: the appeal window for the ${last.roll} roll closed at ${last.closesText}</strong> <cite>${last.src}</cite>. The next window, for the ${nextYear + 1} roll, should open in summer ${nextYear} (it usually runs mid-July to mid-August) <cite>S4</cite><cite>S5</cite>. The exact dates haven't been announced, so I don't know them yet.`;
+  }
+
+  function nextBill(now) {
+    const y = now.getMonth() === 0 && now.getDate() <= 31 ? now.getFullYear() : now.getFullYear() + 1;
+    if (now.getMonth() === 11 || now.getMonth() === 0) {
+      return `Bills for the ${y} roll should be going out now, due around January 31, ${y}`;
+    }
+    return `The next bill, for the ${y} roll, should arrive around December ${y - 1} and be due around January 31, ${y}`;
   }
 
   // Precompute stemmed keyword sets.
   const INDEX = ENTRIES.map(e => ({
     entry: e,
+    core: new Set((e.core || []).flatMap(tokens)),
     kw: new Set(e.keywords.flatMap(tokens)),
     title: new Set(tokens(e.title)),
     phrases: e.phrases.map(p => p.toLowerCase())
   }));
+
+  // Every word the knowledge base knows about. A question word outside it means
+  // the closest entry probably doesn't answer what was asked (CLAUDE.md §4 rule 2).
+  const VOCAB = new Set(ENTRIES.flatMap(e => [
+    ...e.keywords, ...(e.core || []), e.title, ...e.phrases, e.answer.replace(/<[^>]+>/g, " ")
+  ].flatMap(tokens)));
+
+  // Everyday words that never signal a new topic.
+  const COMMON = new Set(("about above after again against also always another anyone anything around back because before being below best better between both bring came come comes coming could didn doesn doing done down each else even ever every everyone except first found from gave give given goes going gone good great happen happens help here into keep last least less make makes many maybe mean means might more most much must never next none only other others over people really right said same says seem should since some someone something soon still such sure take than that them then these they thing things think those though through told under until upon very wait well went were what whatever when whether which while whom whose will with within without would wrong year years your yours worth says said".split(" ")));
+
+  function unknownTerms(question) {
+    // Capitalized words after the first are usually names (streets, neighborhoods), so skip them.
+    const raw = question.replace(/[^A-Za-z0-9%' ]+/g, " ").split(/\s+/)
+      .filter((w, i) => i === 0 || !/^[A-Z]/.test(w))
+      .map(w => w.toLowerCase().replace(/'(s|re|ve|ll|d|m)$|n't$/, "").replace(/'/g, ""));
+    return [...new Set(raw.filter(w => w.length > 3 && !/^\d/.test(w) && !STOP.has(w) && !COMMON.has(w) && !VOCAB.has(stem(w))))];
+  }
 
   function score(question) {
     const q = question.toLowerCase();
     const qt = new Set(tokens(question));
     return INDEX.map(ix => {
       let s = 0;
-      qt.forEach(t => { if (ix.kw.has(t)) s += 1; if (ix.title.has(t)) s += 0.5; });
+      qt.forEach(t => { if (ix.kw.has(t)) s += 1; if (ix.core.has(t)) s += 2; if (ix.title.has(t)) s += 0.5; });
       ix.phrases.forEach(p => { if (q.includes(p)) s += 3; });
       return { entry: ix.entry, score: s };
     }).sort((a, b) => b.score - a.score);
@@ -73,13 +116,17 @@
       name: "property-lookup",
       test: q => /\b\d{2,5}\s+[a-z0-9.]+(\s+[a-z0-9.]+)?\s+(st|street|ave|avenue|blvd|boulevard|dr|drive|rd|road|pl|place|ct|court|ln|lane|way|hwy|pkwy)\b/i.test(q)
         || /\b(look ?up|search)\b.*\b(my|property|parcel|house|address)\b/i.test(q)
-        || /\bparcel (number|id)\b|\bwhat is my (assessment|assessed value|value|tax bill)\b|\bmy (property'?s?|house'?s?|home'?s?) (value|assessment)\b/i.test(q),
+        // Only when asking for the number itself, not "what is my assessment based on?"
+        || /\bparcel (number|id)\b/i.test(q)
+        || /\b(what('?s| is)|find|show me|tell me) my (property'?s? |house'?s? |home'?s? )?(assessment|assessed value|value|tax bill)\s*(\?|$|for\b|at\b|on \d)/i.test(q),
       reply: () => `<p><strong>I can't look up individual properties yet.</strong> Parcel lookup (Layer 2) is still being built. To see your value now, use the property search on <a href="https://www.nolaassessor.com/" target="_blank" rel="noopener">nolaassessor.com</a> or call the Assessor's Office. I won't guess at numbers for your property.</p>`,
       contact: true, allowAnswer: true
     },
     {
       name: "other-parish",
-      test: q => /\b(jefferson|st\.? tammany|st\.? bernard|plaquemines|metairie|kenner|slidell|baton rouge|lafayette|texas|florida|mississippi)\b/i.test(q),
+      // "Parish" is required for names that are also New Orleans streets (Jefferson Ave., Lafayette St.).
+      test: q => /\b(jefferson|st\.? tammany|st\.? bernard|plaquemines|lafayette|east baton rouge)\s+parish\b/i.test(q)
+        || /\b(metairie|kenner|slidell|gretna|covington|mandeville|baton rouge|shreveport|texas|florida|mississippi)\b/i.test(q),
       reply: () => `<p>I only cover property in the <strong>City of New Orleans (Orleans Parish)</strong>. I don't know the rules or deadlines elsewhere. Contact that parish's assessor.</p>`,
       contact: false, allowAnswer: false
     }
@@ -146,8 +193,12 @@
         parts.push(idkReply());
         contact = true;
       } else {
-        body = entry.answer.replace(/\{\{APPEAL_STATUS\}\}/g, appealStatus(now));
-        if (parts.length) parts.push(`<p class="bridge">Here is the general information:</p>`);
+        body = entry.answer.replace(/\{\{APPEAL_STATUS\}\}/g, appealStatus(now)).replace(/\{\{NEXT_BILL\}\}/g, nextBill(now));
+        const unknown = unknownTerms(question);
+        if (unknown.length) {
+          parts.push(`<p><strong>I don't know</strong> about <strong>${unknown.map(escapeHtml).join(", ")}</strong>. My sources don't cover it, so this may not answer your question. Ask the office below to be sure. Here is the closest topic I have:</p>`);
+          contact = true;
+        } else if (parts.length) parts.push(`<p class="bridge">Here is the general information:</p>`);
         parts.push(`<h3>${entry.title}</h3>` + body);
         sourceIds = citedIds(body, entry.sources);
         contact = contact || !!entry.contact;
@@ -176,7 +227,8 @@
     "Is there a cap on how much my assessment can rise?",
     "How do I appeal my assessment, and what's the deadline?",
     "What evidence do I need?",
-    "I missed the deadline. What can I do now?"
+    "I missed the deadline. What can I do now?",
+    "My parent died. What happens to the homestead?"
   ];
 
   function addMsg(role, html) {
