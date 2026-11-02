@@ -6,8 +6,6 @@
    Works in the browser (window.NolaProperty) and in Node (tests). */
 
 (function (root) {
-  // Approximate 2026 combined East Bank rate. Unverified (see docs/verification-checklist.md item 1).
-  const MILLAGE_2026 = 121.20;
   const ROLL = "2026 roll";
 
   const n = v => (typeof v === "number" ? v : 0);
@@ -17,18 +15,28 @@
   const title = s => esc(String(s || "").toLowerCase().replace(/\b\w/g, c => c.toUpperCase()));
 
   function rec(r) {
-    // Fill the defaults the export left out to save space.
-    return Object.assign({ fz: "0", vt: "0", st: "AC", n: 1 }, r, {
+    // Fill the defaults the export left out to save space. 2027 values are stored only when they differ from 2026.
+    const o = Object.assign({ fz: "0", vt: "0", st: "AC", n: 1 }, r, {
       lmv: n(r.lmv), imv: n(r.imv), tmv: n(r.tmv), lav: n(r.lav), iav: n(r.iav), tav: n(r.tav),
       hs: n(r.hs), oe: n(r.oe), ve: n(r.ve), fr: n(r.fr), tx: n(r.tx)
     });
+    o.has27 = !r.no27 && typeof r.t27 === "number";
+    o.m27 = "m27" in r ? r.m27 : o.tmv;
+    o.a27 = "a27" in r ? r.a27 : o.tav;
+    o.h27 = "h27" in r ? r.h27 : o.hs;
+    o.x27 = "x27" in r ? r.x27 : o.tx;
+    o.th26 = n(r.th26); o.th27 = n(r.th27);
+    return o;
   }
+
+  // Total mills on the parcel: stored per parcel only when different from the district's usual rate.
+  const mills = (r, meta, year) => r["ml" + String(year).slice(2)] || ((meta.mills || {})[year] || {})[r.d] || null;
 
   const row = (label, value, field) =>
     `<tr><th scope="row">${label}</th><td>${value}</td><td class="field">${field}</td></tr>`;
 
-  function block(kind, inner) {
-    const label = { recorded: "Recorded in the " + ROLL, calculated: "Calculated by the Navigator", explanation: "What it means", missing: "Not in this record" }[kind];
+  function block(kind, inner, labelOverride) {
+    const label = labelOverride || { recorded: "Recorded in the " + ROLL, calculated: "Calculated by the Navigator", explanation: "What it means", missing: "Not in this record" }[kind];
     return `<div class="prov prov-${kind}"><span class="prov-tag">${label}</span>${inner}</div>`;
   }
 
@@ -53,6 +61,9 @@ ${r.ve ? row("Veteran exemption", usd(r.ve), "Veteran Exemption Amount") : ""}
 ${r.fr ? row("First responder exemption", usd(r.fr), "First Responder Exemption Amount") : ""}
 ${r.oe ? row("Other exemption", usd(r.oe), "Other Exemption Amount") : ""}
 ${row("Taxable assessed value", "<strong>" + usd(r.tx) + "</strong>", "Taxable Assessed Value")}
+${typeof r.t26 === "number" ? row("Computed tax, 2026 roll", "<strong>" + usd(r.t26) + "</strong>", "LTC millage file (AMILLAGE)") : ""}
+${r.has27 ? row("Market value, 2027 roll", usd(r.m27) + (r.m27 === r.tmv ? " (same)" : ` (${r.m27 > r.tmv ? "+" : "−"}${usd(Math.abs(r.m27 - r.tmv))})`), "2027 roll, market value") : ""}
+${r.has27 ? row("Computed tax, 2027 roll", usd(r.t27), "2027 roll, LTC millage file") : ""}
 ${row("Assessment freeze", r.fz === "0" ? "None" : "Yes (code " + esc(r.fz) + ")", "Freeze Code(s)")}
 ${exempt ? row("Status", "Exempt", "Assessment Status(es)") : ""}
 </table>`)}
@@ -75,7 +86,7 @@ ${sourceLine(meta)}
   /* ---------- Questions about the selected property ---------- */
   const INTENTS = [
     { id: "compare", re: /\b(2025|last year|previous year|prior year|change[ds]?|went up|go up|increase[ds]?|decrease[ds]?|went down|compared?)\b/i },
-    { id: "tax", re: /\b(tax(es)? (bill|owe|due|amount|estimate)|how much (tax|will i (pay|owe))|estimate|my (tax )?bill|property tax(es)?\b.*\b(how much|estimate))/i },
+    { id: "tax", re: /\b(tax(es)? (bill|owe|due|amount|estimate)|how much (tax|will i (pay|owe))|estimate|my (tax )?bill|property tax(es)?\b.*\b(how much|estimate)|millage|mills)/i },
     { id: "taxable", re: /\btaxable\b|\bwhy (is|are) my (tax(es)?|taxable).*\b(zero|0|nothing)\b/i },
     { id: "homestead", re: /\bhomestead\b/i },
     { id: "freeze", re: /\b(freeze|frozen|special assessment|sal)\b/i },
@@ -122,14 +133,20 @@ ${sourceLine(meta)}
         return out([
           block("recorded", `<p>Taxable assessed value: <strong>${usd(r.tx)}</strong>. Field: Taxable Assessed Value.</p>${exemptNote(r)}`),
           block("calculated", `<p>${usd(r.tav)} assessed − ${usd(r.hs)} homestead − ${usd(r.ve)} veteran − ${usd(r.fr)} first responder − ${usd(r.oe)} other = ${usd(Math.max(0, r.tav - r.hs - r.ve - r.fr - r.oe))} (never below $0). This matches the recorded value.</p>`),
-          block("explanation", `<p>Millage is applied to the taxable value <cite>S11</cite>. ${r.tx === 0 ? "A taxable value of $0 means your exemptions cover the whole assessed value, so the parish millages in this calculation don't apply. Some charges, like certain police and fire millages, aren't covered by homestead, so check your actual bill <cite>S19</cite>." : ""}</p>`)
+          r.tx === 0 && r.t26 > 0 ? block("recorded", `<p>Even so, the roll computes <strong>${usd(r.t26)}</strong> in 2026 tax on this parcel. That's the police and fire millages "without homestead exemption" (11.51 mills), which still apply to the exempted value: ${usd(r.tav)} × 11.51 ÷ 1,000 = ${usd(r.tav * 11.51 / 1000)} <cite>S30</cite>.</p>`) : "",
+          block("explanation", `<p>Most millages are applied to the taxable value <cite>S11</cite>. ${r.tx === 0 ? "A taxable value of $0 means your exemptions cover the whole assessed value for those millages. The police and fire millages without homestead exemption are the exception <cite>S30</cite>." : ""}</p>`)
         ]);
       case "tax": {
-        const est = r.tx * MILLAGE_2026 / 1000;
+        if (typeof r.t26 !== "number") {
+          return out([block("missing", `<p><strong>I don't know.</strong> No computed tax is recorded for this parcel in the roll's millage file. Your bill comes from the Bureau of the Treasury <cite>S27</cite>.</p>`)]);
+        }
+        const ml = mills(r, meta, 2026);
+        const gross = r.tav * ml / 1000;
         return out([
-          block("recorded", `<p>Taxable assessed value: <strong>${usd(r.tx)}</strong>. Field: Taxable Assessed Value.</p>${exemptNote(r)}`),
-          block("calculated", `<p>${usd(r.tx)} × ${MILLAGE_2026.toFixed(2)} mills ÷ 1,000 ≈ <strong>${usd(est)}</strong> a year. <em>Rough estimate, not your bill.</em></p>`),
-          block("explanation", `<p>The ~${MILLAGE_2026.toFixed(2)}-mill combined rate is approximate and not yet verified against the Treasury's millage table <cite>S11</cite>. ${r.hs ? "Some millages (certain police and fire taxes) aren't reduced by homestead, so a homesteaded bill is usually a bit higher than this <cite>S19</cite>. " : ""}Special districts like the Downtown Development District or a security district add more, and this roll doesn't say which ones apply to your parcel <cite>S17</cite>. Your actual bill comes from the Bureau of the Treasury <cite>S27</cite>.</p>`)
+          block("recorded", `<p>Computed property tax on the 2026 roll: <strong>${usd(r.t26)}</strong>${ml ? `, from ${ml.toFixed(2)} total mills` : ""}${r.th26 ? `, after a homestead reduction of ${usd(r.th26)}` : ""}. Taxable assessed value: ${usd(r.tx)}. Source: the LTC roll's millage file, which lists every levy on the parcel.</p>${exemptNote(r)}`
+            + (r.has27 ? `<p>On the 2027 roll: <strong>${usd(r.t27)}</strong>${mills(r, meta, 2027) ? ` at ${mills(r, meta, 2027).toFixed(2)} mills` : ""}.</p>` : "")),
+          ml && r.tav ? block("calculated", `<p>Check: ${usd(r.tav)} assessed × ${ml.toFixed(2)} mills ÷ 1,000 = ${usd(gross)} before homestead${r.th26 ? `, − ${usd(r.th26)} homestead reduction = ${usd(gross - r.th26)}` : ""}${r.oe || r.ve || r.fr ? " (other exemptions reduce it further)" : ""}. Matches the recorded amount${Math.abs(gross - r.th26 - r.t26) > 2 && !(r.oe || r.ve || r.fr) ? " only roughly" : ""}.</p>`) : "",
+          block("explanation", `<p>Homestead reduces every levy except the police and fire millages "without homestead exemption" (11.51 mills), so homesteaded owners still pay those on the first $7,500 <cite>S30</cite>. This total <strong>doesn't include special-district fees</strong> such as the Downtown Development District or neighborhood security districts, which are billed separately <cite>S17</cite>. Your actual bill and due date come from the Bureau of the Treasury <cite>S27</cite>.</p>`)
         ]);
       }
       case "homestead":
@@ -137,7 +154,7 @@ ${sourceLine(meta)}
           block("recorded", r.hs
             ? `<p>Homestead exemption: <strong>${usd(r.hs)}</strong> of assessed value${r.hsp && !/^100/.test(r.hsp) ? `, covering ${esc(r.hsp.replace(/^0+/, ""))}% of the ownership` : ""}. Field: Homestead Exemption Amount.</p>`
             : `<p>No homestead exemption is recorded on this parcel. Field: Homestead Exemption = No.</p>`),
-          r.hs ? block("calculated", `<p>${usd(r.hs)} × ~${MILLAGE_2026.toFixed(2)} mills ÷ 1,000 ≈ <strong>${usd(r.hs * MILLAGE_2026 / 1000)}</strong> a year in taxes the exemption removes (rough estimate; homestead doesn't reduce every millage <cite>S19</cite>).</p>`) : "",
+          r.hs && r.th26 ? block("recorded", `<p>Taxes the exemption removed on the 2026 roll: <strong>${usd(r.th26)}</strong> a year (homestead reduction in the LTC millage file). Homestead doesn't reduce the police and fire "without homestead" millages <cite>S30</cite>.</p>`) : "",
           block("explanation", r.hs
             ? `<p>The full exemption is $7,500 of assessed value, the first $75,000 of market value <cite>S2</cite>. Once granted, it stays on; you don't reapply each year <cite>S8</cite>.${r.hs < 7500 ? " Yours is less than $7,500, usually because only part of the ownership qualifies, or the assessed value is below $7,500." : ""}</p>`
             : `<p>If you own this home and live in it as your primary residence, you can apply in person at the Assessor's Office <cite>S7</cite><cite>S8</cite>. Ask me "How do I apply for the homestead exemption?" for the documents to bring.</p>`)
@@ -158,11 +175,23 @@ ${sourceLine(meta)}
           block("explanation", `<p>Disabled veterans with a 50%+ rating can get an extra exemption, and 100% disabled veterans a full exemption <cite>S25</cite><cite>S7</cite>. First responders can get about $2,500 of assessed value off <cite>S7</cite>. "Other" exemptions usually mean government, religious or nonprofit property.</p>`)
         ]);
       }
-      case "compare":
+      case "compare": {
+        if (!r.has27) {
+          return out([block("missing", `<p><strong>I don't know.</strong> This parcel ID isn't in the 2027 roll; it may have been split, merged or renumbered. The 2025 roll isn't available to me at all. Ask the Assessor's Office.</p>`)]);
+        }
+        const dm = r.m27 - r.tmv, dt = r.t27 - (r.t26 || 0);
+        const m26 = mills(r, meta, 2026), m27 = mills(r, meta, 2027);
         return out([
-          block("missing", `<p><strong>I don't know yet.</strong> Only the ${ROLL} is loaded, so I can't compare this parcel with 2025. When the 2025 roll is added, I'll match it by parcel ID (${esc(r.id)}), which stays the same across years.</p>`),
-          block("explanation", `<p>The 2025 and 2026 rolls both carry values from the 2024 reappraisal, so most parcels change little between them. Big changes usually come from a sale, a renovation, a demolition or a correction. The bigger change is the <strong>2027 roll</strong>, a reappraisal year <cite>S4</cite>. Check your 2027 value on the Assessor's site.</p>`)
+          block("recorded", `<table class="ptable">
+${row("Market value", `${usd(r.tmv)} → ${usd(r.m27)}`, "2026 → 2027 roll")}
+${row("Taxable assessed value", `${usd(r.tx)} → ${usd(r.x27)}`, "2026 → 2027 roll")}
+${m26 && m27 ? row("Total mills", `${m26.toFixed(2)} → ${m27.toFixed(2)}`, "LTC millage files") : ""}
+${row("Computed tax", `${usd(r.t26 || 0)} → ${usd(r.t27)}`, "LTC millage files")}
+</table>`, "Recorded in the 2026 and 2027 rolls"),
+          block("calculated", `<p>Market value ${dm === 0 ? "<strong>didn't change</strong>" : `changed by <strong>${dm > 0 ? "+" : "−"}${usd(Math.abs(dm))}</strong> (${dm > 0 ? "+" : "−"}${pct(Math.abs(dm) / (r.tmv || 1))})`}. Computed tax changed by <strong>${dt >= 0 ? "+" : "−"}${usd(Math.abs(dt))}</strong>${dm === 0 && dt !== 0 ? ", all of it from the millage change" : ""}.${dm > 0 && r.x27 === r.tx && r.fz !== "0" ? " Taxable value stayed the same because of the assessment freeze on this parcel, so the tax change comes from the millage." : ""}</p>`),
+          block("explanation", `<p>Compared by parcel ID ${esc(r.id)}. The 2027 roll the Assessor filed with the state on Sept. 4, 2026 keeps 98% of parcel values the same as 2026, and still dates them 01/01/2023 <cite>S31</cite>. So the expected 2027 reappraisal doesn't show up in it, and <strong>I don't know why</strong>. Ask the Assessor's Office. I can't compare with 2025: that roll isn't available to me.</p>`)
         ]);
+      }
       case "building":
         return out([block("missing", `<p><strong>I don't know.</strong> This roll doesn't include square footage, bedrooms, bathrooms or condition: those fields are blank or zero for every parcel. The Assessor's property search may show them, and wrong building details are one of the easiest things to get corrected <cite>S10</cite>.</p>`)]);
       case "built":
@@ -186,7 +215,7 @@ ${sourceLine(meta)}
     return null;
   }
 
-  const api = { card, candidateLine, answer, intentOf, MILLAGE_2026 };
+  const api = { card, candidateLine, answer, intentOf };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.NolaProperty = api;
 })(typeof window !== "undefined" ? window : this);

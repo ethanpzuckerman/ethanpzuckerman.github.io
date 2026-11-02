@@ -154,17 +154,64 @@ expected**, with expected results written before running:
 
 ## 4. Outside data
 
-**Source:** Census ACS 5-year estimates by tract: race and ethnicity (B03002), income, owner/renter, home value, rent,
-age 65+ and vacancy. These are the same tables PolicyMap shows. Pulled via the Census Data API with
-`pipeline/fetch_acs.py`; details and the matching evaluation are in `docs/outside-data.md`.
+**Source:** U.S. Census Bureau **American Community Survey, 2024 5-year estimates (2020–2024)**, for all **184 Orleans
+census tracts** (371,853 residents). It covers:
+- race and ethnicity (B03002)
+- median household income
+- owner vs. renter households
+- median home value and median rent
+- residents 65+
+- vacant units
 
-**Status:** the script is written, but this cloud session blocks api.census.gov, so **the pull hasn't run yet**. Allowing
-the domain (or running it on a normal computer) produces `data/outside/acs<year>_orleans_tracts.csv` plus a metadata
-file.
+These are the same tables PolicyMap and Social Explorer show.
 
-**Can it be matched?** Yes, by tract, but the roll has no coordinates or tract, so each parcel needs a location first.
-The best route is parcel ID → City parcel GIS layer; address geocoding is the fallback, and its known problems (no N/S,
-suffix codes, units, unaddressed vacant lots) are listed in the doc.
+**How it was pulled:** by API with `pipeline/fetch_acs.py`, through **Census Reporter's public API**, which needs no key.
+The Census Bureau's own API now requires a free key; set `CENSUS_API_KEY` and the same script uses it instead.
+
+**Saved to:** `data/outside/acs_orleans_tracts.csv`, with a margin of error for every estimate, and `.meta.json`
+(endpoint, release, tables, pull date).
+
+**Can it be matched to the roll? Tested** (`docs/outside-data-matching.md`, `pipeline/geocode_sample.py`). The roll has
+no coordinates or tract, so we sent a random sample of **504 parcels** to the Census batch geocoder and joined the
+tract it returned to the ACS table.
+
+| | Share of the sample |
+|---|---|
+| **Joined to an ACS tract, all parcels** | **86%** (432 of 504) |
+| Homes | **94%** |
+| Commercial | 81% |
+| Vacant land | **57%** |
+| Ties: two possible locations, mostly N/S streets the roll can't tell apart | 6% |
+
+**Verdict:** reliable enough for **neighborhood context on homes**, but not for every parcel. Vacant lots often have no
+mailable address. A parcel-ID join to the City's parcel GIS layer is the next thing to test. Tract figures describe a
+neighborhood, never an owner, so they stay out of property answers for now (CLAUDE.md §3 rule 7).
+
+## 4b. Comparing years (2026 vs 2027)
+
+The assignment asks for 2025 vs 2026 "where available." **The 2025 Orleans roll isn't available**: the course Box
+folder has only 2026, and the Louisiana Tax Commission's site keeps only its two most recent upload years. Those years
+hold the **2026 roll and the new 2027 roll** (filed Sept. 4, 2026), so we compared those, by parcel ID
+(`pipeline/ltc_roll.py`, `pipeline/compare_rolls.py`, full write-up in `docs/year-comparison.md`).
+
+**Parser check first:** our parse of the raw 2026 tax commission files reproduces the course's Box file **exactly**.
+Market, land and taxable values match on all 163,135 parcels.
+
+![2026 vs 2027](eda/figC1_value_change.png)
+
+- **Parcels:** 162,940 are in both rolls. 195 drop out and 198 are new (splits, merges or renumbering), and these are
+  reported, not guessed.
+- **Values barely moved: 98% of parcels have exactly the same market value**, and every parcel is still dated
+  01/01/2023. Of the increases, 55% are on parcels with a recorded sale since 2025. The rest are likely construction, demolition or corrections (not checked).
+- **Taxes moved because millage went up:** the median home's total rate went from **131.99 to 133.48 mills**. 84% of
+  homes' computed tax rises, with a median increase of **$25**. The median homesteaded home goes from $1,965 to $2,032.
+- **This contradicts our earlier sources,** which said the 2027 roll would carry a parish-wide reappraisal. The filed roll
+  doesn't show one. The chatbot now says what the filed roll shows and that it doesn't know why. Ask the Assessor's
+  Office (verification checklist).
+
+**Bonus from the same files:** each parcel's millage rows give its **actual computed tax**, so the chatbot no longer
+estimates. The unverified 121.20-mill figure was too low; the real 2026 East Bank total is 131.99 mills. The files also
+confirm that homestead doesn't reduce the police and fire millages "without homestead exemption" (11.51 mills).
 
 ## 5. Ten test questions
 
@@ -174,24 +221,23 @@ Run in the real page with `node tests/chatbot_eval.js`. Expected answers come fr
 | # | Property | Question | Expected (from the raw roll) | How it did |
 |---|---|---|---|---|
 | 1 | 1205 St Charles #607 | What is my property's market value? | $145,700 = $12,700 land + $133,000 buildings | ✅ Exact, labeled Recorded with field names |
-| 2 | 1205 St Charles #607 | How much tax will I pay? | Taxable $7,070 → ≈ $857 at ~121.20 mills, flagged rough | ✅ Separates recorded taxable value from the calculated estimate; flags the unverified millage |
+| 2 | 1205 St Charles #607 | How much tax will I pay? | Recorded tax $1,019.48 on the 2026 roll ($1,029.92 on 2027), summed from the raw millage rows | ✅ Recorded amount, a calculated check ($14,570 × 131.99 − $904 homestead = $1,019) and the special-district caveat. *v1 used an unverified 121.20-mill estimate ($857); fixed once the millage files were available.* |
 | 3 | 423 Gravier #3A | Do I have a homestead exemption? | Yes, $7,500 | ✅ Plus estimated savings, labeled calculated |
 | 4 | 1503 Tchoupitoulas | Why is my assessed value what it is? | $25,620 ÷ $325,000 = 7.9%, below 10% because of the freeze | ✅ Explains the freeze |
-| 5 | 934 Melpomene | Why is my taxable value zero? | $19,810 − $7,500 homestead − $12,310 veteran = $0 | ✅ Shows the arithmetic |
+| 5 | 934 Melpomene | Why is my taxable value zero? | $19,810 − $7,500 − $12,310 = $0 taxable, yet the roll computes $228 (police/fire millages still apply) | ✅ after a fix: v1 implied a $0 taxable value meant no tax |
 | 6 | 1770 Tchoupitoulas | How much tax will I pay? | $0, because the property is exempt (other exemption $659,150) | ✅ after a fix: v1 said $0 without explaining why |
-| 7 | 1205 St Charles #607 | How did my value change from 2025? | "I don't know": 2025 roll not loaded | ✅ Says so, and that it will match by parcel ID |
+| 7 | 1503 Tchoupitoulas | How did my value change from 2025? | Can't compare with 2025; 2026 → 2027: market $325,000 → $334,900, tax $2,478 → $2,505 | ✅ Real comparison by parcel ID; explains the freeze kept taxable value flat |
 | 8 | 1205 St Charles #607 | How many square feet is my house? | Not in this roll | ✅ "I don't know" plus where to look |
 | 9 | 1205 St Charles #607 | Who owns this property? | Won't show names (privacy) | ✅ after a fix: v1 routed "Who…" to the general contacts answer |
 | 10 | (search) | 701 S Claiborne Ave | 3 records; S. Claiborne first | ✅ after adding the legal-description ranking |
 
 ## Remaining limitations
 
-- **No 2025 roll.** The Box folder only has 2026, so year-over-year answers say "I don't know".
-  `pipeline/compare_years.py` is ready, joins on Parcel ID, and passed a self-test on the 2026 file.
-- **Outside data not pulled yet** (network). Demographics stay out of property answers until matching is tested.
-- **The ~121.20-mill rate is unverified**, so every tax estimate says so. Special districts aren't in the roll.
-- **Values are as of 01/01/2023.** The 2027 reappraisal values aren't in this file.
+- **No 2025 roll anywhere we can reach,** so "change from 2025" is answered with 2026 → 2027 and a clear note.
+- **The 2027 reappraisal question is open:** the filed 2027 roll keeps 98% of values. Confirm with the Assessor.
+- **Taxes exclude special-district fees** (DDD, security districts). They aren't in the state roll files.
+- **Demographics aren't in property answers yet.** Matching works for 94% of homes but not for vacant land; a parcel-ID
+  GIS join is next.
 - **The chatbot is still keyword-based**, with no AI model behind it. Property answers are templates filled from the
-  record, which is why they can't hallucinate numbers, but they only cover the question types listed in
-  `property.js`.
+  record, so they can't make up numbers, but they only cover the question types in `property.js`.
 - **Code meanings are unknown** (freeze codes, exemption codes), so the bot says it doesn't know them.

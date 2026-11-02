@@ -31,7 +31,9 @@ const SOURCES = {
   S26: { label: "Bureau of Governmental Research — PolicyWatch: Revisiting Assessment Issues", url: "https://www.bgr.org/report-index/policywatch-revisiting-assessment-issues-in-new-orleans/", official: false },
   S27: { label: "City of New Orleans — Pay Property Tax", url: "https://nola.gov/property-tax/", official: true },
   S28: { label: "LouisianaLawHelp — Homestead Exemption for Property Taxes in Louisiana", url: "https://louisianalawhelp.org/resource/homestead-exemption-for-property-taxes-in-louisiana", official: false },
-  S29: { label: "Loyola Law Pro Bono Desk Manual §6.5 — Considerations with Immovable Property", url: "https://probonodeskmanual.loyno.edu/node/1044", official: false }
+  S29: { label: "Loyola Law Pro Bono Desk Manual §6.5 — Considerations with Immovable Property", url: "https://probonodeskmanual.loyno.edu/node/1044", official: false },
+  S30: { label: "Louisiana Tax Commission — Orleans 2026 tax roll files, incl. millage by parcel (posted Nov. 2025)", url: "https://stax.latax.la.gov/TaxRollsFolder/2025/", official: true },
+  S31: { label: "Louisiana Tax Commission — Orleans 2027 tax roll files (filed Sept. 4, 2026)", url: "https://stax.latax.la.gov/TaxRollsFolder/2026/", official: true }
 };
 
 /* keywords: single words (weight 1). core: the entry's main subject words (weight 2 more).
@@ -99,11 +101,13 @@ const ENTRIES = [
 <tr><td>Fair market value</td><td>set by Assessor</td><td>$300,000</td></tr>
 <tr><td>× 10% residential ratio</td><td>$300,000 × 0.10</td><td>$30,000 assessed</td></tr>
 <tr><td>− Homestead exemption</td><td>$30,000 − $7,500</td><td>$22,500 taxable</td></tr>
-<tr><td>× millage (~121.20 mills, 2026)</td><td>$22,500 × 0.12120</td><td><strong>≈ $2,727 / year</strong></td></tr>
-<tr><td>Same home, no homestead</td><td>$30,000 × 0.12120</td><td>≈ $3,636 / year</td></tr></table>
-<p>Sources: ratio <cite>S1</cite>, homestead amount <cite>S2</cite>, millage concept <cite>S11</cite>.</p>
-<p><strong>Caveats:</strong> the ~121.20-mill combined rate is approximate and should be confirmed on the Treasury's millage table <cite>S11</cite>. Some millages, such as certain police and fire taxes, are <em>not</em> reduced by homestead <cite>S19</cite>, and special districts like the Downtown Development District add more <cite>S17</cite>. This is an illustration, not your bill.</p>`,
-    sources: ["S11", "S17", "S1", "S2", "S19"]
+<tr><td>× 131.99 mills (2026 roll, East Bank)</td><td>$22,500 × 0.13199</td><td>$2,969.78</td></tr>
+<tr><td>+ police &amp; fire mills homestead doesn't reduce</td><td>$7,500 × 0.01151</td><td>$86.33</td></tr>
+<tr><td><strong>Total</strong></td><td></td><td><strong>$3,056.10 / year</strong></td></tr>
+<tr><td>Same home, no homestead</td><td>$30,000 × 0.13199</td><td>$3,959.70 / year</td></tr></table>
+<p>Sources: ratio <cite>S1</cite>, homestead amount <cite>S2</cite>, millage rates and the police/fire exception from the 2026 roll's millage file <cite>S30</cite>.</p>
+<p><strong>Caveats:</strong> 131.99 is the total on the East Bank; Algiers (District 5) is 132.01 because it's in a different levee district <cite>S30</cite>. Special districts like the Downtown Development District or a neighborhood security district add fees that aren't in this total <cite>S17</cite>. Find your property above to see its own recorded tax.</p>`,
+    sources: ["S11", "S17", "S1", "S2", "S30"]
   },
   {
     id: "mill", topic: "From value to tax bill",
@@ -112,9 +116,9 @@ const ENTRIES = [
     keywords: ["mill", "mills", "millage", "rate", "rates", "who", "sets", "levy"],
     phrases: ["what is a mill", "what is millage", "millage rate", "who sets the millage", "tax rate"],
     answer: `<p>A <strong>mill</strong> is one-tenth of one percent: <strong>$1 of tax per $1,000 of taxable assessed value</strong> <cite>S13</cite><cite>S11</cite>.</p>
-<p>Each taxing body (the City, School Board, levee and drainage districts, libraries, police, fire, and others) sets its own millage, and some changes need voter approval. They add up to your total rate <cite>S11</cite>. BGR reports which rates apply where <cite>S18</cite>. The 2026 combined East Bank rate is roughly 121 mills, but confirm the official table <cite>S11</cite>.</p>
+<p>Each taxing body (the City, School Board, levee and drainage districts, libraries, police, fire, and others) sets its own millage, and some changes need voter approval. They add up to your total rate <cite>S11</cite>. BGR reports which rates apply where <cite>S18</cite>. In the 2026 roll the total is <strong>131.99 mills</strong> on the East Bank and 132.01 in Algiers; the 2027 roll raises the East Bank total to <strong>133.48</strong> <cite>S30</cite><cite>S31</cite>.</p>
 <p>You can't appeal a millage. Rates change through public hearings and elections <cite>S13</cite>.</p>`,
-    sources: ["S13", "S11", "S18"]
+    sources: ["S13", "S11", "S18", "S30", "S31"]
   },
   {
     id: "rollback", topic: "From value to tax bill",
@@ -144,8 +148,9 @@ const ENTRIES = [
     keywords: ["district", "districts", "downtown", "ddd", "security", "levee", "west", "bank", "algiers", "different", "neighbor", "fee"],
     phrases: ["special district", "security district", "downtown development district", "west bank", "different rate"],
     answer: `<p>Not every millage applies everywhere. East Bank and West Bank parcels fall in different levee districts, and some areas also pay the <strong>Downtown Development District</strong>, a neighborhood <strong>security or improvement district</strong>, or a flat fee <cite>S17</cite><cite>S18</cite>. That's why two homes with the same value can get different bills.</p>
-<p>BGR's dashboard estimates bills by area <cite>S18</cite>, and the Treasury lists rates by taxing body <cite>S11</cite>.</p>`,
-    sources: ["S17", "S18", "S11"]
+<p>BGR's dashboard estimates bills by area <cite>S18</cite>, and the Treasury lists rates by taxing body <cite>S11</cite>.</p>
+<p>The state roll files list the parish-wide millages and the East Bank or Algiers levee district for every parcel, but <strong>not</strong> special-district fees, so I can\'t tell you which ones apply to a property <cite>S30</cite>.</p>`,
+    sources: ["S17", "S18", "S11", "S30"]
   },
   {
     id: "commercial", topic: "From value to tax bill",
@@ -241,8 +246,8 @@ const ENTRIES = [
 <p>Two things can still raise your bill:</p>
 <ul><li>If your value rose <strong>more than the citywide average</strong>, you carry a larger share of the total.</li>
 <li>Taxing bodies may <strong>roll forward</strong>. For 2027 the City proposed raising its general municipal tax from 12.23 to 13.91 mills, which Fox 8 estimated at about <strong>$178 more a year</strong> on a $300,000 homesteaded home <cite>S19</cite>. That was a proposal, not the final rate.</li></ul>
-<p>I can't estimate your bill yet. Parcel lookup (Layer 2) isn't built.</p>`,
-    sources: ["S11", "S19"]
+<p>The 2027 roll filed with the state shows the result: most parcel values didn\'t change, the median home\'s total rate went from 131.99 to 133.48 mills, and 84% of homes\' computed taxes went up (median +$25) <cite>S30</cite><cite>S31</cite>. Find your property above to see your own numbers.</p>`,
+    sources: ["S11", "S19", "S30", "S31"]
   },
   {
     id: "why-2027", topic: "2027 reassessment",
@@ -250,11 +255,11 @@ const ENTRIES = [
     core: ["reassessment"],
     keywords: ["2027", "reassessment", "reappraisal", "why", "quadrennial", "new", "values", "what"],
     phrases: ["why is there a reassessment", "2027 reassessment", "what is the reassessment", "what does the 2027", "reassessment mean"],
-    answer: `<p>The <strong>2027 assessment roll</strong>, posted for inspection July 15 – Aug. 17, 2026, carries <strong>new market values</strong> from a parish-wide reappraisal <cite>S4</cite><cite>S21</cite>. The last one, for tax year 2024, raised total assessed value about 20% <cite>S26</cite>. The Louisiana Constitution requires reappraisal <strong>at least every four years</strong> <cite>S1</cite>.</p>
+    answer: `<p>The <strong>2027 assessment roll</strong> was posted for inspection July 15 – Aug. 17, 2026 <cite>S4</cite>, and news coverage described it as a parish-wide reappraisal <cite>S21</cite>. <strong>But the 2027 roll the Assessor filed with the state on Sept. 4, 2026 keeps 98% of parcel values the same as 2026</strong>, all still dated 01/01/2023 <cite>S31</cite>. I don't know whether the reappraisal is still coming or changed few values. Ask the Assessor's Office. The last one, for tax year 2024, raised total assessed value about 20% <cite>S26</cite>. The Louisiana Constitution requires reappraisal <strong>at least every four years</strong> <cite>S1</cite>.</p>
 <p>Orleans names each roll for the year the bill is due. So the "2027 roll" was posted in 2026, and its bills arrive around December 2026, due around January 31, 2027 <cite>S4</cite><cite>S12</cite>.</p>
 <p><strong>What I don't know:</strong> why this cycle falls on 2027 rather than 2028 (three years is allowed, but I found no official explanation). The Assessor's Office can answer that.</p>
 <p><strong>What to do:</strong> check your new value and make sure your homestead or SAL still shows. {{APPEAL_STATUS}}</p>`,
-    sources: ["S4", "S21", "S26", "S1", "S12"], contact: true
+    sources: ["S4", "S21", "S31", "S26", "S1", "S12"], contact: true
   },
   {
     id: "cap", topic: "2027 reassessment",

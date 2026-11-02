@@ -15,7 +15,8 @@ submission.
 
 | # | Fact as written now | Where to check | Why it's risky |
 |---|---|---|---|
-| 1 | 2026 combined millage ≈ **121.20 mills** (worked example) | City Treasury millage table [S11]. **Better:** download any 2026 East Bank homestead tax bill from taxbills.nola.gov and read the millage lines | Came from third-party sites. It drives the dollar figures in the worked example |
+| 1 | ~~2026 combined millage ≈ 121.20 mills~~ **Resolved Nov. 2:** the state roll files give 131.99 (East Bank) / 132.01 (Algiers) for 2026 and 133.48 for 2027, with each parcel's computed tax | LTC millage files [S30][S31] | Done. Still worth comparing one real Treasury bill to see the special-district fees the state files leave out |
+| 1b | **The 2027 roll the Assessor filed (Sept. 4, 2026) keeps 98% of 2026 values and the 01/01/2023 valuation date.** Is the 2027 reappraisal still coming? | Call the Assessor; compare your own 2027 notice with the roll | Our sources said 2027 was a reappraisal year; the filed data doesn't show it |
 | 2 | Disabled veteran tiers: **+$2,500 / +$4,500 / full exemption** | OPAO Homestead & SAL page [S7], or call the Assessor | Source is the *Jefferson Parish* Assessor and an aggregator |
 | 3 | Freeze (SAL) income limit **$100,000 indexed (≈ $102,700 for 2026)** | OPAO [S7]; Louisiana Tax Commission | Single secondary source |
 | 4 | 2026-roll appeal deadline **Aug. 20, 2025** | OPAO notices [S5] and [S6] | OPAO's own notices conflict: Aug. 18 vs. Aug. 20 |

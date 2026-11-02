@@ -27,5 +27,27 @@ chosen = {
                    and int(r["Total Market Value"]) > 100000),
 }
 out = {k: {f: v[f] for f in KEEP} for k, v in chosen.items()}
+
+# Recorded taxes, summed straight from the raw LTC millage rows (independent of pipeline/ltc_roll.py),
+# and the 2027 market value straight from the raw 2027 AVALUE rows.
+import glob
+ids = {v["Parcel ID(s)"]: k for k, v in out.items()}
+def raw(year, name):
+    for f in glob.glob(str(ROOT / f"data/raw/ltc{year}/x/*/{name}.TXT")):
+        for r in csv.reader(open(f, encoding="latin-1", newline=""), quotechar="~"):
+            if len(r) > 3 and r[2].strip() in ids:
+                yield r
+for year in (2026, 2027):
+    for k in out:
+        out[k][f"tax_{year}"] = 0.0
+    for r in raw(year, "AMILLAGE"):
+        out[ids[r[2].strip()]][f"tax_{year}"] += float(r[11] or 0)
+for k in out:
+    out[k]["market_2027"] = 0
+for r in raw(2027, "AVALUE"):
+    out[ids[r[2].strip()]]["market_2027"] += int(float(r[3] or 0))
+for k in out:
+    for y in (2026, 2027):
+        out[k][f"tax_{y}"] = round(out[k][f"tax_{y}"], 2)
 (ROOT / "tests/chatbot_expected.json").write_text(json.dumps(out, indent=2))
 print(json.dumps(out, indent=2))

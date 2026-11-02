@@ -42,8 +42,11 @@ for (const [k, list] of shards) {
 const meta = {
   year: 2026,
   source: "Louisiana Tax Commission, Orleans Parish 2026 tax roll (LTC Expanded Real Estate Roll)",
+  source2027: "Louisiana Tax Commission, Orleans Parish 2027 tax roll, filed Sept. 4, 2026 (stax.latax.la.gov/TaxRollsFolder/2026)",
   sourceUrl: "https://stax.latax.la.gov/TaxRollsFolder",
   assessmentDate: "01/01/2023",
+  // Usual total mills per district: { "2026": { "1": 131.99, ... }, "2027": {...} }. Used when a record has no ml26/ml27.
+  mills: fs.existsSync(path.join(ROOT, "data/processed/mills_by_district.json")) ? JSON.parse(fs.readFileSync(path.join(ROOT, "data/processed/mills_by_district.json"), "utf8")) : {},
   parcels: n,
   generated: new Date().toISOString().slice(0, 10),
   notIncluded: "Owner names, mailing addresses, purchase prices, building size, bedrooms, bathrooms, condition, special taxing districts",

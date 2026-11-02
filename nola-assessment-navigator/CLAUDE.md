@@ -101,27 +101,36 @@ Assessed value is a fixed percentage of FMV, set by property class:
 - Each taxing body sets its own millage. Which millages apply depends on location:
   East vs. West Bank levee districts, the Downtown Development District, security and
   improvement districts, and flat fees [S17][S18].
-- **2026 combined citywide rate: about 121.20 mills** (East Bank, before special
-  districts). `VERIFY` against the Treasury's 2026 millage table [S11]. This figure came
-  from secondary summaries, so the chatbot must say it is approximate.
+- **Total millage, from the state roll files (verified Nov. 2, 2026):**
+  - **2026 roll: 131.99 mills** on the East Bank and **132.01** in Algiers (District 5), which is in a different levee
+    district.
+  - **2027 roll: 133.48** (East Bank) and 132.01 (Algiers).
+  - Each parcel's millage rows list every levy and its computed tax, so the chatbot shows the **recorded** tax, not an
+    estimate [S30][S31].
+  - The earlier 121.20 figure from secondary sites was wrong. Don't use it.
+- **Homestead doesn't reduce two levies:** "FIRE – WITHOUT HOMESTEAD EXEMPTION" (6.84) and "POLICE – WITHOUT
+  HOMESTEAD EXEMPTION" (4.67), 11.51 mills together. Even a fully exempted home (100% disabled veteran) pays these on
+  its full assessed value [S30].
+- **Special-district fees aren't in the state files:** the Downtown Development District and security districts are
+  billed separately, so the recorded tax can be lower than the real bill.
 - **Rollback and roll-forward.** In a reassessment year, when total values go up, taxing
   bodies must **roll back** millage so they collect about the same revenue. Afterward
   they may vote to **roll forward** up to their prior maximum rate [S11][S19].
 
-**Worked example (simplified, 2026 rates, East Bank):**
+**Worked example (2026 roll, East Bank) [S1][S2][S30]:**
 
 | Step | Calculation | Result |
 |---|---|---|
 | Fair market value | (set by Assessor) | $300,000 |
 | × Residential ratio | $300,000 × 10% | $30,000 assessed value |
 | − Homestead exemption | $30,000 − $7,500 | $22,500 taxable |
-| × Millage | $22,500 × 121.20 ÷ 1,000 | **≈ $2,727 per year** |
-| Same house, no homestead | $30,000 × 121.20 ÷ 1,000 | ≈ $3,636 per year |
+| × Total millage | $22,500 × 131.99 ÷ 1,000 | $2,969.78 |
+| + Police and fire mills homestead doesn't reduce | $7,500 × 11.51 ÷ 1,000 | $86.33 |
+| **Total** | | **$3,056.10 per year** |
+| Same house, no homestead | $30,000 × 131.99 ÷ 1,000 | $3,959.70 per year |
 
-This is an illustration, not a bill. A real bill is a little higher for a homesteaded
-house, because some millages (for example, certain police and fire millages) are **not**
-reduced by the homestead exemption [S2][S19]. Special districts add more. The chatbot must
-show this caveat every time it gives a dollar estimate.
+Checked against a real parcel. 1205 St Charles Av #607: $14,570 × 131.99 = $1,923.07, − $903.62 homestead reduction
+= **$1,019.48**, exactly the recorded tax. Special-district fees are extra.
 
 ### 2.5 Exemptions and special assessments
 
@@ -161,10 +170,17 @@ bill is not an excuse [S12]. `VERIFY` the current rate.
 
 ### 2.7 The 2027 reassessment: what it means
 
-- The **2027 roll** (posted July 2026) carries **new market values** from a parish-wide
-  reappraisal. The previous one, for **tax year 2024**, raised total assessed value about
-  **20%** [S4][S21][S26]. Values for tax years 2025 and 2026 were mostly carried forward
-  from 2024, apart from sales, new construction, demolitions, and corrections.
+- **What we expected:** news coverage described the **2027 roll** (posted July 2026) as a parish-wide reappraisal
+  [S4][S21]. The previous one, for **tax year 2024**, raised total assessed value about **20%** [S26].
+- **What the data shows (Nov. 2, 2026):** the 2027 roll the Assessor filed with the state on **Sept. 4, 2026** keeps
+  **98% of parcels at exactly their 2026 market value**, and every parcel is still dated **01/01/2023** [S31]
+  (`docs/year-comparison.md`).
+  - Total market value rose only from $75.5B to $76.5B.
+  - Taxes rise mainly through millage: 131.99 → 133.48 mills; median home +$25; median homesteaded home
+    $1,965 → $2,032.
+  - **So the expected reappraisal doesn't appear in the filed roll.** Whether it's still coming or changed few values is
+    unknown. `VERIFY` with the Assessor. Until then the chatbot reports what the filed roll shows and says it doesn't
+    know why.
 - `VERIFY` why this cycle falls on 2027 instead of 2028. The Constitution allows up to
   four years [S1], so three is permitted, but no source found so far explains the choice.
 - Because total values rose, taxing bodies must **roll back** millage, then may **roll
@@ -237,6 +253,8 @@ hearings and elections [S11][S13].
 | S27 | City of New Orleans, Pay Property Tax | https://nola.gov/property-tax/ |
 | S28 | LouisianaLawHelp, "Homestead Exemption for Property Taxes in Louisiana" | https://louisianalawhelp.org/resource/homestead-exemption-for-property-taxes-in-louisiana |
 | S29 | Loyola Law Pro Bono Desk Manual §6.5, "Considerations with Immovable Property" (undated practice note) | https://probonodeskmanual.loyno.edu/node/1044 |
+| S30 | Louisiana Tax Commission, Orleans **2026** tax roll files (7 districts; incl. millage and computed tax by parcel), posted Nov. 2025 | https://stax.latax.la.gov/TaxRollsFolder/2025/ |
+| S31 | Louisiana Tax Commission, Orleans **2027** tax roll files, filed Sept. 4, 2026 | https://stax.latax.la.gov/TaxRollsFolder/2026/ |
 
 **How to rank sources:** official government sources (S1–S15, S27) outrank everything else. Use news,
 nonprofit and legal-aid sources (S16–S26, S28–S29) for context, or when no official source exists. Label
@@ -258,7 +276,21 @@ Raw files go in `data/raw/` and are **never committed**: they hold owner names. 
 | File | Roll | Status |
 |---|---|---|
 | `data/raw/Orleans_Parish_2026_LTC_Expanded_Real_Estate_Roll.csv` (Box course folder, 110 MB) | **2026** (bills due early 2026) | **Loaded and profiled** |
-| 2025 roll | 2025 | **Not provided.** The Box folder only has 2026. The LTC publishes past rolls at stax.latax.la.gov/TaxRollsFolder (blocked in the cloud session). |
+| `data/raw/ltc2026/`: raw LTC files `ORLEANSDISTRICT1–7_2026_TAXROLL.zip` (TaxRollsFolder/2025) | **2026** | Parsed by `pipeline/ltc_roll.py`. **Reproduces the Box file exactly** (market, land and taxable values on all 163,135 parcels), and adds the per-parcel millage and computed tax |
+| `data/raw/ltc2027/`: raw LTC files `ORLEANS1–7_2027_*_TAXROLL.zip` (TaxRollsFolder/2026, filed Sept. 4, 2026) | **2027** | 163,138 parcels; compared with 2026 by parcel ID (`pipeline/compare_rolls.py`) |
+| 2025 roll | 2025 | **Not available.** It's not in Box, and the LTC site keeps only its two latest upload years. |
+| `data/outside/acs_orleans_tracts.csv` | Census ACS 2024 5-year, 184 tracts | Pulled via the Census Reporter API (`pipeline/fetch_acs.py`). Tract matching tested: 86% of a 504-parcel sample, 94% of homes (`docs/outside-data-matching.md`) |
+
+**Raw LTC file format:** comma-separated with `~` quotes, keyed by (year, district FIPS, parcel). Tables:
+- `ASSMT`: type RE/PP, status, owner, mailing address
+- `PARCEL`: ward, subdivision, situs address, occupancy, transfer, valuation date
+- `AVALUE`: market, assessed, homestead, taxable, other/veteran/first-responder exemptions, per land/improvement line
+- `AMILLAGE`: one row per levy, with mills, gross tax, homestead reduction and net tax
+- `LEGAL`, `IMPROVE`, `OWNER`, `TGROUP` (levy list)
+- `PARISHSELFREPORT.json`: district totals; its average millage, e.g. 134.18 for District 4 in 2027, is a weighted
+  average, not a parcel rate
+
+Column positions are documented in `pipeline/ltc_roll.py`.
 
 **What the 2026 roll is** (verified by `pipeline/eda.py`, see `docs/eda/eda_numbers.json`)
 - **Source and shape:**
@@ -267,8 +299,8 @@ Raw files go in `data/raw/` and are **never committed**: they hold owner names. 
   - Multi-record parcels join values with `" | "`.
 - **Key:** `Parcel ID(s)` is unique and identical to `Tax Bill #` and `Assessment Parcel Number(s)`. Use it to join
   years and outside data. **Never join on address.**
-- **Valuation date:** `Assessment Date(s)` is **01/01/2023** on every row. That's likely the 2024 reappraisal's
-  valuation date, carried into 2026 (`VERIFY`). The 2027 reappraisal values are **not** in this file.
+- **Valuation date:** `Assessment Date(s)` is **01/01/2023** on every row, in the 2026 **and** the 2027 roll. That's
+  likely the 2024 reappraisal's valuation date (`VERIFY`).
 - **Identities that hold on every row:**
   - market = land + improvement
   - assessed = land + improvement
@@ -312,7 +344,12 @@ Raw files go in `data/raw/` and are **never committed**: they hold owner names. 
    - `data/web/` and `data/processed/` are git-ignored; regenerate them, or use the copy published with the live
      chatbot.
 4. `python3 pipeline/compare_years.py <2025.csv> <2026.csv>`: year comparison on Parcel ID, ready for the 2025 roll.
-5. `python3 pipeline/fetch_acs.py`: Census ACS by tract (outside data; needs api.census.gov). See `docs/outside-data.md`.
+5. `python3 pipeline/fetch_acs.py`: Census ACS by tract (outside data, via Census Reporter; uses api.census.gov when
+   `CENSUS_API_KEY` is set). Then `python3 pipeline/geocode_sample.py`: tract-matching test. See
+   `docs/outside-data.md`.
+6. `python3 pipeline/ltc_roll.py data/raw/ltc2026 2026`, `… ltc2027 2027`, then `python3 pipeline/compare_rolls.py`:
+   raw state files → parcel tables → the 2026 vs 2027 comparison. **Run these before step 3**, which adds each
+   parcel's recorded 2026/2027 tax and 2027 values to the web export.
 
 **Data rules for the agent**
 1. Profile any new file first (rows, columns, types, nulls, duplicate IDs) and update this section and the data
@@ -541,4 +578,5 @@ Full write-up and screenshots: `docs/sample-questions.md`, `docs/screenshots/` (
 parcel's $0 wasn't explained, "Who owns…" went to the general contacts answer, and N/S Claiborne wasn't ranked.
 
 **Still open:** a sourced entry on payment plans (Q5); official sources to replace the secondary ones in
-Q3; checking the 121.20-mill figure and every other `VERIFY` item using `docs/verification-checklist.md`.
+Q3; checking every remaining `VERIFY` item using `docs/verification-checklist.md`. (The millage figure is now resolved
+from the state roll files.)

@@ -22,17 +22,14 @@
 | Residents 65+ | B01001 (12 cells summed) | Where freeze eligibility concentrates |
 | Vacant housing units | B25002 | Context for vacant and blighted parcels |
 
-## Status: script ready; pull blocked in this environment
+## Status: pulled (Nov. 2, 2026)
 
-The class's cloud session allows Box but blocks `api.census.gov`. Running the script returns:
-
-```
-Couldn't get data from api.census.gov (JSONDecodeError). If you're in a sandbox, allow api.census.gov in its network settings.
-```
-
-To finish this step, allow **`api.census.gov`** (and **`geocoding.geo.census.gov`** for the matching test) in the
-session's network settings, or run `python3 pipeline/fetch_acs.py` on any computer with normal internet. No data has been
-faked in its place.
+- **Release:** ACS 2024 5-year (2020–2024) estimates for **184 tracts**, 371,853 residents, saved to
+  `data/outside/acs_orleans_tracts.csv`.
+- **How:** pulled through **Census Reporter's public API**. The Census Bureau's own API now redirects to a "missing key"
+  page, so it requires a free key; `pipeline/fetch_acs.py` uses it automatically when `CENSUS_API_KEY` is set.
+- **Gaps:** 14 tracts have no income estimate and 15 no home-value estimate (small or non-residential tracts). Those
+  values are left blank.
 
 ## Can it be reliably matched to the assessment rolls?
 
@@ -57,8 +54,8 @@ by tract. So matching takes two steps: parcel → location → tract. The option
 | Vacant lots with no mailable address | Part of 31,608 vacant parcels | Geocoders often miss these |
 | Streets renamed in 2021 (Jefferson Davis → Norman C Francis, Robert E Lee → Allen Toussaint) | ~480 parcels | Geocoder may know only one name |
 
-   *Plan:* geocode a random sample of 500 parcels stratified by occupancy type, and report the match rate by type and
-   by failure reason, before trusting it for the whole roll.
+   **Tested** on a random sample of 504 parcels: 86% joined to a tract overall, 94% of homes, 57% of vacant land,
+   and 6% were ties between two locations. Full results: `docs/outside-data-matching.md`.
 
 3. **District or ward averages instead of tracts.** Not recommended: tracts don't nest inside wards or municipal
    districts, so any crosswalk would be approximate.

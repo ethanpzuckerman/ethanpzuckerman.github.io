@@ -13,7 +13,10 @@
     "Taxable Assessed Value": "7070",
     "Freeze Code(s)": "0",
     "Veteran Exemption Type Code(s)": "0",
-    "Assessment Status(es)": "AC"
+    "Assessment Status(es)": "AC",
+    "tax_2026": 1019.48,
+    "tax_2027": 1029.92,
+    "market_2027": 145700
   },
   "gravier": {
     "Parcel ID(s)": "105100749",
@@ -29,7 +32,10 @@
     "Taxable Assessed Value": "24450",
     "Freeze Code(s)": "0",
     "Veteran Exemption Type Code(s)": "0",
-    "Assessment Status(es)": "AC"
+    "Assessment Status(es)": "AC",
+    "tax_2026": 3313.47,
+    "tax_2027": 3349.85,
+    "market_2027": 319500
   },
   "frozen": {
     "Parcel ID(s)": "101101410",
@@ -45,7 +51,10 @@
     "Taxable Assessed Value": "18120",
     "Freeze Code(s)": "1",
     "Veteran Exemption Type Code(s)": "0",
-    "Assessment Status(es)": "AC"
+    "Assessment Status(es)": "AC",
+    "tax_2026": 2477.96,
+    "tax_2027": 2504.9,
+    "market_2027": 334900
   },
   "veteran100": {
     "Parcel ID(s)": "101103728",
@@ -61,7 +70,10 @@
     "Taxable Assessed Value": "0",
     "Freeze Code(s)": "0",
     "Veteran Exemption Type Code(s)": "3",
-    "Assessment Status(es)": "AC"
+    "Assessment Status(es)": "AC",
+    "tax_2026": 228.0,
+    "tax_2027": 227.97,
+    "market_2027": 198100
   },
   "exempt": {
     "Parcel ID(s)": "101100301",
@@ -77,6 +89,9 @@
     "Taxable Assessed Value": "0",
     "Freeze Code(s)": "0",
     "Veteran Exemption Type Code(s)": "0",
-    "Assessment Status(es)": "EX"
+    "Assessment Status(es)": "EX",
+    "tax_2026": 0.0,
+    "tax_2027": 0.0,
+    "market_2027": 6591500
   }
 }

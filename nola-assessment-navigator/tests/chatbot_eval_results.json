@@ -19,18 +19,18 @@
     "n": 2,
     "prop": "1205 St. Charles Ave Apt 607",
     "q": "How much tax will I pay?",
-    "expect": "Taxable $7,070 (recorded); × 121.20 mills ≈ $857 (calculated, labeled rough and unverified)",
+    "expect": "Recorded computed tax $1,019 on the 2026 roll ($1,030 on 2027), with the check and the special-district caveat",
     "must": [
-      "$7,070",
-      "$857",
-      "CALCULATED",
-      "Rough estimate",
-      "not yet verified"
+      "$1,019",
+      "$1,030",
+      "131.99",
+      "RECORDED",
+      "special-district"
     ],
     "ok": true,
     "missing": [],
     "shot": "docs/screenshots/week2/t02.png",
-    "got": "1205 ST CHARLES AV 607 parcel 102000079 RECORDED IN THE 2026 ROLL Taxable assessed value: $7,070. Field: Taxable Assessed Value. CALCULATED BY THE NAVIGATOR $7,070 × 121.20 mills ÷ 1,000 ≈ $857 a year. Rough estimate, not your bill. WHAT IT MEANS The ~121.20-m"
+    "got": "1205 ST CHARLES AV 607 parcel 102000079 RECORDED IN THE 2026 ROLL Computed property tax on the 2026 roll: $1,019, from 131.99 total mills, after a homestead reduction of $904. Taxable assessed value: $7,070. Source: the LTC roll's millage file, which lists eve"
   },
   {
     "n": 3,
@@ -44,7 +44,7 @@
     "ok": true,
     "missing": [],
     "shot": "docs/screenshots/week2/t03.png",
-    "got": "423 GRAVIER ST 3A parcel 105100749 RECORDED IN THE 2026 ROLL Homestead exemption: $7,500 of assessed value. Field: Homestead Exemption Amount. CALCULATED BY THE NAVIGATOR $7,500 × ~121.20 mills ÷ 1,000 ≈ $909 a year in taxes the exemption removes (rough estima"
+    "got": "423 GRAVIER ST 3A parcel 105100749 RECORDED IN THE 2026 ROLL Homestead exemption: $7,500 of assessed value. Field: Homestead Exemption Amount. RECORDED IN THE 2026 ROLL Taxes the exemption removed on the 2026 roll: $904 a year (homestead reduction in the LTC m"
   },
   {
     "n": 4,
@@ -65,11 +65,13 @@
     "n": 5,
     "prop": "934 Melpomene St",
     "q": "Why is my taxable value zero?",
-    "expect": "$19,810 − $7,500 homestead − $12,310 veteran = $0",
+    "expect": "$19,810 − $7,500 homestead − $12,310 veteran = $0 taxable, but the roll still computes $228 (police/fire millages)",
     "must": [
       "$0",
       "$12,310",
-      "$7,500"
+      "$7,500",
+      "$228",
+      "police and fire"
     ],
     "ok": true,
     "missing": [],
@@ -89,22 +91,24 @@
     "ok": true,
     "missing": [],
     "shot": "docs/screenshots/week2/t06.png",
-    "got": "1770 TCHOUPITOULAS ST parcel 101100301 RECORDED IN THE 2026 ROLL Taxable assessed value: $0. Field: Taxable Assessed Value. This parcel is exempt: an \"other\" exemption of $659,150 covers its whole assessed value (fields: Assessment Status = EX, Other Exemption"
+    "got": "1770 TCHOUPITOULAS ST parcel 101100301 RECORDED IN THE 2026 ROLL Computed property tax on the 2026 roll: $0, from 131.99 total mills. Taxable assessed value: $0. Source: the LTC roll's millage file, which lists every levy on the parcel. This parcel is exempt: "
   },
   {
     "n": 7,
-    "prop": "1205 St. Charles Ave Apt 607",
+    "prop": "1503 Tchoupitoulas St",
     "q": "How did my value change from 2025?",
-    "expect": "I don't know: only the 2026 roll is loaded; will match 2025 by parcel ID",
+    "expect": "Can't compare with 2025 (not available); 2026 → 2027: market $325,000 → $334,900, tax $2,478 → $2,505",
     "must": [
-      "I don't know",
-      "2025",
-      "102000079"
+      "$325,000",
+      "$334,900",
+      "$2,478",
+      "$2,505",
+      "2025"
     ],
     "ok": true,
     "missing": [],
     "shot": "docs/screenshots/week2/t07.png",
-    "got": "1205 ST CHARLES AV 607 parcel 102000079 NOT IN THIS RECORD I don't know yet. Only the 2026 roll is loaded, so I can't compare this parcel with 2025. When the 2025 roll is added, I'll match it by parcel ID (102000079), which stays the same across years. WHAT IT"
+    "got": "1503 TCHOUPITOULAS ST parcel 101101410 RECORDED IN THE 2026 AND 2027 ROLLS Market value $325,000 → $334,900 2026 → 2027 roll Taxable assessed value $18,120 → $18,120 2026 → 2027 roll Total mills 131.99 → 133.48 LTC millage files Computed tax $2,478 → $2,505 LT"
   },
   {
     "n": 8,
