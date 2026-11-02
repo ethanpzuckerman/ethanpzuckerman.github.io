@@ -19,13 +19,25 @@
 
   <header class="top">
     <div class="wrap">
-      <p class="eyebrow">Orleans Parish · Layer 1: General guidance</p>
+      <p class="eyebrow">Orleans Parish · General guidance + your property</p>
       <h1>NOLA Assessment Navigator</h1>
-      <p class="lede">Ask how assessments, millage, exemptions, and appeals work in the City of New Orleans. Every answer lists its sources.</p>
+      <p class="lede">Ask how assessments, millage, exemptions, and appeals work in the City of New Orleans, or find your property and ask about its 2026 record. Every answer lists its sources.</p>
     </div>
   </header>
 
   <main class="wrap chat">
+    <form id="find" class="find" autocomplete="off">
+      <label for="addr">Find your property</label>
+      <div class="find-row">
+        <input id="addr" name="addr" type="text" placeholder="Address (1234 Magazine St, Apt 2) or parcel ID" />
+        <button type="submit">Search</button>
+      </div>
+    </form>
+    <div id="selected" class="selected" hidden>
+      <span class="sel-text"></span>
+      <button type="button" id="clear-prop">Change property</button>
+    </div>
+
     <section id="log" class="log" aria-live="polite"></section>
 
     <form id="ask" class="ask" autocomplete="off">
@@ -41,10 +53,13 @@
   </main>
 
   <footer class="wrap foot">
-    <p>Built by Ethan Zuckerman as a student project. Facts last researched Oct. 19, 2026. Answers come from a curated knowledge base, not live government data.</p>
+    <p>Built by Ethan Zuckerman as a student project. Facts last researched Oct. 19, 2026. General answers come from a curated knowledge base; property answers come from the Louisiana Tax Commission's 2026 Orleans Parish roll (values as of 1/1/2023). Owner names are not shown.</p>
   </footer>
 
   <script src="kb.js"></script>
+  <script src="address.js"></script>
+  <script src="lookup.js"></script>
+  <script src="property.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

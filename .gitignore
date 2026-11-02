@@ -6,3 +6,7 @@ serve.py
 
 # NOLA Assessment Navigator raw assessment rolls (may contain owner names)
 nola-assessment-navigator/data/raw/
+
+# NOLA Assessment Navigator generated data (regenerate with pipeline/; published with the live chatbot)
+nola-assessment-navigator/data/processed/
+nola-assessment-navigator/data/web/

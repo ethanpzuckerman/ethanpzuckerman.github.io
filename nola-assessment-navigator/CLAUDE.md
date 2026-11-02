@@ -5,8 +5,9 @@ purpose, the domain facts the code depends on, the data notes, and the rules the
 has to follow. If a task conflicts with a rule in **Section 4 (Chatbot rules)**, the rule
 wins. Stop and ask instead of breaking it.
 
-*Last researched: October 19, 2026. Facts that change every year (dates, millage, income
-limits) carry a `VERIFY` tag. Re-check them before each tax cycle.*
+*Last researched: October 19, 2026. Data section updated November 2, 2026, after profiling the
+2026 roll. Facts that change every year (dates, millage, income limits) carry a `VERIFY` tag.
+Re-check them before each tax cycle.*
 
 ---
 
@@ -32,12 +33,12 @@ before it works.
 | Layer | Name | What it answers | Data | Status |
 |---|---|---|---|---|
 | 1 | **General guidance** | "How does this work?": FMV vs. assessed value, millage, exemptions, appeals, deadlines, the 2027 reassessment | Curated knowledge base (`kb.js`) built from the sources in Section 2 | **Draft live** |
-| 2 | **My property** | "What does this mean for *my* parcel?": look up a parcel and show its 2025 → 2026 change, exemptions on file, and a tax estimate | 2025 and 2026 assessment rolls (Section 3) | Not started |
+| 2 | **My property** | "What does this mean for *my* parcel?": find and confirm a parcel, then show its values, exemptions, freeze and a tax estimate (2025 → 2026 change once the 2025 roll arrives) | 2026 LTC roll (Section 3); 2025 roll not yet available | **Draft live**: lookup + 10 question types |
 | 3 | **Market context** | "How does my change compare?": my change vs. my neighborhood, comparable parcels, citywide distribution | Same rolls, aggregated by neighborhood or assessment district | Not started |
 
 Layer 2 and 3 answers must still follow every rule in Section 4. A number from the roll
-is a fact and needs a citation, for example "2026 roll, parcel 39W001112, column
-`TOTAL_ASSESSED`".
+is a fact and needs a citation, for example "2026 roll, parcel 102000079, field
+`Total Assessed Value`".
 
 ---
 
@@ -251,44 +252,80 @@ data-aggregator sites. During research they gave dates that contradicted the Ass
 
 ## 3. Data
 
-Files go in `data/raw/` and are **never committed** if they hold owner names. See
-`data/README.md`.
+Raw files go in `data/raw/` and are **never committed**: they hold owner names. Full field list:
+`docs/data-dictionary.md`. EDA: `docs/week2-report.md` and `docs/eda/`.
 
-| File (expected) | Roll | What it represents | Status |
-|---|---|---|---|
-| `data/raw/roll_2025.*` | **2025 roll** | Values posted July 2024, bills due early 2025. **Not** a reassessment year: mostly carried forward from the 2024 reappraisal. | Not yet in repo. Add and profile it. |
-| `data/raw/roll_2026.*` | **2026 roll** | Values posted July 2025, bills due early 2026. Also not a reassessment year. | Not yet in repo. Add and profile it. |
+| File | Roll | Status |
+|---|---|---|
+| `data/raw/Orleans_Parish_2026_LTC_Expanded_Real_Estate_Roll.csv` (Box course folder, 110 MB) | **2026** (bills due early 2026) | **Loaded and profiled** |
+| 2025 roll | 2025 | **Not provided.** The Box folder only has 2026. The LTC publishes past rolls at stax.latax.la.gov/TaxRollsFolder (blocked in the cloud session). |
 
-**What we know so far**
-- Both rolls come from the Orleans Parish Assessor. Expect one row per parcel, or per
-  parcel and class line, keyed by a tax bill or parcel number (format like
-  `39W001112`; the bill PDF at `taxbills.nola.gov/pdfs/2023/39W001112.pdf` uses the same
-  ID).
-- Expect columns for: owner name, mailing address, property (situs) address, land value,
-  improvement value, total FMV, assessed values by class, exemption codes and amounts
-  (homestead, SAL, veteran), taxable value, and probably assessment district or
-  neighborhood. **Confirm the real column names and write them here** before writing
-  any Layer 2 code.
-- **2025 → 2026 changes should be small for most parcels**, since neither is a
-  reassessment year. Big changes probably mean a sale, new construction or renovation, a
-  demolition, a split or merger, a correction, or an exemption gained or lost. That is
-  the main Layer 2 story. The bigger jump (2026 → 2027 reassessment) is **not** in our
-  files. Say so if a user asks about their 2027 value.
-- Use the 2024-reappraisal neighborhoods (393) for Layer 3 comparisons if the roll
-  carries a neighborhood code [S15].
+**What the 2026 roll is** (verified by `pipeline/eda.py`, see `docs/eda/eda_numbers.json`)
+- **Source and shape:**
+  - The Louisiana Tax Commission's 2026 tax rolls for Orleans, one archive per municipal district (1–7), combined.
+  - **163,135 rows, one per parcel, 115 columns.**
+  - Multi-record parcels join values with `" | "`.
+- **Key:** `Parcel ID(s)` is unique and identical to `Tax Bill #` and `Assessment Parcel Number(s)`. Use it to join
+  years and outside data. **Never join on address.**
+- **Valuation date:** `Assessment Date(s)` is **01/01/2023** on every row. That's likely the 2024 reappraisal's
+  valuation date, carried into 2026 (`VERIFY`). The 2027 reappraisal values are **not** in this file.
+- **Identities that hold on every row:**
+  - market = land + improvement
+  - assessed = land + improvement
+  - taxable = assessed − (homestead + other + veteran + first responder), floored at 0
+  - homestead amount ≤ $7,500
+- **The 10% rule shows in the data:** 97% of non-frozen residential parcels are assessed at exactly 10% of market;
+  frozen (SAL) parcels have a median of 7.6%.
+- **Address format** (drives `address.js`):
+  - no N/S directions
+  - suffix codes AV, BL, HW, PW, CR, WY, TR (= Trail)
+  - units written bare after the suffix (`ST CHARLES AV 607`), with `HF` = ½
+  - spellings `MARTIN L KING BL` and `ORETHA C HALEY BL`
+  - 2021 renames (Norman C Francis, Allen Toussaint) mostly applied
+  - 820 parcels list several addresses; 1,110 addresses are shared by 2+ parcels
+  - 1,004 address strings have no usable street
+- **Not in the file** (blank or zero for every parcel): building size, bedrooms, bathrooms, condition, renovation year,
+  tax-sale status, special taxing district, coordinates, census tract. **"Living Square Feet" is mislabeled**: it
+  equals the record count.
+- **Sales-ratio findings** (the client's concern; Figure 5 in `docs/week2-report.md`):
+  - In 8,604 residential SALE transfers from 2023–2025, the cheapest tenth of homes ($15K–$130K) is valued at
+    **1.18×** its sale price (COD 33). Every other tenth sits at 0.92–0.94×.
+  - 19% of these sales, and 40% of 2023 sales, sit at almost exactly **92% of price**, a sign of values reset on
+    sale.
+  - Sale prices are unverified, and the cheap end mixes in non-market sales. Treat this as a pattern worth
+    investigating, not a conclusion about any one home.
+  - Our code reproduced the class model EDA's numbers exactly.
+- **Placeholders, not facts:**
+  - Year built 1994 (42,390 parcels, mostly vacant or commercial)
+  - Transfer date 12/31/1994 (8,112)
+  - Purchase price 0 or nominal (50,933; none verified)
+- **Unknown codes:** Freeze Code 1–4, Other Exemption codes, LTC subclass codes, most instrument types. Veteran type
+  1/2/3 *appears* to be $2,500 / $4,500 / full exemption (inferred).
+
+**Pipeline** (run from `nola-assessment-navigator/`):
+1. `python3 pipeline/eda.py`: charts and numbers.
+2. `python3 pipeline/data_dictionary.py`: the data dictionary.
+3. `python3 pipeline/export_web.py && node pipeline/shard.js`: public fields → `data/web/2026/` (241 street files
+   + `meta.json` + `ids.json`, ~53 MB).
+   - Owner names, mailing addresses and purchase prices are dropped.
+   - Placeholders (1994 year built on non-residential parcels, 12/31/1994 transfer dates) are removed.
+   - `data/web/` and `data/processed/` are git-ignored; regenerate them, or use the copy published with the live
+     chatbot.
+4. `python3 pipeline/compare_years.py <2025.csv> <2026.csv>`: year comparison on Parcel ID, ready for the 2025 roll.
+5. `python3 pipeline/fetch_acs.py`: Census ACS by tract (outside data; needs api.census.gov). See `docs/outside-data.md`.
 
 **Data rules for the agent**
-1. Profile each file first: row count, columns, types, nulls, duplicate parcel IDs.
-   Write the results in `data/README.md`.
-2. Join the years on parcel ID, never on address. Report parcels that appear in only
-   one year.
-3. Never show owner names in the UI or in example outputs. Look up by address or parcel
-   ID only.
-4. Every number shown to a user cites the roll year and field it came from.
-5. Do not compute "expected" or "fair" values. Layer 3 describes the distribution. It
-   does not tell an owner they are over-assessed.
-
----
+1. Profile any new file first (rows, columns, types, nulls, duplicate IDs) and update this section and the data
+   dictionary before writing code that uses it.
+2. Join years and outside data on **Parcel ID**, never on address. Report parcels found in only one year; don't guess.
+3. Never show owner names, contacts or mailing addresses in the UI, tests or docs.
+4. Every number shown to a user names the roll year and the field it came from.
+5. Treat placeholders as missing, not as facts. Say what's missing and where the owner can find it.
+6. Don't compute "expected" or "fair" values, and don't tell an owner they're over-assessed. Layer 3 describes
+   distributions only. The sales-ratio pattern can be described citywide with its caveats. It must never be applied to
+   one owner's home ("your home is probably over-assessed").
+7. **Outside demographics describe neighborhoods, never owners.** Don't infer an owner's race, income or age from
+   tract data, and keep demographics out of property answers until tract matching is tested.
 
 ## 4. Chatbot rules (instructions to the agent)
 
@@ -320,12 +357,22 @@ the system prompt or answer logic, and test them (Section 6).
 6. **Dates matter.** Compare deadlines with today's date. If a deadline has passed, say so
    and give the next expected window. Never imply an appeal is still open when it
    isn't.
-7. **Layer boundaries.** Until Layer 2 ships, if a user gives an address or asks about
-   "my" value, explain that parcel lookup isn't built yet and link them to the Assessor's
-   property search. Don't invent parcel data.
-8. **Privacy.** Don't ask for or store names, Social Security numbers, income, or
-   disability details. If a user shares them, don't repeat them back.
-9. **Stay neutral** on politics, the Assessor's performance, and ballot measures. Present
+7. **Find, then confirm, then answer.** Property answers only use a record the owner picked
+   from the lookup results ("Is this your property?"). With several matches (condo units,
+   N/S Claiborne), show them all with district, ward, area and legal description, and let
+   the owner choose. With no match, say why and offer the parcel-ID search and the
+   Assessor's property search. Never invent parcel data.
+8. **Separate recorded, calculated and explained.** Every property answer labels:
+   - **Recorded:** copied from the roll, with the field name
+   - **Calculated:** arithmetic the Navigator did, with the formula shown
+   - **Explanation:** general rules, cited to S-IDs
+
+   Show the data year, source and valuation date on every property answer. If a field is
+   missing or a placeholder, say so ("I don't know: this roll doesn't include square footage").
+9. **Privacy.** Don't ask for or store names, Social Security numbers, income, or
+   disability details. If a user shares them, don't repeat them back. Don't display owner
+   names even though the roll has them.
+10. **Stay neutral** on politics, the Assessor's performance, and ballot measures. Present
    documented views with sources.
 
 ---
@@ -396,13 +443,19 @@ this repo):
 ```
 nola-assessment-navigator/
   CLAUDE.md          ← this file
-  README.md          ← project overview, live link, sample Q&A
-  index.html         ← chatbot UI (Layer 1)
-  kb.js              ← knowledge base: SOURCES + ENTRIES (answers, keywords, source IDs)
-  app.js             ← retrieval, guardrails, rendering
+  README.md          ← project overview, live link
+  index.html         ← chatbot UI: property search + chat
+  kb.js              ← Layer 1 knowledge base: SOURCES + ENTRIES (answers, keywords, source IDs)
+  app.js             ← retrieval, guardrails, lookup flow, rendering
+  address.js         ← address normalizer + matcher (browser and Node)
+  lookup.js          ← loads data/web/2026 files, finds parcels by address or ID
+  property.js        ← Layer 2 answers about the selected parcel (recorded / calculated / explanation)
   style.css
-  data/README.md     ← data notes (Section 3)
-  docs/sample-questions.md, docs/verification-checklist.md, docs/screenshots/
+  pipeline/          ← eda.py, data_dictionary.py, export_web.py, shard.js, compare_years.py, fetch_acs.py
+  tests/             ← address.test.js (unit), address_eval.js (19 real addresses), chatbot_eval.js (10 questions)
+  data/              ← raw/ (ignored), processed/ (ignored), web/ (ignored, generated), README.md
+  docs/              ← week2-report.md, data-dictionary.md, address-matching-results.md, outside-data.md,
+                       eda/, sample-questions.md, verification-checklist.md, screenshots/
 ```
 
 **How Layer 1 works:** `app.js` scores the question against each `kb.js` entry: +1 per
@@ -415,6 +468,26 @@ showing the closest entry, so it never silently answers a different question. De
 and bill dates are computed from today's date and the `APPEAL_WINDOWS` table in
 `app.js`; add each new roll there when the Assessor announces it. Every entry **must**
 list at least one source ID. A check in `app.js` refuses to render an entry without one.
+
+**How Layer 2 works:**
+1. **Find.** The owner types an address or a 9-digit parcel ID. `lookup.js` normalizes it with `address.js`, loads only
+   the file for that street (plus close spellings if the street isn't found), and returns one of four results: exact,
+   multiple, close, or not found with a reason. When the owner gave N/S, records whose legal description agrees are
+   listed first.
+2. **Confirm.** The owner picks the record ("Is this your property?").
+3. **Answer.** Questions that match one of `property.js`'s intents get a recorded / calculated / explanation answer
+   built from that record:
+   - value, assessed, taxable, tax
+   - homestead, freeze, other exemptions
+   - comparison with 2025, building size, year built, last sale, owner, property type
+   - "my value is wrong"
+
+   Questions that start like "how do I…" or "where…" go to Layer 1 even with a property selected.
+
+**Tests to run before committing** (server: `python3 -m http.server 8765`):
+- `node tests/address.test.js`
+- `node tests/address_eval.js`
+- `node tests/chatbot_eval.js`
 
 **Planned upgrade:** replace keyword retrieval with an LLM (Claude API) that answers only
 from retrieved `kb.js` passages, using Section 4 as the system prompt. Keep the
@@ -434,7 +507,7 @@ code. That requires a small server or serverless function.
 
 ---
 
-## 7. Live draft chatbot (Layer 1)
+## 7. Live draft chatbot (Layers 1 and 2)
 
 - **Live link:** https://claude.ai/artifact/PMnTiHc5EGih7pzGky6bWB. This is a Claude artifact, private until the owner
   shares it from the page's Share menu.
@@ -442,8 +515,13 @@ code. That requires a small server or serverless function.
   at `<pages-site>/nola-assessment-navigator/`.
 - It answers the Layer 1 questions in Section 5 and shows inline `[S#]` citations plus a source list under every
   answer. It labels secondary sources, appends human contacts, checks the appeal deadline against today's date,
-  and refuses advice requests and property lookups.
-- To rebuild the artifact, inline `style.css`, `kb.js`, and `app.js` into one HTML file and republish to the same URL.
+  and refuses advice requests.
+- **Layer 2 (Nov. 2):** property search by address or parcel ID across all 163,135 parcels in the 2026 roll, a
+  candidate list for multiple matches, a confirm step, a property card, and record-grounded answers. Each answer
+  shows the data year and source.
+- **To rebuild the artifact:** inline `style.css`, `kb.js`, `address.js`, `lookup.js`, `property.js` and `app.js` into
+  one HTML file, publish the files in `data/web/2026/` alongside it at the same relative paths, and republish to the
+  same URL.
 
 ## 8. Sample questions and known gaps
 
@@ -457,6 +535,10 @@ Full write-up and screenshots: `docs/sample-questions.md`, `docs/screenshots/` (
 | 3 | What does the 2027 reassessment mean for me? | ⚠️ Correct and date-aware, but leans on secondary sources | ⚠️ Same |
 | 4 | Should I appeal? My house is worth less than what the Assessor says. | ⚠️ Refused advice but left out the appeal steps it promised | ✅ Refuses advice, then shows appeal steps, status and contacts |
 | 5 | Can I pay my property taxes in installments? | ❌ Answered with due dates instead of "I don't know" | ⚠️ Says "I don't know about installments" first, then the closest topic |
+
+**Week 2 (Nov. 2):** ten property-grounded test questions, all checked against the raw CSV, are in
+`docs/week2-report.md` §5 (`node tests/chatbot_eval.js`, 10/10 pass). Three answers needed fixes first: the exempt
+parcel's $0 wasn't explained, "Who owns…" went to the general contacts answer, and N/S Claiborne wasn't ranked.
 
 **Still open:** a sourced entry on payment plans (Q5); official sources to replace the secondary ones in
 Q3; checking the 121.20-mill figure and every other `VERIFY` item using `docs/verification-checklist.md`.

@@ -1,0 +1,214 @@
+{
+  "checks": {
+    "parcels": 163135,
+    "parcel_id_unique": true,
+    "parcel_id_equals_tax_bill": 1.0,
+    "market_equals_land_plus_improvement": 1.0,
+    "assessed_equals_land_plus_improvement": 1.0,
+    "taxable_equals_assessed_minus_exemptions": 1.0,
+    "max_homestead_amount": 7500.0,
+    "taxable_zero": 14841,
+    "status_exempt": 10109,
+    "living_sqft_equals_record_count": 0.9999938701075796,
+    "assessment_date_values": [
+      "01/01/2023"
+    ],
+    "transfer_date_1994_12_31": 8112,
+    "purchase_price_zero": 50933
+  },
+  "share_parcels": {
+    "RESIDENTIAL": 0.7395,
+    "VACANT LAND": 0.1938,
+    "COMMERCIAL": 0.0426,
+    "EXEMPT": 0.022,
+    "MIXED (2+ TYPES)": 0.0021
+  },
+  "share_market_value": {
+    "RESIDENTIAL": 0.5227,
+    "VACANT LAND": 0.1305,
+    "COMMERCIAL": 0.1315,
+    "EXEMPT": 0.2101,
+    "MIXED (2+ TYPES)": 0.0052
+  },
+  "total_market_value": 75650566500.0,
+  "occupancy_counts": {
+    "RESIDENTIAL": 120631,
+    "VACANT LAND": 31608,
+    "COMMERCIAL": 6954,
+    "EXEMPT": 3592,
+    "MIXED (2+ TYPES)": 350
+  },
+  "taxable_zero_by_occupancy": {
+    "VACANT LAND": 7016,
+    "RESIDENTIAL": 4197,
+    "EXEMPT": 3592,
+    "MIXED (2+ TYPES)": 36
+  },
+  "residential_market_value": {
+    "count": 120631,
+    "p10": 108000.0,
+    "p25": 145900.0,
+    "p50": 233600.0,
+    "p75": 398550.0,
+    "p90": 611800.0
+  },
+  "homestead_by_district": {
+    "1": {
+      "parcels": 6807,
+      "homestead": 0.3345,
+      "frozen": 0.0714
+    },
+    "4": {
+      "parcels": 6048,
+      "homestead": 0.4314,
+      "frozen": 0.1048
+    },
+    "7": {
+      "parcels": 10347,
+      "homestead": 0.5215,
+      "frozen": 0.1434
+    },
+    "2": {
+      "parcels": 13936,
+      "homestead": 0.527,
+      "frozen": 0.1155
+    },
+    "6": {
+      "parcels": 15813,
+      "homestead": 0.5463,
+      "frozen": 0.1208
+    },
+    "3": {
+      "parcels": 52949,
+      "homestead": 0.554,
+      "frozen": 0.1863
+    },
+    "5": {
+      "parcels": 14731,
+      "homestead": 0.6101,
+      "frozen": 0.1687
+    }
+  },
+  "homestead_citywide_residential": 0.5354,
+  "assessment_ratio": {
+    "No freeze": {
+      "parcels": 102157,
+      "share_exactly_10pct": 0.9719,
+      "median_ratio": 0.1,
+      "share_below_9_5pct": 0.0261
+    },
+    "Special assessment level (freeze)": {
+      "parcels": 18474,
+      "share_exactly_10pct": 0.0521,
+      "median_ratio": 0.0764,
+      "share_below_9_5pct": 0.7411
+    }
+  },
+  "sales_ratio": {
+    "sales": 8604,
+    "median": 0.933,
+    "cod": 13.1,
+    "prd": 1.055,
+    "by_tenth": [
+      {
+        "tenth": 0,
+        "lo": 15000,
+        "hi": 130000,
+        "sales": 901,
+        "median": 1.176,
+        "cod": 33.385
+      },
+      {
+        "tenth": 1,
+        "lo": 130500,
+        "hi": 179900,
+        "sales": 822,
+        "median": 0.938,
+        "cod": 16.661
+      },
+      {
+        "tenth": 2,
+        "lo": 180000,
+        "hi": 225000,
+        "sales": 915,
+        "median": 0.93,
+        "cod": 11.554
+      },
+      {
+        "tenth": 3,
+        "lo": 225900,
+        "hi": 274200,
+        "sales": 804,
+        "median": 0.93,
+        "cod": 10.245
+      },
+      {
+        "tenth": 4,
+        "lo": 274500,
+        "hi": 325000,
+        "sales": 872,
+        "median": 0.935,
+        "cod": 8.511
+      },
+      {
+        "tenth": 5,
+        "lo": 325500,
+        "hi": 385000,
+        "sales": 879,
+        "median": 0.93,
+        "cod": 8.012
+      },
+      {
+        "tenth": 6,
+        "lo": 387000,
+        "hi": 460000,
+        "sales": 849,
+        "median": 0.926,
+        "cod": 7.214
+      },
+      {
+        "tenth": 7,
+        "lo": 461000,
+        "hi": 565000,
+        "sales": 845,
+        "median": 0.924,
+        "cod": 6.305
+      },
+      {
+        "tenth": 8,
+        "lo": 566000,
+        "hi": 753500,
+        "sales": 856,
+        "median": 0.927,
+        "cod": 6.505
+      },
+      {
+        "tenth": 9,
+        "lo": 755000,
+        "hi": 33151001,
+        "sales": 861,
+        "median": 0.92,
+        "cod": 6.231
+      }
+    ],
+    "share_in_0.92_band": 0.1943,
+    "count_in_0.92_band": 1672,
+    "share_exactly_92pct_rounded_100": 0.1532,
+    "0.92_band_share_by_year": {
+      "2023": 0.402,
+      "2024": 0.092,
+      "2025": 0.06
+    }
+  },
+  "year_built": {
+    "parcels_1994": 42390,
+    "1994_by_occupancy": {
+      "VACANT LAND": 31432,
+      "COMMERCIAL": 6876,
+      "EXEMPT": 2253,
+      "RESIDENTIAL": 1705,
+      "MIXED (2+ TYPES)": 124
+    },
+    "residential_share_ending_0_or_5": 0.7862
+  }
+}

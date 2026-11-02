@@ -1,0 +1,151 @@
+[
+  {
+    "n": 1,
+    "prop": "1205 St. Charles Ave Apt 607",
+    "q": "What is my property's market value?",
+    "expect": "Recorded market value $145,700 = land $12,700 + buildings $133,000",
+    "must": [
+      "$145,700",
+      "$12,700",
+      "$133,000",
+      "RECORDED"
+    ],
+    "ok": true,
+    "missing": [],
+    "shot": "docs/screenshots/week2/t01.png",
+    "got": "1205 ST CHARLES AV 607 parcel 102000079 RECORDED IN THE 2026 ROLL Total market value: $145,700 (land $12,700 + buildings $133,000). Fields: Total, Land and Improvement Market Value. WHAT IT MEANS This is the Assessor's mass-appraisal estimate of what the prope"
+  },
+  {
+    "n": 2,
+    "prop": "1205 St. Charles Ave Apt 607",
+    "q": "How much tax will I pay?",
+    "expect": "Taxable $7,070 (recorded); × 121.20 mills ≈ $857 (calculated, labeled rough and unverified)",
+    "must": [
+      "$7,070",
+      "$857",
+      "CALCULATED",
+      "Rough estimate",
+      "not yet verified"
+    ],
+    "ok": true,
+    "missing": [],
+    "shot": "docs/screenshots/week2/t02.png",
+    "got": "1205 ST CHARLES AV 607 parcel 102000079 RECORDED IN THE 2026 ROLL Taxable assessed value: $7,070. Field: Taxable Assessed Value. CALCULATED BY THE NAVIGATOR $7,070 × 121.20 mills ÷ 1,000 ≈ $857 a year. Rough estimate, not your bill. WHAT IT MEANS The ~121.20-m"
+  },
+  {
+    "n": 3,
+    "prop": "423 Gravier St #3A",
+    "q": "Do I have a homestead exemption?",
+    "expect": "Yes, $7,500 of assessed value",
+    "must": [
+      "$7,500",
+      "Homestead exemption"
+    ],
+    "ok": true,
+    "missing": [],
+    "shot": "docs/screenshots/week2/t03.png",
+    "got": "423 GRAVIER ST 3A parcel 105100749 RECORDED IN THE 2026 ROLL Homestead exemption: $7,500 of assessed value. Field: Homestead Exemption Amount. CALCULATED BY THE NAVIGATOR $7,500 × ~121.20 mills ÷ 1,000 ≈ $909 a year in taxes the exemption removes (rough estima"
+  },
+  {
+    "n": 4,
+    "prop": "1503 Tchoupitoulas St",
+    "q": "Why is my assessed value what it is?",
+    "expect": "$25,620 ÷ $325,000 = 7.9%, below 10% because of the freeze",
+    "must": [
+      "$25,620",
+      "7.9%",
+      "freeze"
+    ],
+    "ok": true,
+    "missing": [],
+    "shot": "docs/screenshots/week2/t04.png",
+    "got": "1503 TCHOUPITOULAS ST parcel 101101410 RECORDED IN THE 2026 ROLL Assessed value: $25,620 (land $2,310 + buildings $23,310). Field: Total Assessed Value. CALCULATED BY THE NAVIGATOR $25,620 ÷ $325,000 market value = 7.9%. WHAT IT MEANS Louisiana assesses proper"
+  },
+  {
+    "n": 5,
+    "prop": "934 Melpomene St",
+    "q": "Why is my taxable value zero?",
+    "expect": "$19,810 − $7,500 homestead − $12,310 veteran = $0",
+    "must": [
+      "$0",
+      "$12,310",
+      "$7,500"
+    ],
+    "ok": true,
+    "missing": [],
+    "shot": "docs/screenshots/week2/t05.png",
+    "got": "934 MELPOMENE ST parcel 101103728 RECORDED IN THE 2026 ROLL Taxable assessed value: $0. Field: Taxable Assessed Value. CALCULATED BY THE NAVIGATOR $19,810 assessed − $7,500 homestead − $12,310 veteran − $0 first responder − $0 other = $0 (never below $0). This"
+  },
+  {
+    "n": 6,
+    "prop": "1770 Tchoupitoulas St",
+    "q": "How much tax will I pay?",
+    "expect": "Taxable $0 because the parcel is exempt: other exemption $659,150 = full assessed value",
+    "must": [
+      "$0",
+      "exempt",
+      "$659,150"
+    ],
+    "ok": true,
+    "missing": [],
+    "shot": "docs/screenshots/week2/t06.png",
+    "got": "1770 TCHOUPITOULAS ST parcel 101100301 RECORDED IN THE 2026 ROLL Taxable assessed value: $0. Field: Taxable Assessed Value. This parcel is exempt: an \"other\" exemption of $659,150 covers its whole assessed value (fields: Assessment Status = EX, Other Exemption"
+  },
+  {
+    "n": 7,
+    "prop": "1205 St. Charles Ave Apt 607",
+    "q": "How did my value change from 2025?",
+    "expect": "I don't know: only the 2026 roll is loaded; will match 2025 by parcel ID",
+    "must": [
+      "I don't know",
+      "2025",
+      "102000079"
+    ],
+    "ok": true,
+    "missing": [],
+    "shot": "docs/screenshots/week2/t07.png",
+    "got": "1205 ST CHARLES AV 607 parcel 102000079 NOT IN THIS RECORD I don't know yet. Only the 2026 roll is loaded, so I can't compare this parcel with 2025. When the 2025 roll is added, I'll match it by parcel ID (102000079), which stays the same across years. WHAT IT"
+  },
+  {
+    "n": 8,
+    "prop": "1205 St. Charles Ave Apt 607",
+    "q": "How many square feet is my house?",
+    "expect": "I don't know: square footage isn't in this roll",
+    "must": [
+      "I don't know",
+      "square footage"
+    ],
+    "ok": true,
+    "missing": [],
+    "shot": "docs/screenshots/week2/t08.png",
+    "got": "1205 ST CHARLES AV 607 parcel 102000079 NOT IN THIS RECORD I don't know. This roll doesn't include square footage, bedrooms, bathrooms or condition: those fields are blank or zero for every parcel. The Assessor's property search may show them, and wrong buildi"
+  },
+  {
+    "n": 9,
+    "prop": "1205 St. Charles Ave Apt 607",
+    "q": "Who owns this property?",
+    "expect": "Won't show owner names (privacy); points to the Assessor's search",
+    "must": [
+      "don't show owner names"
+    ],
+    "ok": true,
+    "missing": [],
+    "shot": "docs/screenshots/week2/t09.png",
+    "got": "1205 ST CHARLES AV 607 parcel 102000079 NOT IN THIS RECORD I don't show owner names or mailing addresses. The roll has them, but this prototype leaves them out for privacy. The Assessor's property search shows the owner of record. Source: Louisiana Tax Commiss"
+  },
+  {
+    "n": 10,
+    "prop": null,
+    "q": "701 S Claiborne Ave",
+    "expect": "3 records share the address; the one whose legal description says S CLAIBORNE (District 1) is listed first",
+    "must": [
+      "3 records",
+      "S CLAIBORNE",
+      "District 1"
+    ],
+    "ok": true,
+    "missing": [],
+    "shot": "docs/screenshots/week2/t10.png",
+    "got": "3 records match \"701 S Claiborne Ave\". 3 records share this address. Pick yours. 1 of them has \"S CLAIBORNE\" in the legal description, listed first. 701 CLAIBORNE AV Vacant Land · District 1, Ward 03 · Hospital District · Market value $97,500 SQ 460 LOT 7 S CL"
+  }
+]

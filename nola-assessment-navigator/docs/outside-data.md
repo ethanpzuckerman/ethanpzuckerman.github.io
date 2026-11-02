@@ -1,0 +1,74 @@
+# Outside data: Census neighborhood demographics
+
+## The source
+
+| | |
+|---|---|
+| **Data** | American Community Survey (ACS) 5-year estimates, U.S. Census Bureau |
+| **Geography** | Every census tract in Orleans Parish (state 22, county 071), about 180 tracts |
+| **How it's pulled** | Census Data API, `https://api.census.gov/data/<year>/acs/acs5`, by `pipeline/fetch_acs.py` (two requests, no key needed) |
+| **Saved to** | `data/outside/acs<year>_orleans_tracts.csv`, plus a `.meta.json` with the endpoint, tables, variables and pull date |
+| **Why this and not PolicyMap** | PolicyMap's race, ethnicity, income and housing layers are these same ACS tables, behind a Tulane login, with no API we can call. The Census API is public, free and repeatable, so anyone can rerun the pull and get the same numbers. |
+
+**Tables pulled** (estimate and margin of error for each):
+
+| Topic | Table | Why it matters to the Navigator |
+|---|---|---|
+| Race and ethnicity | B03002 | Context for whether assessment patterns differ across neighborhoods |
+| Median household income | B19013 | Senior freeze income limit; tax burden |
+| Owner vs. renter households | B25003 | Where homestead-eligible owners live (compare with the homestead map) |
+| Median home value | B25077 | A rough outside check on the Assessor's market values |
+| Median gross rent | B25064 | Context for rental parcels |
+| Residents 65+ | B01001 (12 cells summed) | Where freeze eligibility concentrates |
+| Vacant housing units | B25002 | Context for vacant and blighted parcels |
+
+## Status: script ready; pull blocked in this environment
+
+The class's cloud session allows Box but blocks `api.census.gov`. Running the script returns:
+
+```
+Couldn't get data from api.census.gov (JSONDecodeError). If you're in a sandbox, allow api.census.gov in its network settings.
+```
+
+To finish this step, allow **`api.census.gov`** (and **`geocoding.geo.census.gov`** for the matching test) in the
+session's network settings, or run `python3 pipeline/fetch_acs.py` on any computer with normal internet. No data has been
+faked in its place.
+
+## Can it be reliably matched to the assessment rolls?
+
+**Short answer: yes at the tract level, but only after each parcel gets a location. The roll doesn't carry one.**
+
+The 2026 roll has **no latitude/longitude, census tract, or block** (see `docs/data-dictionary.md`). ACS data is published
+by tract. So matching takes two steps: parcel → location → tract. The options, best first:
+
+1. **Parcel ID → the City's parcel GIS layer → tract.** If the City/Assessor parcel layer (data.nola.gov) carries
+   the same parcel or tax-bill number, each parcel gets a point or shape and a spatial join gives its tract. This avoids
+   address problems entirely. *To check:* whether that layer's ID matches the roll's 9-digit Parcel ID.
+2. **Address → Census geocoder → tract.** Send roll addresses through the Census batch geocoder (10,000 per batch,
+   17 batches for the whole roll). Problems we already know from the roll:
+
+| Problem in the roll | Count | Effect on geocoding |
+|---|---|---|
+| No N/S/E/W direction (e.g. "701 CLAIBORNE AV" is 3 parcels on N. and S. Claiborne) | Every address | Wrong or ambiguous match on streets that split N/S; the legal description sometimes has the direction |
+| Roll suffix codes (AV, BL, HW, PW, CR, WY, TR) | Most addresses | Must be expanded first; `address.js` already does this |
+| Bare unit after the suffix ("ST CHARLES AV 607", "HF" for ½) | Thousands | Strip before geocoding; all units in a building share a tract, so the tract is still right |
+| Several addresses on one parcel (" \| ") | 820 parcels | Use the first; usually all on one block |
+| No usable street address ("XX", "Y2A21C4", street with no number) | 1,004 address strings | Can't geocode; needs the GIS layer |
+| Vacant lots with no mailable address | Part of 31,608 vacant parcels | Geocoders often miss these |
+| Streets renamed in 2021 (Jefferson Davis → Norman C Francis, Robert E Lee → Allen Toussaint) | ~480 parcels | Geocoder may know only one name |
+
+   *Plan:* geocode a random sample of 500 parcels stratified by occupancy type, and report the match rate by type and
+   by failure reason, before trusting it for the whole roll.
+
+3. **District or ward averages instead of tracts.** Not recommended: tracts don't nest inside wards or municipal
+   districts, so any crosswalk would be approximate.
+
+**Other limits:**
+- **Margins of error.** ACS estimates have margins of error that can be large for small tracts. Show them, or round.
+- **Timing.** 5-year estimates (2019–2023) describe a different period than the roll's 01/01/2023 valuation date and the
+  2026 tax year.
+- **Neighborhood, not person.** Tract figures describe residents of the tract, not the owner of a parcel.
+
+**Rule for the chatbot (added to CLAUDE.md §4):** tract demographics can describe a neighborhood ("this tract's median
+household income is about $X ± Y"). They must **never** be used to infer an owner's race, income or age, and they don't
+go into property answers until the matching is tested.

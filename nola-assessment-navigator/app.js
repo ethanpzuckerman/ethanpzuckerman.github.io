@@ -119,7 +119,7 @@
         // Only when asking for the number itself, not "what is my assessment based on?"
         || /\bparcel (number|id)\b/i.test(q)
         || /\b(what('?s| is)|find|show me|tell me) my (property'?s? |house'?s? |home'?s? )?(assessment|assessed value|value|tax bill)\s*(\?|$|for\b|at\b|on \d)/i.test(q),
-      reply: () => `<p><strong>I can't look up individual properties yet.</strong> Parcel lookup (Layer 2) is still being built. To see your value now, use the property search on <a href="https://www.nolaassessor.com/" target="_blank" rel="noopener">nolaassessor.com</a> or call the Assessor's Office. I won't guess at numbers for your property.</p>`,
+      reply: () => `<p><strong>To see your property's numbers, find it first.</strong> Type just the address (like "1234 Magazine St") or the 9-digit parcel ID in the <em>Find your property</em> box, then confirm it's yours. I won't guess at numbers for a property you haven't selected.</p>`,
       contact: true, allowAnswer: true
     },
     {
@@ -230,6 +230,29 @@
     "I missed the deadline. What can I do now?",
     "My parent died. What happens to the homestead?"
   ];
+  const PROPERTY_SUGGESTIONS = [
+    "What is my property's market value?",
+    "Why is my assessed value what it is?",
+    "Do I have a homestead exemption?",
+    "How much tax will I pay?",
+    "How did my value change from 2025?",
+    "How many square feet is my house?",
+    "Do I have an assessment freeze?",
+    "I think my value is wrong"
+  ];
+
+  function setChips(list) {
+    const chips = document.getElementById("chips");
+    chips.innerHTML = "";
+    list.forEach(s => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "chip";
+      b.textContent = s;
+      b.addEventListener("click", () => ask(s));
+      chips.appendChild(b);
+    });
+  }
 
   function addMsg(role, html) {
     const log = document.getElementById("log");
@@ -245,23 +268,103 @@
     return s.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   }
 
+  /* ---------- Property lookup and selected property (Layer 2) ---------- */
+  const DATA_BASE = "data/web/2026/";
+  const lookup = window.NolaLookup ? NolaLookup.create(name => fetch(DATA_BASE + name).then(r => {
+    if (!r.ok) throw new Error(r.status);
+    return r.json();
+  })) : null;
+  let selected = null;
+  let metaInfo = null;
+  let lastCandidates = [];
+
+  // Questions about how the system works go to the knowledge base even when a property is selected.
+  const GENERAL_FIRST = /^(how (do|can|should|would) (i|we|you)|how to\b|where\b|what (documents|do i (need|bring))|what is an?\b|what's an?\b|what does .* mean|when (is|are|do|does)\b|who (do|should|can) i\b|can i (apply|appeal|get)|do i (have|need) to (reapply|apply|appeal)|is there\b)/i;
+  const LOOKS_LIKE_ADDRESS = /^\s*(\d{1,6}[A-Za-z]?(\s+1\/2)?\s+[A-Za-z0-9.' -]{2,}|\d{9})\s*(,.*)?$/;
+
+  function propertyAnswerHtml(q) {
+    if (!selected || GENERAL_FIRST.test(q) || !window.NolaProperty) return null;
+    const a = NolaProperty.answer(selected, q, metaInfo);
+    if (!a) return null;
+    let html = renderCites(a.html);
+    const ids = citedIds(a.html);
+    if (ids.length) html += sourcesBlock(ids);
+    if (a.contact) html += CONTACTS_HTML;
+    return html;
+  }
+
+  function renderLookup(res, input) {
+    lastCandidates = res.candidates.map(c => c.record);
+    if (res.status === "not_found") {
+      return `<p><strong>I couldn't find that property in the 2026 roll.</strong> ${escapeHtml(res.reason || "")}</p>
+<p>Tips: check the house number, try the street without "N/S" or the suffix, include your unit number for a condo, or search by the 9-digit parcel ID from your tax bill. If it still doesn't show up, the Assessor's property search at nolaassessor.com is the official source.</p>` + CONTACTS_HTML;
+    }
+    const intro = {
+      exact: `<p>I found <strong>one record</strong> for "${escapeHtml(input)}". Is this your property?</p>`,
+      close: `<p><strong>Closest match</strong>: ${escapeHtml(res.reason)}</p>`,
+      multiple: `<p><strong>${res.total || res.candidates.length} records</strong> match "${escapeHtml(input)}". ${escapeHtml(res.reason || "")}${(res.total || 0) > res.candidates.length ? ` Showing the first ${res.candidates.length}; add your unit number to narrow it down.` : ""}</p>`
+    }[res.status];
+    const list = res.candidates.map((c, i) =>
+      `<li><button type="button" class="pick" data-pick="${i}">${NolaProperty.candidateLine(c.record)}</button></li>`).join("");
+    return intro + `<ul class="picks">${list}</ul><p class="hint">Choose the record that's yours. If none are, try another spelling or your parcel ID.</p>`;
+  }
+
+  async function runLookup(input) {
+    if (!lookup) return;
+    const msg = addMsg("bot", `<p>Searching the 2026 roll for "${escapeHtml(input)}"…</p>`);
+    try {
+      metaInfo = metaInfo || await lookup.meta();
+      const res = await lookup.find(input);
+      msg.innerHTML = renderLookup(res, input);
+    } catch (e) {
+      msg.innerHTML = `<p><strong>I couldn't load the property data</strong>, so I can't look this up right now. You can still ask general questions, or use the Assessor's property search at nolaassessor.com.</p>`;
+    }
+  }
+
+  function selectProperty(rec) {
+    selected = rec;
+    const bar = document.getElementById("selected");
+    bar.hidden = false;
+    bar.querySelector(".sel-text").innerHTML = `Selected: <strong>${escapeHtml(rec.a)}</strong> · parcel ${escapeHtml(rec.id)} · 2026 roll`;
+    addMsg("bot", NolaProperty.card(rec, metaInfo) +
+      `<p>Ask me about this property, like "How much tax will I pay?" or "Do I have a homestead exemption?" Answers label what's <strong>recorded</strong> in the roll, what I <strong>calculated</strong>, and the general <strong>explanation</strong>.</p>`);
+    setChips(PROPERTY_SUGGESTIONS);
+  }
+
+  function clearProperty() {
+    selected = null;
+    document.getElementById("selected").hidden = true;
+    setChips(SUGGESTIONS);
+    addMsg("bot", `<p>Property cleared. Search for another one, or ask a general question.</p>`);
+  }
+
   function ask(q) {
     q = q.trim();
     if (!q) return;
     addMsg("user", escapeHtml(q));
-    addMsg("bot", answer(q).html);
+    if (lookup && LOOKS_LIKE_ADDRESS.test(q) && !/\?/.test(q)) return runLookup(q);
+    const prop = propertyAnswerHtml(q);
+    addMsg("bot", prop || answer(q).html);
   }
 
   function init() {
-    const chips = document.getElementById("chips");
-    SUGGESTIONS.forEach(s => {
-      const b = document.createElement("button");
-      b.type = "button";
-      b.className = "chip";
-      b.textContent = s;
-      b.addEventListener("click", () => ask(s));
-      chips.appendChild(b);
+    setChips(SUGGESTIONS);
+    const find = document.getElementById("find");
+    if (find) find.addEventListener("submit", e => {
+      e.preventDefault();
+      const input = document.getElementById("addr");
+      const v = input.value.trim();
+      if (!v) return;
+      addMsg("user", escapeHtml(v));
+      runLookup(v);
+      input.value = "";
     });
+    document.getElementById("log").addEventListener("click", e => {
+      const b = e.target.closest("[data-pick]");
+      if (b) selectProperty(lastCandidates[+b.dataset.pick]);
+    });
+    const clr = document.getElementById("clear-prop");
+    if (clr) clr.addEventListener("click", clearProperty);
     document.getElementById("ask").addEventListener("submit", e => {
       e.preventDefault();
       const input = document.getElementById("q");
@@ -270,12 +373,13 @@
       input.focus();
     });
     addMsg("bot", `<p>Hi! I answer general questions about property assessments in the <strong>City of New Orleans</strong>: how values are set, how your tax bill is calculated, exemptions like homestead, the 2027 reassessment, and how to appeal.</p>
-<p class="disclose"><strong>I'm a student prototype, not an official government tool.</strong> Information may be out of date, so always confirm with the Assessor's Office. I can't give legal or tax advice, and I can't look up your property yet.</p>`);
+<p>To ask about <strong>your</strong> property, find it with the box above using its address or 9-digit parcel ID, then confirm the record. Property answers use the <strong>2026 roll</strong> from the Louisiana Tax Commission.</p>
+<p class="disclose"><strong>I'm a student prototype, not an official government tool.</strong> Information may be out of date, so always confirm with the Assessor's Office. I can't give legal or tax advice.</p>`);
     const hash = decodeURIComponent((location.hash || "").slice(1));
     if (hash.startsWith("q=")) ask(hash.slice(2));
   }
 
-  window.NavigatorBot = { answer, score };
+  window.NavigatorBot = { answer, score, ask, propertyAnswerHtml, GENERAL_FIRST };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
   else init();
 })();

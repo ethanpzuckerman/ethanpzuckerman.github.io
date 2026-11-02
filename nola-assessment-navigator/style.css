@@ -119,3 +119,49 @@ a.cite:hover, a.cite:focus { text-decoration: underline; }
 .foot { color: var(--muted); font-size: 13px; padding-block: 8px 32px; }
 
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+
+/* ---------- Property lookup (Layer 2) ---------- */
+.find { display: flex; flex-direction: column; gap: 6px; }
+.find label { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.find-row { display: flex; gap: 8px; }
+.find input {
+  flex: 1; min-width: 0; font: inherit; color: var(--ink); background: var(--surface);
+  border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px;
+}
+.find input:focus { outline: 2px solid var(--gold); outline-offset: 1px; }
+.find button, .selected button {
+  font: inherit; font-weight: 600; border: 1px solid var(--navy); border-radius: 10px; padding: 10px 16px;
+  background: var(--surface); color: var(--ink); cursor: pointer;
+}
+.selected {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px;
+  background: var(--gold-soft); border-radius: 10px; padding: 8px 12px; font-size: 14px;
+}
+.selected button { padding: 6px 12px; font-size: 13px; }
+.picks { list-style: none; padding: 0; margin: 8px 0; display: flex; flex-direction: column; gap: 6px; }
+.pick {
+  width: 100%; text-align: left; font: inherit; color: var(--ink); background: var(--bg);
+  border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; cursor: pointer;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.pick:hover, .pick:focus-visible { border-color: var(--gold); outline: none; }
+.pick span { font-size: 13px; color: var(--muted); }
+.pick .legal { font-size: 12px; }
+.hint { font-size: 13px; color: var(--muted); }
+.pcard h3, .msg h3 .pid { margin-bottom: 2px; }
+.pid { font-size: 13px; font-weight: 500; color: var(--muted); }
+.pmeta { font-size: 13px; color: var(--muted); }
+.ptable { width: 100%; }
+.ptable th { font-weight: 500; color: var(--ink); }
+.ptable td { font-variant-numeric: tabular-nums; }
+.ptable .field { font-size: 11px; color: var(--muted); }
+.prov { border-left: 3px solid var(--line); padding: 6px 0 6px 12px; margin: 10px 0; }
+.prov p { margin: 0 0 6px; }
+.prov-tag { display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 4px; color: var(--muted); }
+.prov-recorded { border-left-color: var(--link); }
+.prov-recorded .prov-tag { color: var(--link); }
+.prov-calculated { border-left-color: var(--gold); }
+.prov-calculated .prov-tag { color: var(--gold); }
+.prov-explanation { border-left-color: var(--muted); }
+.prov-missing { border-left-color: var(--muted); border-left-style: dashed; }
+.srcline { font-size: 12px; color: var(--muted); margin-top: 8px; }
