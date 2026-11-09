@@ -10,3 +10,4 @@ nola-assessment-navigator/data/raw/
 # NOLA Assessment Navigator generated data (regenerate with pipeline/; published with the live chatbot)
 nola-assessment-navigator/data/processed/
 nola-assessment-navigator/data/web/
+nola-assessment-navigator/docs/report.html
