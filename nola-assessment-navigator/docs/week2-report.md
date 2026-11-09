@@ -1,4 +1,4 @@
-# Week 2: From the dataset to one owner's property
+# NOLA Assessment Navigator, Part 2: Data Exploration, Property Lookup, and Chatbot
 
 **Live chatbot:** https://claude.ai/artifact/PMnTiHc5EGih7pzGky6bWB. Find a property by address or parcel ID, confirm the
 record, then ask about it.
@@ -12,10 +12,10 @@ record, then ask about it.
 | Assignment item | Where |
 |---|---|
 | 1. EDA: 3–5 charts with a paragraph each, plus a finding verified independently | §1: Figures 1–5, then "Verifying a finding independently" |
-| 2. Data dictionary, plus what we couldn't figure out | §2 and `docs/data-dictionary.md` (all 115 fields) |
-| 3. Address matching tested on 10+ addresses: how many matched, and why any failed | §3 (19 addresses) and `docs/address-matching-results.md` |
+| 2. Data dictionary, plus what we couldn't figure out | §2, and all 115 fields in Appendix A (`docs/data-dictionary.md`) |
+| 3. Address matching tested on 10+ addresses: how many matched, and why any failed | §3, and all 19 results in Appendix B (`docs/address-matching-results.md`) |
 | 4. One outside source pulled by API, saved and documented | §4: Census ACS by tract; `data/outside/`, `docs/outside-data.md` |
-| 5. 10 test questions: expected answer vs. what the chatbot did | §5 and `docs/screenshots/week2/` |
+| 5. 10 test questions: expected answer vs. what the chatbot did | §5, and screenshots of every answer in Appendix C |
 | Live link to the current chatbot | Top of this page |
 | Compare 2025 and 2026 by a consistent ID | §4b: 2025 isn't available, so 2026 vs 2027 by parcel ID |
 | Property lookup: address variations, multiple matches, missing records | §3, and the live chatbot's "Find your property" box |
@@ -38,8 +38,9 @@ the roll's own arithmetic holds. On **all 163,135 rows**:
 **Figure 1: What's on the roll, by count and by value** (`docs/eda/fig1_share_parcels_value.png`)
 ![Share of parcels and value by type](eda/fig1_share_parcels_value.png)
 Residential parcels are 74% of the roll but 52% of its $75.7 billion market value. **Exempt parcels are only 2.2% of
-parcels but 21% of the value.** These are the big institutional properties (port, City Park, hospitals, universities,
-the Superdome), and their share of value is carried by everyone else's taxes. Commercial parcels are 4% of the count
+parcels but 21% of the value.** These are large institutional properties: City Park ($1.39 billion), the LSU and VA
+medical centers (about $1 billion each), Tulane, the Convention Center, the Superdome and the Port. None of that value is
+taxed. Commercial parcels are 4% of the count
 and 13% of the value. 14,841 parcels have a taxable value of $0: exempt property, vacant land with an "other"
 exemption, and 4,197 homes whose exemptions cover the whole assessed value.
 
@@ -51,8 +52,8 @@ are above $611,800. These are the Assessor's mass-appraisal values as of 01/01/2
 **Figure 3: Homestead exemption by district** (`docs/eda/fig3_homestead_by_district.png`)
 ![Homestead share by district](eda/fig3_homestead_by_district.png)
 Citywide, **54% of residential parcels** have a homestead exemption. That ranges from **61% in District 5** to
-**33% in District 1**. A low share points to more rentals, second
-homes and short-term rentals, or to owners who live there but haven't applied. That makes it a useful map for homestead
+**33% in District 1**. A low share can reflect more rentals, second
+homes and short-term rentals, or owners who live there but haven't applied. That makes it a useful map for homestead
 outreach.
 
 **Figure 4: The 10% rule, and the freeze exception** (`docs/eda/fig4_assessment_ratio.png`)
@@ -67,13 +68,13 @@ from the education outline working in the data.
 For 8,604 residential sales from 2023–2025, we compare the roll's market value with the sale price. The middle and top
 of the market sit at **0.92–0.94× the sale price**. The **cheapest tenth ($15K–$130K) sits at 1.18×**, with dispersion
 (COD 33) more than twice the IAAO target band of 5–15. Taken at face value, owners of the least expensive homes are
-assessed at more than they sold for, while everyone else is assessed below. That's the regressivity concern
-Professor Peeler raised.
+assessed at more than they sold for, while everyone else is assessed below. That's the regressivity concern the
+project's client raised.
 
 **Caveats before anyone acts on it:**
 - None of the roll's sale prices are marked verified.
-- The cheapest tenth likely includes distressed and non-market sales. With sheriff's and succession deeds included,
-  that tenth rises to 1.41×.
+- The cheapest tenth likely includes distressed and non-market sales. Including every deed type (sheriff's sales,
+  successions and other non-SALE transfers) raises that tenth to 1.41×.
 - Values are as of 01/01/2023, so later sales include appreciation.
 - With 2021–22 sales, from before the valuation date (and with slightly different filters: SALE, SALW and CASH documents, prices of $25K or more), the cheapest tenth is at 1.05×. The gap is smaller there, but it
   points the same way.
@@ -99,8 +100,9 @@ Both match the EDA. We also traced one parcel by hand. For **1205 St Charles Av 
 $133,000 = $145,700 market value. × 10% = $14,570 assessed, − $7,500 homestead = **$7,070 taxable**, exactly what the roll
 records.
 
-*For you to redo:* open the CSV in Excel and filter Occupancy = RESIDENTIAL and Freeze Code = 0. Add a column
-`=Total Assessed Value / Total Market Value` and count the rows equal to 0.1.
+**To reproduce it in Excel** (the file's 163,135 rows fit within Excel's limit): filter Occupancy Type = RESIDENTIAL and
+Freeze Code = 0, add a column `=Total Assessed Value / Total Market Value`, and count the rows equal to 0.1. The
+result should be 99,289 of 102,157.
 
 **Second check: replicating the class model EDA.** The Oct. 28 class recording shows the instructor's AI-built EDA.
 We reran its two headline findings with our own code on the raw file (`pipeline/eda.py`, `sales_ratio()`):
@@ -118,7 +120,7 @@ under Figure 5.
 
 ## 2. Data dictionary
 
-`docs/data-dictionary.md` (generated by `pipeline/data_dictionary.py`) covers all 115 fields. Each one has a meaning,
+**Appendix A** (`docs/data-dictionary.md`, generated by `pipeline/data_dictionary.py`) covers all 115 fields. Each one has a meaning,
 a status (Verified / Inferred / Unknown), its fill rate, and common values (hidden for owner and mailing fields).
 
 **What we couldn't figure out:**
@@ -126,8 +128,8 @@ a status (Verified / Inferred / Unknown), its fill rate, and common values (hidd
   the 434 instrument-type codes.
 - **The assessment date:** whether 01/01/2023 on every row is the 2024 reappraisal's valuation date.
 - **Mislabeled fields:** "Living Square Feet" is actually a record count, not square footage.
-- **Empty fields:** about 30 are always blank or zero, including building size, bedrooms, bathrooms, condition,
-  tax-sale status and special taxing district.
+- **Empty fields:** 39 are always blank, zero or "NOT AVAILABLE", including building size, bedrooms, bathrooms,
+  condition, tax-sale status and special taxing district.
 
 The chatbot says "I don't know" for all of these.
 
@@ -144,9 +146,9 @@ The chatbot says "I don't know" for all of these.
 
 The matcher then looks up street + house number, falls back to close spellings, and accepts a 9-digit parcel ID.
 
-**Tested on 19 addresses** (`docs/address-matching-results.md`; `node tests/address_eval.js`): **19 of 19 behaved as
+**Tested on 19 addresses** (full table in **Appendix B**; `node tests/address_eval.js`): **19 of 19 behaved as
 expected**, with expected results written before running:
-- **12 exact matches**, including:
+- **13 exact matches**, including:
   - "1205 St. Charles Avenue, Apt 607, New Orleans, LA 70130"
   - "2000 MLK Blvd"
   - "1050 Jefferson Davis Parkway" (now Norman C Francis)
@@ -232,7 +234,7 @@ confirm that homestead doesn't reduce the police and fire millages "without home
 ## 5. Ten test questions
 
 Run in the real page with `node tests/chatbot_eval.js`. Expected answers come from the **raw CSV**
-(`tests/expected_from_raw.py`), not the app's own export. Screenshots: `docs/screenshots/week2/t01–t10.png`.
+(`tests/expected_from_raw.py`), not the app's own export. Screenshots of every answer are in **Appendix C**.
 
 | # | Property | Question | Expected (from the raw roll) | How it did |
 |---|---|---|---|---|
@@ -246,6 +248,17 @@ Run in the real page with `node tests/chatbot_eval.js`. Expected answers come fr
 | 8 | 1205 St Charles #607 | How many square feet is my house? | Not in this roll | ✅ "I don't know" plus where to look |
 | 9 | 1205 St Charles #607 | Who owns this property? | Won't show names (privacy) | ✅ after a fix: v1 routed "Who…" to the general contacts answer |
 | 10 | (search) | 701 S Claiborne Ave | 3 records; S. Claiborne first | ✅ after adding the legal-description ranking |
+
+**Beyond the ten:** `node tests/property_sweep.js` asks all 14 property question types about 305 random parcels of
+every kind (homestead, rental, commercial, vacant, exempt, frozen, veteran, multi-record), 4,270 answers, and flags
+broken output or a "matches the recorded amount" claim that isn't true. It found two bugs, both fixed:
+- **Doubled mills:** on 866 parcels with several assessment records, the displayed rate counted each levy twice. The
+  recorded taxes were always right. After the fix, every one of 150,793 parcels without other exemptions reconciles:
+  assessed × mills − homestead = recorded tax, within $2.
+- **Wrong routing:** "I think my value is wrong" was answered as a value lookup instead of with the review and appeal
+  path.
+
+The final sweep: **0 problems**.
 
 ## Remaining limitations
 

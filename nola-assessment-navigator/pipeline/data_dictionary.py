@@ -150,7 +150,8 @@ def main():
         filled = s.notna() & ~s.isin(["", "0", "NOT AVAILABLE"])
         status, meaning = MEANING[c]
         ex = "(private)" if c in PRIVATE else ", ".join(f"`{v[:28]}`" for v in s.dropna().value_counts().index[:3])
-        rows.append(f"| {c} | {status} | {filled.mean():.0%} | {s.nunique():,} | {ex} | {meaning} |")
+        cell = lambda x: str(x).replace("|", "\\|")  # a raw "|" would split the Markdown table cell
+        rows.append(f"| {cell(c)} | {status} | {filled.mean():.0%} | {s.nunique():,} | {cell(ex)} | {cell(meaning)} |")
     unknown = [c for c in df.columns if MEANING[c][0] == U]
     empty = [c for c in unknown if not (df[c].notna() & ~df[c].isin(["", "0", "NOT AVAILABLE"])).any()]
     unclear = [c for c in unknown if c not in empty]

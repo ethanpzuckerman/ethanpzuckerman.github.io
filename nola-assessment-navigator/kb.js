@@ -58,9 +58,9 @@ const ENTRIES = [
     keywords: ["inspect", "inspection", "visit", "nothing", "didn't", "changed", "went", "increase", "jump", "why", "higher"],
     phrases: ["why did my value go up", "didn't change anything", "come inspect", "value went up", "assessment went up", "why is my assessment higher"],
     answer: `<p>Mass appraisal values whole neighborhoods from sales data. So your value can rise because <strong>similar homes near you sold for more</strong>, even if no one visited your house and you made no changes <cite>S10</cite><cite>S15</cite>.</p>
-<p>Values move most in a <strong>reappraisal year</strong>. The 2024 reappraisal raised total assessed value about 20% <cite>S26</cite>, and the <strong>2027 roll</strong> (posted July 2026) carries new reappraised values <cite>S4</cite>. In other years, changes usually come from a sale, a permit or renovation, new construction, a demolition, or a correction.</p>
+<p>Values move most in a <strong>reappraisal year</strong>. The 2024 reappraisal raised total assessed value about 20% <cite>S26</cite>, and the <strong>2027 roll</strong> was expected to be another <cite>S4</cite>. The 2027 roll filed with the state, though, keeps 98% of values the same as 2026 <cite>S31</cite>. In other years, changes usually come from a sale, a permit or renovation, new construction, a demolition, or a correction.</p>
 <p>A higher value does <em>not</em> automatically raise your bill by the same percent. In reassessment years taxing bodies must roll back millage <cite>S11</cite>. Ask me "Will my taxes go up the same amount?" for more.</p>`,
-    sources: ["S10", "S15", "S26", "S4", "S11"]
+    sources: ["S10", "S15", "S26", "S4", "S31", "S11"]
   },
   {
     id: "assessed-vs-market", topic: "How values are set",

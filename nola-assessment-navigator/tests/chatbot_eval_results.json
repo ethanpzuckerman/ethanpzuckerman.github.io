@@ -91,7 +91,7 @@
     "ok": true,
     "missing": [],
     "shot": "docs/screenshots/week2/t06.png",
-    "got": "1770 TCHOUPITOULAS ST parcel 101100301 RECORDED IN THE 2026 ROLL Computed property tax on the 2026 roll: $0, from 131.99 total mills. Taxable assessed value: $0. Source: the LTC roll's millage file, which lists every levy on the parcel. This parcel is exempt: "
+    "got": "1770 TCHOUPITOULAS ST parcel 101100301 RECORDED IN THE 2026 ROLL Computed property tax on the 2026 roll: $0, from 131.99 total mills. Taxable assessed value: $0. Source: the LTC roll's millage file, which lists every levy on the parcel [S30]. This parcel is ex"
   },
   {
     "n": 7,

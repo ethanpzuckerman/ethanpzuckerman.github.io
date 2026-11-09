@@ -96,7 +96,11 @@ a.cite:hover, a.cite:focus { text-decoration: underline; }
 .contacts ul { margin: 6px 0 0; }
 .tel { user-select: all; font-weight: 600; }
 
-.ask { display: flex; gap: 8px; position: sticky; bottom: 12px; }
+.ask {
+  display: flex; gap: 8px; position: sticky; bottom: 0; z-index: 2;
+  /* Solid band so answer text doesn't show through around the input while scrolling. */
+  background: var(--bg); padding-block: 10px max(10px, env(safe-area-inset-bottom, 0px));
+}
 .ask input {
   flex: 1; min-width: 0; font: inherit; color: var(--ink); background: var(--surface);
   border: 1px solid var(--line); border-radius: 999px; padding: 12px 18px;

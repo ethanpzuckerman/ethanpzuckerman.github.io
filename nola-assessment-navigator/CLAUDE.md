@@ -33,7 +33,7 @@ before it works.
 | Layer | Name | What it answers | Data | Status |
 |---|---|---|---|---|
 | 1 | **General guidance** | "How does this work?": FMV vs. assessed value, millage, exemptions, appeals, deadlines, the 2027 reassessment | Curated knowledge base (`kb.js`) built from the sources in Section 2 | **Draft live** |
-| 2 | **My property** | "What does this mean for *my* parcel?": find and confirm a parcel, then show its values, exemptions, freeze and a tax estimate (2025 → 2026 change once the 2025 roll arrives) | 2026 LTC roll (Section 3); 2025 roll not yet available | **Draft live**: lookup + 10 question types |
+| 2 | **My property** | "What does this mean for *my* parcel?": find and confirm a parcel, then show its values, exemptions, freeze, recorded 2026/2027 tax and the 2026 → 2027 change | 2026 and 2027 LTC rolls (Section 3); the 2025 roll isn't available | **Draft live**: lookup + 14 question types |
 | 3 | **Market context** | "How does my change compare?": my change vs. my neighborhood, comparable parcels, citywide distribution | Same rolls, aggregated by neighborhood or assessment district | Not started |
 
 Layer 2 and 3 answers must still follow every rule in Section 4. A number from the roll
@@ -163,7 +163,7 @@ values are posted:
 |---|---|---|---|---|
 | **2025** | July 15 – Aug. 15, **2024** | 4 p.m., Aug. 20, 2024 [S22] | ~Dec. 2024 | Jan. 31, 2025, extended to Feb. 28 that year [S12] |
 | **2026** | July 15 – Aug. 15, **2025** | Aug. 20, 2025 per [S6]; one OPAO notice says Aug. 18 [S5]. `VERIFY` | ~Dec. 2025 | ~Jan. 31, 2026 [S12] |
-| **2027** (reassessment) | July 15 – Aug. 17, **2026** | Online system July 22 → **4 p.m., Thu. Aug. 20, 2026** [S4] | ~Dec. 2026 | ~Jan. 31, 2027 `VERIFY` |
+| **2027** (expected reassessment; the filed roll shows little change, see §2.7) | July 15 – Aug. 17, **2026** | Online system July 22 → **4 p.m., Thu. Aug. 20, 2026** [S4] | ~Dec. 2026 | ~Jan. 31, 2027 `VERIFY` |
 
 Late payment: interest accrues at **1% per month** after the due date, and not receiving a
 bill is not an excuse [S12]. `VERIFY` the current rate.
@@ -450,7 +450,7 @@ questions must have a knowledge-base entry in `kb.js`.
   3. *Do I have to reapply every year?*
 
 ### 5.4 What the 2027 reassessment means for owners
-- Content: what changed on the 2027 roll; 2024 comparison (~20%); rollback and
+- Content: what the filed 2027 roll actually shows (98% of values unchanged, millage up, median home +$25; §2.7); 2024 comparison (~20%); rollback and
   roll-forward; the City's two proposed levies (12.23 vs. 13.91 mills; ~$178 on a $300,000
   homestead); there is no 10% cap (2022 amendment failed); what to check before bills
   arrive.
@@ -525,6 +525,7 @@ list at least one source ID. A check in `app.js` refuses to render an entry with
 - `node tests/address.test.js`
 - `node tests/address_eval.js`
 - `node tests/chatbot_eval.js`
+- `node tests/property_sweep.js`: 14 question types × 305 random parcels; must report 0 problems
 
 **Planned upgrade:** replace keyword retrieval with an LLM (Claude API) that answers only
 from retrieved `kb.js` passages, using Section 4 as the system prompt. Keep the

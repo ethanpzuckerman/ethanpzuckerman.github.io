@@ -30,8 +30,8 @@ It then matches by street name and house number. If the street isn't found, it t
 | 7 | 1050 Jefferson Davis Parkway | old street name (renamed 2021) | exact | exact | 1 | 1050 NORMAN C FRANCIS PW (102206001) | ✅ |
 | 8 | 519 General Pershing Street | General vs GEN | exact | exact | 1 | 519 GEN PERSHING ST (614103512) | ✅ |
 | 9 | 130 Robert E. Lee Blvd | old street name (renamed 2021) | exact | exact | 1 | 130 ALLEN TOUSSAINT BL (206411902) | ✅ |
-| 10 | 1122 Tchoupitoulas St | second address on a multi-address parcel | exact | exact | 1 | 1116 TCHOUPITOULAS ST | 1122 TCHOUPITOULAS ST | 1112 TCHOUPITOULAS ST (102101404) | ✅ |
-| 11 | 1116 Tchoupitoulis St | misspelled street | close | close | 1 | 1116 TCHOUPITOULAS ST | 1122 TCHOUPITOULAS ST | 1112 TCHOUPITOULAS ST (102101404) | ✅ |
+| 10 | 1122 Tchoupitoulas St | second address on a multi-address parcel | exact | exact | 1 | 1116 TCHOUPITOULAS ST \| 1122 TCHOUPITOULAS ST \| 1112 TCHOUPITOULAS ST (102101404) | ✅ |
+| 11 | 1116 Tchoupitoulis St | misspelled street | close | close | 1 | 1116 TCHOUPITOULAS ST \| 1122 TCHOUPITOULAS ST \| 1112 TCHOUPITOULAS ST (102101404) | ✅ |
 | 12 | 701 S. Claiborne Ave | roll has no N/S direction | multiple | multiple | 3 | 701 CLAIBORNE AV (103107307) | ✅ |
 | 13 | 1518 1/2 Melpomene St | half address vs HF | exact | exact | 1 | 1518 MELPOMENE ST HF (101105624) | ✅ |
 | 14 | 1514 freret | lowercase, no suffix | exact | exact | 1 | 1514 FRERET ST (101110115) | ✅ |

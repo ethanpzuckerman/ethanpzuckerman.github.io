@@ -20,7 +20,7 @@ Examples are hidden for owner and mailing fields (privacy).
 | FIPS Code | Inferred | 100% | 7 | `22173`, `22175`, `22176` | LTC code for the district's tax roll (22171–22177, one per municipal district), not a county FIPS code. |
 | Tax Bill # | Verified | 100% | 163,135 | `101100224`, `101100227`, `101100301` | Tax bill number. Identical to Parcel ID on every row. |
 | Parcel ID(s) | Verified | 100% | 163,135 | `101100224`, `101100227`, `101100301` | Unique parcel identifier (163,135 unique values). Use this to join years and other data. |
-| Property Address(es) | Verified | 100% | 162,007 | `210 BARONNE ST`, `5500 CHEF MENTEUR HW`, `14601 OLD GENTILLY HW` | Situs (property) address, roll format: no N/S direction, short suffixes (AV, BL, HW, PW, CR, WY), units after the suffix ("ST CHARLES AV 607"), "HF" for half addresses. 820 parcels list several addresses joined with " | ". |
+| Property Address(es) | Verified | 100% | 162,007 | `210 BARONNE ST`, `5500 CHEF MENTEUR HW`, `14601 OLD GENTILLY HW` | Situs (property) address, roll format: no N/S direction, short suffixes (AV, BL, HW, PW, CR, WY), units after the suffix ("ST CHARLES AV 607"), "HF" for half addresses. 820 parcels list several addresses joined with " \| ". |
 | Owner(s) | Verified | 100% | 124,489 | (private) | Owner name(s) as recorded. Not used in the app (privacy). |
 | Primary Owner(s) | Verified | 100% | 124,426 | (private) | First-listed owner. Not used in the app. |
 | Assessment Status(es) | Inferred | 100% | 2 | `AC`, `EX` | AC = active/taxable; EX = exempt (10,109 parcels, all vacant land or exempt occupancy). |
@@ -28,8 +28,8 @@ Examples are hidden for owner and mailing fields (privacy).
 | Subdivision(s) | Verified | 99% | 611 | `I-510 WEST`, `LOWER 9TH WARD 2`, `INNER CITY 7TH WARD` | Subdivision or area name used by the Assessor (611 values). Blank on 1,831 parcels. |
 | Block(s) | Unknown | 0% | 0 |  | Always blank in this file. |
 | Lot(s) | Unknown | 0% | 0 |  | Always blank in this file. Square/lot appear inside Legal Description instead. |
-| Occupancy Type(s) | Verified | 100% | 12 | `RESIDENTIAL`, `VACANT LAND`, `COMMERCIAL` | Use class: RESIDENTIAL, VACANT LAND, COMMERCIAL, EXEMPT; multi-record parcels list several joined by " | ". |
-| Vacant Lot Indicator(s) | Verified | 100% | 4 | `N`, `Y`, `Y | N` | Y if the parcel is vacant land. Matches Occupancy = VACANT LAND exactly (31,608). |
+| Occupancy Type(s) | Verified | 100% | 12 | `RESIDENTIAL`, `VACANT LAND`, `COMMERCIAL` | Use class: RESIDENTIAL, VACANT LAND, COMMERCIAL, EXEMPT; multi-record parcels list several joined by " \| ". |
+| Vacant Lot Indicator(s) | Verified | 100% | 4 | `N`, `Y`, `Y \| N` | Y if the parcel is vacant land. Matches Occupancy = VACANT LAND exactly (31,608). |
 | Transfer Date(s) | Inferred | 100% | 14,663 | `12/31/1994`, `10/14/2024`, `10/24/2022` | Date of the last recorded transfer. 12/31/1994 on 8,112 parcels looks like a placeholder for "before records were digitized". |
 | Purchase Price(s) | Inferred | 69% | 14,417 | `0`, `10`, `100` | Price on the last transfer document. 0 on 50,933 parcels and nominal amounts ($10, $100) are common, and none are marked verified. Usable for a sales-ratio study only with filters (document type SALE, recent years, price over $10K, outlier ratios dropped). See Figure 5 in docs/week2-report.md. |
 | Verified Sale Indicator(s) | Inferred | 100% | 1 | `N` | Whether the sale was verified as arm's-length. N on every row, so none are verified in this file. |
@@ -43,7 +43,7 @@ Examples are hidden for owner and mailing fields (privacy).
 | Assessment Date(s) | Inferred | 100% | 1 | `01/01/2023` | 01/01/2023 on every row. Likely the valuation date of the 2024 reappraisal that 2026 values carry forward from. |
 | Subdivision Phase(s) | Unknown | 0% | 0 |  | Always blank. |
 | Legal Description(s) | Verified | 100% | 161,015 | `SQ 274  JULIA ST, S RAMPART `, `SQ 227  CARONDELET ST AND CO`, `SQUARE 14X CANAL ST TO POYDR` | Legal description (square, lot, bounding streets). Useful to tell apart parcels that share an address. |
-| Building Use(s) | Inferred | 100% | 4 | `R`, `C`, `C | R` | R = residential, C = commercial building use. |
+| Building Use(s) | Inferred | 100% | 4 | `R`, `C`, `C \| R` | R = residential, C = commercial building use. |
 | Structure Number(s) | Unknown | 0% | 0 |  | Always blank. |
 | Auxiliary Square Feet | Unknown | 0% | 1 | `0` | Always 0. No building-size data in this file. |
 | Garage Square Feet | Unknown | 0% | 1 | `0` | Always 0. |
@@ -97,10 +97,10 @@ Examples are hidden for owner and mailing fields (privacy).
 | Assessment Mailing Address 2 | Verified | 18% | 21,265 | (private) | Mailing address line 2; "NOT AVAILABLE" when empty. Not used in the app. |
 | Assessment Mailing Address 3 | Verified | 100% | 5,516 | (private) | City, state and ZIP of the mailing address. Not used in the app. |
 | Value Quantity Value(s) | Unknown | 0% | 1 | `0` | Always 0. |
-| Value Unit Code(s) | Inferred | 100% | 2 | `L | I`, `I | L` | Which value lines exist: L = land, I = improvement. |
-| LTC Subclass Code(s) | Unknown | 100% | 187 | `3400 | 4000`, `4000 | 3400`, `3400 | 4020` | Louisiana Tax Commission property subclass codes (187 combinations, e.g. 3400 | 4000). Likely land vs. improvement classes, but the code table isn't in the file. |
+| Value Unit Code(s) | Inferred | 100% | 2 | `L \| I`, `I \| L` | Which value lines exist: L = land, I = improvement. |
+| LTC Subclass Code(s) | Unknown | 100% | 187 | `3400 \| 4000`, `4000 \| 3400`, `3400 \| 4020` | Louisiana Tax Commission property subclass codes (187 combinations, e.g. 3400 \| 4000). Likely land vs. improvement classes, but the code table isn't in the file. |
 | Value Other Exemption Code(s) | Unknown | 6% | 6 | `0`, `4`, `5` | Code for the type of "other" exemption (0, 4, 5, 6, …). Meanings unknown. |
-| Homestead Type Code(s) | Inferred | 40% | 5 | `0`, `1`, `0 | 1` | 1 = homestead applies, 0 = none. |
+| Homestead Type Code(s) | Inferred | 40% | 5 | `0`, `1`, `0 \| 1` | 1 = homestead applies, 0 = none. |
 | Value Homestead Percentage(s) | Verified | 40% | 241 | `100.00`, `050.00`, `033.33` | Share of the property covered by homestead (100.00, 050.00, 033.33…). Explains partial homestead amounts. |
 | Veteran Exemption Type Code(s) | Inferred | 1% | 6 | `0`, `3`, `2` | Disabled-veteran tier. 1 ↔ $2,500 (155 of 173), 2 ↔ $4,500 (all 289 with an amount), 3 ↔ the rest of the assessed value, i.e. full exemption (likely 100% disabled). Inferred from amounts; not confirmed. |
 | First Responder Exemption Type Code(s) | Inferred | 0% | 2 | `0`, `1` | 1 if the first responder exemption applies. |
@@ -109,7 +109,7 @@ Examples are hidden for owner and mailing fields (privacy).
 | Parcel Place FIPS Code(s) | Inferred | 100% | 16 | `96009`, `96007`, `96013` | Same as Assessment Place FIPS Code, at the parcel level. |
 | Tax District Number(s) | Unknown | 0% | 0 |  | Always blank, so special taxing districts (DDD, security districts) can't be identified from this file. |
 | Owner Taxpayer ID(s) | Unknown | 0% | 1 | `0` | Always 0. |
-| Ownership Percentage(s) | Inferred | 70% | 107 | `100`, `50`, `25` | Each owner's percentage share, joined with " | " when several. |
+| Ownership Percentage(s) | Inferred | 70% | 107 | `100`, `50`, `25` | Each owner's percentage share, joined with " \| " when several. |
 | Owner Contact Name(s) | Inferred | 1% | 515 | (private) | Owner contact person. Not used in the app. |
 | Owner Mailing Address 1 | Verified | 100% | 107,375 | (private) | Owner mailing address line 1. Not used in the app. |
 | Owner Mailing Address 2 | Verified | 18% | 21,244 | (private) | Owner mailing address line 2. Not used in the app. |

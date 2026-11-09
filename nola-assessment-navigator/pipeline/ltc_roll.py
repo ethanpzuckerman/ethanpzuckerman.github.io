@@ -58,11 +58,15 @@ def parse(base):
                        ("veteran", 15), ("first_responder", 17)):
             d[key] += num(r[i])
     t = defaultdict(lambda: defaultdict(float))
+    levies = defaultdict(set)
     for r in rows(base, "AMILLAGE"):  # 3 tax name, 4 mills, 9 gross tax, 10 homestead reduction, 11 net tax
         if r[2] not in p:
             continue
         d = t[r[2]]
-        d["mills"] += num(r[4])
+        # A parcel with several assessment records lists each levy once per record: count its rate once.
+        if (r[3], r[4]) not in levies[r[2]]:
+            levies[r[2]].add((r[3], r[4]))
+            d["mills"] += num(r[4])
         d["tax_gross"] += num(r[9])
         d["tax_homestead_reduction"] += num(r[10])
         d["tax_net"] += num(r[11])

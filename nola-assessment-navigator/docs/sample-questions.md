@@ -7,6 +7,11 @@ disclosure. Screenshots of the first version's failures are kept in `screenshots
 - **Version 1:** first test, Oct. 19, 2026.
 - **Version 2:** after bug fixes, Oct. 21, 2026.
 
+> **Update, Nov. 2, 2026:** the Part 2 data work changed two answers below. The worked example now uses the recorded
+> 2026 rate of **131.99 mills** from the state roll files, giving $3,056 for the $300,000 homesteaded home instead of
+> the earlier ~$2,727 at 121.20 mills. The 2027 answer now says the filed 2027 roll keeps 98% of values unchanged.
+> See `week2-report.md`.
+
 | # | Question | Version 1 | Version 2 | Screenshot |
 |---|---|---|---|---|
 | 1 | How is my property tax bill calculated? | ✅ Good | ✅ Good | `screenshots/q1-tax-bill.png` |

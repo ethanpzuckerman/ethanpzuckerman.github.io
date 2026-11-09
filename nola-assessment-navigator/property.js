@@ -83,8 +83,27 @@ ${sourceLine(meta)}
     return `<p>This parcel is <strong>exempt</strong>: an "other" exemption of ${usd(r.oe)} covers its whole assessed value (fields: Assessment Status = EX, Other Exemption Amount). Exempt parcels are usually government, religious or nonprofit property. The roll doesn't say which kind this is.</p>`;
   }
 
+  // Re-derive the recorded tax from assessed value and mills, and only say "matches" when it does.
+  function taxCheck(r, ml) {
+    if (!ml || !r.tav) return "";
+    if (r.st === "EX" || (r.oe && r.oe >= r.tav)) {
+      return block("calculated", `<p>Exemptions remove the whole ${usd(r.tav)} assessed value from every levy, so the computed tax is $0, as recorded.</p>`);
+    }
+    const gross = r.tav * ml / 1000;
+    const net = gross - r.th26;
+    const other = r.oe || r.ve || r.fr;
+    const steps = `${usd(r.tav)} assessed × ${ml.toFixed(2)} mills ÷ 1,000 = ${usd(gross)}${r.th26 ? `, − ${usd(r.th26)} homestead reduction = ${usd(net)}` : ""}`;
+    if (other) {
+      return block("calculated", `<p>${steps} before the ${[r.ve && "veteran", r.fr && "first responder", r.oe && "other"].filter(Boolean).join(" and ")} exemption, which brings it down to the recorded ${usd(r.t26)}.</p>`);
+    }
+    const ok = Math.abs(net - r.t26) <= 2;
+    return block("calculated", `<p>Check: ${steps}. ${ok ? "Matches the recorded amount." : `That differs from the recorded ${usd(r.t26)}, and I don't know why; ask the Assessor's Office.`}</p>`);
+  }
+
   /* ---------- Questions about the selected property ---------- */
   const INTENTS = [
+    // Checked first: "I think my value is wrong" is about disputing the value, not looking it up.
+    { id: "right", re: /\b(wrong|incorrect|mistake|error|too high|not right|isn'?t right)\b/i },
     { id: "compare", re: /\b(2025|last year|previous year|prior year|change[ds]?|went up|go up|increase[ds]?|decrease[ds]?|went down|compared?)\b/i },
     { id: "tax", re: /\b(tax(es)? (bill|owe|due|amount|estimate)|how much (tax|will i (pay|owe))|estimate|my (tax )?bill|property tax(es)?\b.*\b(how much|estimate)|millage|mills)/i },
     { id: "taxable", re: /\btaxable\b|\bwhy (is|are) my (tax(es)?|taxable).*\b(zero|0|nothing)\b/i },
@@ -97,8 +116,7 @@ ${sourceLine(meta)}
     { id: "built", re: /\b(year built|when (was it|was my house|was this) built|how old)\b/i },
     { id: "sale", re: /\b(sale|sold|bought|purchase|transfer)\b/i },
     { id: "owner", re: /\b(owner|who owns|my name|owner'?s name)\b/i },
-    { id: "type", re: /\b(district|ward|occupancy|type of property|property type|zoned|zoning|classif)/i },
-    { id: "right", re: /\b(wrong|incorrect|mistake|error|too high|not right|isn'?t right)\b/i }
+    { id: "type", re: /\b(district|ward|occupancy|type of property|property type|zoned|zoning|classif)/i }
   ];
 
   function intentOf(q) {
@@ -118,7 +136,7 @@ ${sourceLine(meta)}
       case "value":
         return out([
           block("recorded", `<p>Total market value: <strong>${usd(r.tmv)}</strong> (land ${usd(r.lmv)} + buildings ${usd(r.imv)}). Fields: Total, Land and Improvement Market Value.</p>`),
-          block("explanation", `<p>This is the Assessor's mass-appraisal estimate of what the property would sell for, not an appraisal of your specific house <cite>S10</cite>. It's the value as of ${esc(meta.assessmentDate)}, carried into the ${ROLL}. The 2027 roll has new reappraised values that aren't in this file <cite>S4</cite>.</p>`)
+          block("explanation", `<p>This is the Assessor's mass-appraisal estimate of what the property would sell for, not an appraisal of your specific house <cite>S10</cite>. It's the value as of ${esc(meta.assessmentDate)}, carried into the ${ROLL}.${r.has27 ? (r.m27 === r.tmv ? ` The 2027 roll filed with the state keeps it at the same ${usd(r.m27)} <cite>S31</cite>.` : ` The 2027 roll filed with the state changes it to ${usd(r.m27)} <cite>S31</cite>.`) : ""}</p>`)
         ]);
       case "assessed": {
         const ratio = r.tmv ? r.tav / r.tmv : 0;
@@ -143,10 +161,10 @@ ${sourceLine(meta)}
         const ml = mills(r, meta, 2026);
         const gross = r.tav * ml / 1000;
         return out([
-          block("recorded", `<p>Computed property tax on the 2026 roll: <strong>${usd(r.t26)}</strong>${ml ? `, from ${ml.toFixed(2)} total mills` : ""}${r.th26 ? `, after a homestead reduction of ${usd(r.th26)}` : ""}. Taxable assessed value: ${usd(r.tx)}. Source: the LTC roll's millage file, which lists every levy on the parcel.</p>${exemptNote(r)}`
+          block("recorded", `<p>Computed property tax on the 2026 roll: <strong>${usd(r.t26)}</strong>${ml ? `, from ${ml.toFixed(2)} total mills` : ""}${r.th26 ? `, after a homestead reduction of ${usd(r.th26)}` : ""}. Taxable assessed value: ${usd(r.tx)}. Source: the LTC roll's millage file, which lists every levy on the parcel <cite>S30</cite>.</p>${exemptNote(r)}`
             + (r.has27 ? `<p>On the 2027 roll: <strong>${usd(r.t27)}</strong>${mills(r, meta, 2027) ? ` at ${mills(r, meta, 2027).toFixed(2)} mills` : ""}.</p>` : "")),
-          ml && r.tav ? block("calculated", `<p>Check: ${usd(r.tav)} assessed × ${ml.toFixed(2)} mills ÷ 1,000 = ${usd(gross)} before homestead${r.th26 ? `, − ${usd(r.th26)} homestead reduction = ${usd(gross - r.th26)}` : ""}${r.oe || r.ve || r.fr ? " (other exemptions reduce it further)" : ""}. Matches the recorded amount${Math.abs(gross - r.th26 - r.t26) > 2 && !(r.oe || r.ve || r.fr) ? " only roughly" : ""}.</p>`) : "",
-          block("explanation", `<p>Homestead reduces every levy except the police and fire millages "without homestead exemption" (11.51 mills), so homesteaded owners still pay those on the first $7,500 <cite>S30</cite>. This total <strong>doesn't include special-district fees</strong> such as the Downtown Development District or neighborhood security districts, which are billed separately <cite>S17</cite>. Your actual bill and due date come from the Bureau of the Treasury <cite>S27</cite>.</p>`)
+          taxCheck(r, ml),
+          block("explanation", `<p>${r.hs ? `Homestead reduces every levy except the police and fire millages "without homestead exemption" (11.51 mills), so you still pay those on the first $7,500 <cite>S30</cite>. ` : ""}This total <strong>doesn't include special-district fees</strong> such as the Downtown Development District or neighborhood security districts, which are billed separately <cite>S17</cite>. Your actual bill and due date come from the Bureau of the Treasury <cite>S27</cite>.</p>`)
         ]);
       }
       case "homestead":

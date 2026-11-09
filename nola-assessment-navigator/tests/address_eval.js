@@ -45,6 +45,7 @@ const CASES = [
     console.log(`${ok ? "PASS" : "FAIL"}  ${c.input.padEnd(56)} expect=${c.expect.padEnd(9)} got=${r.status.padEnd(9)} n=${n}  ${top}  ${r.reason || ""}`);
   }
   const counts = s => rows.filter(r => r.got === s).length;
+  const cell = s => String(s).replace(/\|/g, "\\|"); // a raw "|" would split the Markdown table cell
   const md = `# Address matching results
 
 Run: \`node tests/address_eval.js\` against the 2026 roll export (\`data/web/2026\`).
@@ -68,7 +69,7 @@ It then matches by street name and house number. If the street isn't found, it t
 
 | # | What the owner typed | What it tests | Expected | Got | Matches | Top candidate | OK |
 |---|---|---|---|---|---|---|---|
-${rows.map((r, i) => `| ${i + 1} | ${r.input} | ${r.tests} | ${r.expect} | ${r.got} | ${r.n} | ${r.top} | ${r.ok ? "✅" : "❌"} |`).join("\n")}
+${rows.map((r, i) => `| ${i + 1} | ${cell(r.input)} | ${cell(r.tests)} | ${r.expect} | ${r.got} | ${r.n} | ${cell(r.top)} | ${r.ok ? "✅" : "❌"} |`).join("\n")}
 
 ## Why the multiple and not-found cases happen
 
