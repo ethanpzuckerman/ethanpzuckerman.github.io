@@ -7,6 +7,22 @@ record, then ask about it.
 **Code:** `pipeline/` (analysis and export), `address.js` + `lookup.js` (matching), `property.js` (property answers),
 `tests/` (all checks below are rerunnable).
 
+**Where each requirement is answered:**
+
+| Assignment item | Where |
+|---|---|
+| 1. EDA: 3–5 charts with a paragraph each, plus a finding verified independently | §1: Figures 1–5, then "Verifying a finding independently" |
+| 2. Data dictionary, plus what we couldn't figure out | §2 and `docs/data-dictionary.md` (all 115 fields) |
+| 3. Address matching tested on 10+ addresses: how many matched, and why any failed | §3 (19 addresses) and `docs/address-matching-results.md` |
+| 4. One outside source pulled by API, saved and documented | §4: Census ACS by tract; `data/outside/`, `docs/outside-data.md` |
+| 5. 10 test questions: expected answer vs. what the chatbot did | §5 and `docs/screenshots/week2/` |
+| Live link to the current chatbot | Top of this page |
+| Compare 2025 and 2026 by a consistent ID | §4b: 2025 isn't available, so 2026 vs 2027 by parcel ID |
+| Property lookup: address variations, multiple matches, missing records | §3, and the live chatbot's "Find your property" box |
+| Property records connected to the chatbot (data year, source, missing info, "can't answer") | §5; every property answer labels what was recorded, calculated and explained |
+| Evaluate outside data and matching limits | §4 |
+| CLAUDE.md updated as we learned | `CLAUDE.md` §3 (Data), §4 (rules 7–8), §6–8 |
+
 ---
 
 ## 1. Exploratory data analysis
@@ -222,7 +238,7 @@ Run in the real page with `node tests/chatbot_eval.js`. Expected answers come fr
 |---|---|---|---|---|
 | 1 | 1205 St Charles #607 | What is my property's market value? | $145,700 = $12,700 land + $133,000 buildings | ✅ Exact, labeled Recorded with field names |
 | 2 | 1205 St Charles #607 | How much tax will I pay? | Recorded tax $1,019.48 on the 2026 roll ($1,029.92 on 2027), summed from the raw millage rows | ✅ Recorded amount, a calculated check ($14,570 × 131.99 − $904 homestead = $1,019) and the special-district caveat. *v1 used an unverified 121.20-mill estimate ($857); fixed once the millage files were available.* |
-| 3 | 423 Gravier #3A | Do I have a homestead exemption? | Yes, $7,500 | ✅ Plus estimated savings, labeled calculated |
+| 3 | 423 Gravier #3A | Do I have a homestead exemption? | Yes, $7,500 | ✅ Plus the tax it removed on the 2026 roll ($904, recorded in the millage file) |
 | 4 | 1503 Tchoupitoulas | Why is my assessed value what it is? | $25,620 ÷ $325,000 = 7.9%, below 10% because of the freeze | ✅ Explains the freeze |
 | 5 | 934 Melpomene | Why is my taxable value zero? | $19,810 − $7,500 − $12,310 = $0 taxable, yet the roll computes $228 (police/fire millages still apply) | ✅ after a fix: v1 implied a $0 taxable value meant no tax |
 | 6 | 1770 Tchoupitoulas | How much tax will I pay? | $0, because the property is exempt (other exemption $659,150) | ✅ after a fix: v1 said $0 without explaining why |
