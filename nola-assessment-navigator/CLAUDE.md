@@ -488,8 +488,10 @@ nola-assessment-navigator/
   lookup.js          ← loads data/web/2026 files, finds parcels by address or ID
   property.js        ← Layer 2 answers about the selected parcel (recorded / calculated / explanation)
   style.css
-  pipeline/          ← eda.py, data_dictionary.py, export_web.py, shard.js, compare_years.py, fetch_acs.py
-  tests/             ← address.test.js (unit), address_eval.js (19 real addresses), chatbot_eval.js (10 questions)
+  pipeline/          ← eda.py, data_dictionary.py, export_web.py, shard.js, ltc_roll.py, compare_rolls.py,
+                       compare_years.py, fetch_acs.py, geocode_sample.py, build_report.py, build_standalone.py
+  tests/             ← address.test.js (unit), address_eval.js (19 real addresses), chatbot_eval.js (10 questions),
+                       property_sweep.js (14 intents × 305 parcels), expected_from_raw.py
   data/              ← raw/ (ignored), processed/ (ignored), web/ (ignored, generated), README.md
   docs/              ← week2-report.md, data-dictionary.md, address-matching-results.md, outside-data.md,
                        eda/, sample-questions.md, verification-checklist.md, screenshots/
@@ -557,6 +559,9 @@ code. That requires a small server or serverless function.
 - **Layer 2 (Nov. 2):** property search by address or parcel ID across all 163,135 parcels in the 2026 roll, a
   candidate list for multiple matches, a confirm step, a property card, and record-grounded answers. Each answer
   shows the data year and source.
+- **Single-file copy (works offline, double-click to open):** `python3 pipeline/build_standalone.py <out.html>` inlines
+  the CSS, the five scripts and every `data/web/2026` file (gzip + base64, ~14 MB), so the page needs no server.
+  `app.js` uses `window.NOLA_LOAD` when it exists and `fetch` otherwise. The output is generated: don't commit it.
 - **To rebuild the artifact:** inline `style.css`, `kb.js`, `address.js`, `lookup.js`, `property.js` and `app.js` into
   one HTML file, publish the files in `data/web/2026/` alongside it at the same relative paths, and republish to the
   same URL.

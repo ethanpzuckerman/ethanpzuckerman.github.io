@@ -270,10 +270,12 @@
 
   /* ---------- Property lookup and selected property (Layer 2) ---------- */
   const DATA_BASE = "data/web/2026/";
-  const lookup = window.NolaLookup ? NolaLookup.create(name => fetch(DATA_BASE + name).then(r => {
+  // The single-file build (pipeline/build_standalone.py) embeds the data and provides window.NOLA_LOAD.
+  const loadData = window.NOLA_LOAD || (name => fetch(DATA_BASE + name).then(r => {
     if (!r.ok) throw new Error(r.status);
     return r.json();
-  })) : null;
+  }));
+  const lookup = window.NolaLookup ? NolaLookup.create(loadData) : null;
   let selected = null;
   let metaInfo = null;
   let lastCandidates = [];
