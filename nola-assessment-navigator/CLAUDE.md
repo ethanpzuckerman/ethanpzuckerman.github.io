@@ -5,9 +5,10 @@ purpose, the domain facts the code depends on, the data notes, and the rules the
 has to follow. If a task conflicts with a rule in **Section 4 (Chatbot rules)**, the rule
 wins. Stop and ask instead of breaking it.
 
-*Last researched: October 19, 2026. Data section updated November 2, 2026, after profiling the
-2026 roll. Facts that change every year (dates, millage, income limits) carry a `VERIFY` tag.
-Re-check them before each tax cycle.*
+*First researched Oct. 19, 2026. Data section added Nov. 2, 2026. **Re-verified Nov. 13, 2026** for the
+final draft: the reappraisal cycle, the Nov. 3 election, the City's 2027 roll-forward, bill dates, payment plans and
+veteran tiers were checked against the sources in §2.9. Facts that change every year (dates, millage, income limits)
+carry a `VERIFY` tag. Re-check them before each tax cycle.*
 
 ---
 
@@ -32,9 +33,16 @@ before it works.
 
 | Layer | Name | What it answers | Data | Status |
 |---|---|---|---|---|
-| 1 | **General guidance** | "How does this work?": FMV vs. assessed value, millage, exemptions, appeals, deadlines, the 2027 reassessment | Curated knowledge base (`kb.js`) built from the sources in Section 2 | **Draft live** |
-| 2 | **My property** | "What does this mean for *my* parcel?": find and confirm a parcel, then show its values, exemptions, freeze, recorded 2026/2027 tax and the 2026 → 2027 change | 2026 and 2027 LTC rolls (Section 3); the 2025 roll isn't available | **Draft live**: lookup + 14 question types |
-| 3 | **Market context** | "How does my change compare?": my change vs. my neighborhood, comparable parcels, citywide distribution | Same rolls, aggregated by neighborhood or assessment district | Not started |
+| 1 | **General guidance** | "How does this work?": FMV vs. assessed value, millage, exemptions, appeals, deadlines, payment, the 2027 reassessment | Curated knowledge base (`kb.js`, 29 entries) built from the sources in Section 2 | **Live** |
+| 2 | **My property** | "What does this mean for *my* parcel?": find and confirm a parcel, then show its values, exemptions, freeze, recorded 2026/2027 tax, the next bill, the 2026 → 2027 change, and its census neighborhood | 2026 and 2027 LTC rolls (Section 3); the course's parcel → census block group crosswalk and ACS block-group data; the 2025 roll isn't available | **Live**: lookup + 20 question types, and general answers show the selected record |
+| 3 | **Market context** | "How does my parcel compare?": its value and 2026 → 2027 change vs. similar parcels in its area | Same rolls, aggregated by Subdivision × property type (`areas.json`) | **First version live**: distributions only (data rule 6) |
+
+**How the layers come together (final draft, Nov. 15):** one chat. The owner can ask a general question, look up
+a property (in the Find box or by typing an address in the chat), and ask about it. With a property selected, a
+general answer (e.g. "How do I apply for homestead?") also shows what that record says on the topic; a property
+question asked before a lookup is remembered and answered right after the owner picks the record. On claude.ai the
+page can also ask **Claude** for a short plain-language "AI explanation" built only from the knowledge base and the
+selected record; it is checked before it's shown and the deterministic answer always stays underneath (§6).
 
 Layer 2 and 3 answers must still follow every rule in Section 4. A number from the roll
 is a fact and needs a citation, for example "2026 roll, parcel 102000079, field
@@ -108,14 +116,21 @@ Assessed value is a fixed percentage of FMV, set by property class:
   - Each parcel's millage rows list every levy and its computed tax, so the chatbot shows the **recorded** tax, not an
     estimate [S30][S31].
   - The earlier 121.20 figure from secondary sites was wrong. Don't use it.
-- **Homestead doesn't reduce two levies:** "FIRE – WITHOUT HOMESTEAD EXEMPTION" (6.84) and "POLICE – WITHOUT
-  HOMESTEAD EXEMPTION" (4.67), 11.51 mills together. Even a fully exempted home (100% disabled veteran) pays these on
-  its full assessed value [S30].
+- **Homestead doesn't reduce two levies, 11.51 mills together:** the 2026 file calls them "POLICE W/O H.E." (9.29)
+  and "FIRE W/O H.E." (2.22) [S30]; the 2027 file splits them as "FIRE – WITHOUT HOMESTEAD EXEMPTION" (6.84) and
+  "POLICE – WITHOUT HOMESTEAD EXEMPTION" (4.67) [S31]. Even a fully exempted home (100% disabled veteran) pays these on
+  its full assessed value.
 - **Special-district fees aren't in the state files:** the Downtown Development District and security districts are
   billed separately, so the recorded tax can be lower than the real bill.
 - **Rollback and roll-forward.** In a reassessment year, when total values go up, taxing
   bodies must **roll back** millage so they collect about the same revenue. Afterward
-  they may vote to **roll forward** up to their prior maximum rate [S11][S19].
+  they may vote to **roll forward** up to their prior maximum rate [S11][S19][S32].
+- **2027 roll-forward (decided):** on **Nov. 5, 2026** the City Council unanimously approved a partial roll-forward
+  totaling **4.039 mills** (about $23.3 million) [S33]. The September proposal had been about 7.44 mills, from 44.67 to
+  52.11 mills across a group of city millages, about $178 a year on a $300,000 homesteaded home [S19]. The 2027 state
+  file (filed Sept. 4) still lists the pre-vote rates, e.g. the City's general levy at 12.23 mills [S31], so its
+  computed 2027 taxes are probably **below the actual bills**. The final rate for each millage isn't known yet. The
+  Navigator shows the possible effect as a calculated range: 4.039 × taxable ÷ 1,000 to 4.039 × assessed ÷ 1,000.
 
 **Worked example (2026 roll, East Bank) [S1][S2][S30]:**
 
@@ -137,17 +152,20 @@ Checked against a real parcel. 1205 St Charles Av #607: $14,570 × 131.99 = $1,9
 | Program | What it does | Who qualifies | How to apply | Sources |
 |---|---|---|---|---|
 | **Homestead exemption** | Removes **$7,500 of assessed value** (= the first **$75,000 of FMV**). In Orleans it applies to state, general city, school, levee, and levee-district taxes, but not every millage. | Owner who **owns and occupies** the home as a primary residence by **Dec. 31** of the tax year. One per person or married couple. | **In person** at OPAO, City Hall Room 4E01. **All occupying owners** must appear. Bring: proof of ownership (act of sale or deed); Louisiana driver's license or ID showing the property address; a current Entergy or cable bill for the property with matching name, service address, and mailing address. A mailing address that differs from the property needs a recorded power of attorney. **Once granted, it stays on**: no yearly re-filing. | [S2][S3][S7][S8][S9] |
-| **Special Assessment Level ("the freeze")** | Freezes the **assessed value** (not the bill) at the level when you qualified. Millage can still rise. | Has homestead **and** is (a) 65 or older, (b) permanently and totally disabled, (c) a veteran with a service-connected disability rating of **50% or more**, or (d) certain surviving spouses or military families. Household adjusted gross income at or below the limit: base **$100,000**, indexed. One source reports **$102,700 for 2026**. `VERIFY` | Apply at OPAO with proof of age or disability and an income document (tax return). Some under-65 owners must re-certify income each year. | [S1][S7][S24] |
-| **Disabled veteran additional exemption** | On top of homestead. **50–69% rating: +$2,500 AV. 70–99%: +$4,500 AV. 100% total and permanent: full exemption** of the homestead. `VERIFY` tiers with OPAO. | Veteran with a VA service-connected rating of 50% or more. A qualifying surviving spouse may keep it. | OPAO, with VA rating letter, proof of homestead, ID, and utility bill. | [S7][S25] |
+| **Special Assessment Level ("the freeze")** | Freezes the **assessed value** (not the bill) at the level when you qualified. Millage can still rise. | Has homestead **and** is (a) 65 or older, (b) permanently and totally disabled, (c) a veteran with a service-connected disability rating of **50% or more**, or (d) certain surviving spouses or military families. Household adjusted gross income at or below the limit: base **$100,000**, indexed (no official 2026 figure found; the $102,700 figure came from a commercial site, so it isn't used). **Amendment 9 (passed Nov. 3, 2026) raises the limit to below $150,000** and delays indexing to 2028 [S36]. `VERIFY` the first tax year it applies. | Apply at OPAO with proof of age or disability and an income document (tax return). Some under-65 owners must re-certify income each year. | [S1][S7][S24][S36] |
+| **Disabled veteran additional exemption** | On top of homestead: **50% to under 70%: the next $2,500 AV. 70% to under 100%: the next $4,500 AV. 100% or unemployability: the rest of the home's AV** (La. Const. Art. VII §21(K), confirmed Nov. 13). The police/fire "without homestead" levies still apply (§2.4). | Veteran with a VA service-connected rating of 50% or more. A surviving spouse who keeps owning and occupying the home keeps it; **Amendment 1 (passed Nov. 3, 2026)** lets the spouse move it to a new home once [S36]. | OPAO, with VA rating letter, proof of homestead, ID, and utility bill. | [S37][S7][S36] |
 | **First responder additional exemption** | About **+$25,000 of FMV** (+$2,500 AV) on a homestead. | Qualifying first responders. | OPAO, with an employment verification letter on agency letterhead. | [S7] |
 | **Heirs and surviving spouses** | A surviving spouse who keeps living in the home keeps the exemption (as owner, usufructuary, or through a qualifying trust). An heir who lives in the home gets a share of the exemption matching their ownership share. | Surviving spouse, or heirs who occupy the home. | Contact OPAO. A **succession** may be needed if title isn't in the heir's name. `VERIFY` what OPAO requires and whether it grants the exemption before a judgment of possession. | [S2][S28][S29] |
 | **Other** (nonprofit or religious use, Restoration Tax Abatement, ITEP, etc.) | Varies. | Mostly non-homestead property. | Out of scope for Layer 1. Say "I don't know the details" and refer to OPAO. | — |
 
-**On the ballot, November 3, 2026 (outcome unknown as of this file):** PAR's guide lists
-Amendment 1 (a disabled veteran's surviving spouse could move the exemption to a new home
-once), Amendment 6 (local option for an extra exemption for SAL-eligible owners 65+), and
-Amendment 9 (raise the SAL income limit to **$150,000**) [S20]. The chatbot must say these
-are *proposed* until results are certified. Update this file after the election.
+**November 3, 2026 election results (unofficial; re-check certification at sos.la.gov)** [S36][S20]:
+- **Amendment 1, passed (~75%):** a disabled veteran's surviving spouse can move the exemption to a new home once.
+- **Amendment 6, passed (~65%):** cities and parishes *may* give owners 65+ extra relief with local approval. It
+  does nothing in New Orleans unless the City adopts it; no such step found as of Nov. 13.
+- **Amendment 9, passed (~60%):** SAL income limit raised to below $150,000; indexing delayed to 2028.
+- **Amendment 2, failed:** keep lower millages after a reassessment without losing the right to raise them.
+- **Amendment 10, failed:** local-option exemption for rehabilitated blighted property.
+The chatbot reports these as unofficial results, gives no opinion, and says it doesn't know exact effective dates.
 
 **History worth knowing:** a 2022 amendment that would have capped yearly assessment
 increases on Orleans homesteads at 10% **failed** narrowly (642,462 no to 635,559 yes)
@@ -162,37 +180,33 @@ values are posted:
 | Roll | Values posted / open-roll inspection | Appeal (BOR) deadline | Bill mailed | Bill due |
 |---|---|---|---|---|
 | **2025** | July 15 – Aug. 15, **2024** | 4 p.m., Aug. 20, 2024 [S22] | ~Dec. 2024 | Jan. 31, 2025, extended to Feb. 28 that year [S12] |
-| **2026** | July 15 – Aug. 15, **2025** | Aug. 20, 2025 per [S6]; one OPAO notice says Aug. 18 [S5]. `VERIFY` | ~Dec. 2025 | ~Jan. 31, 2026 [S12] |
-| **2027** (expected reassessment; the filed roll shows little change, see §2.7) | July 15 – Aug. 17, **2026** | Online system July 22 → **4 p.m., Thu. Aug. 20, 2026** [S4] | ~Dec. 2026 | ~Jan. 31, 2027 `VERIFY` |
+| **2026** | July 15 – Aug. 15, **2025** | Aug. 20, 2025 per [S6]; one OPAO notice says Aug. 18 [S5]. `VERIFY` (the chatbot says "please confirm") | Late Jan. 2026 [S35] | **Feb. 28, 2026** [S35] |
+| **2027** (last year of the 2024 values, §2.7) | July 15 – Aug. 17, **2026** | Online system July 22 → **4 p.m., Thu. Aug. 20, 2026** [S4] | ~Dec. 2026–Jan. 2027 | Not announced as of Nov. 13 `VERIFY` |
+| **2028** (the reappraisal done in 2027) | Summer **2027** (expected) | Aug. 2027 (expected) | late 2027 | early 2028 |
 
 Late payment: interest accrues at **1% per month** after the due date, and not receiving a
-bill is not an excuse [S12]. `VERIFY` the current rate.
+bill is not an excuse [S12][S34][S35]. **Payment plans:** the Treasury offers **no formal installment plan**; owners
+may pay part of the bill in person or by mail (not online), and the unpaid balance accrues 1% a month [S34].
 
 ### 2.7 The 2027 reassessment: what it means
 
-- **What we expected:** news coverage described the **2027 roll** (posted July 2026) as a parish-wide reappraisal
-  [S4][S21]. The previous one, for **tax year 2024**, raised total assessed value about **20%** [S26].
-- **What the data shows (Nov. 2, 2026):** the 2027 roll the Assessor filed with the state on **Sept. 4, 2026** keeps
-  **98% of parcels at exactly their 2026 market value**, and every parcel is still dated **01/01/2023** [S31]
-  (`docs/year-comparison.md`).
-  - Total market value rose only from $75.5B to $76.5B.
-  - Taxes rise mainly through millage: 131.99 → 133.48 mills; median home +$25; median homesteaded home
-    $1,965 → $2,032.
-  - **So the expected reappraisal doesn't appear in the filed roll.** Whether it's still coming or changed few values is
-    unknown. `VERIFY` with the Assessor. Until then the chatbot reports what the filed roll shows and says it doesn't
-    know why.
-- `VERIFY` why this cycle falls on 2027 instead of 2028. The Constitution allows up to
-  four years [S1], so three is permitted, but no source found so far explains the choice.
-- Because total values rose, taxing bodies must **roll back** millage, then may **roll
-  forward**. On Sept. 28, 2026, Fox 8 reported the City filed two 2027 levy versions. The
-  general municipal tax would be **12.23 mills** (adjusted) or **13.91 mills** (rolled
-  forward). A group of city millages would go from **44.67 to 52.11 mills**, about **$178
-  more per year** for a $300,000 homesteaded home [S19]. **These are proposals**, not the
-  final levy.
-- What owners should take from it: (1) your value may have changed even though you did
-  nothing; (2) a higher value does not raise your bill by the same percent, because of
-  rollback; (3) the appeal window for the 2027 roll **closed Aug. 20, 2026**; (4) homestead
-  and SAL still apply. Check that yours are on file before the bill arrives.
+- **The cycle (official, confirmed Nov. 13):** Louisiana reappraises every property at least every four years [S1].
+  The City Council explained in 2023: "Because 2024 is a quadrennial year, Orleans Parish assessments for tax years
+  2024-27 will reflect market values as of Jan. 1, 2023" [S32]. That is exactly what the data shows: every parcel in
+  the 2026 **and** 2027 rolls is dated 01/01/2023, and the 2027 roll the Assessor filed on Sept. 4, 2026 keeps
+  **98% of parcels at their 2026 market value** [S31] (`docs/year-comparison.md`).
+- **So "the 2027 reassessment" is the next reappraisal, done during 2027**, which should set new values for the
+  **2028 roll** (posted for inspection in summer 2027, bills due early 2028). That timing is inferred from the
+  four-year cycle [S32][S1]; `VERIFY` with OPAO. (Earlier drafts assumed the *2027 roll* itself was the
+  reappraisal; the data and [S32] show it isn't. That resolves the old "why 2027 and not 2028?" question.)
+- **The 2027 roll in numbers** (all 162,940 parcels in both rolls): total market value $75.54B → $76.55B; taxes rise
+  mainly through millage, 131.99 → 133.48 mills on the East Bank; median home +$25; median homesteaded home $1,965 →
+  $2,032 [S30][S31]. The Council's Nov. 5 roll-forward (4.039 mills, §2.4) comes on top [S33].
+- The previous reappraisal, for **tax year 2024**, raised total assessed value about **20%** [S26].
+- **What owners should take from it:** (1) values can change in the 2027 reappraisal even if the owner changes
+  nothing; (2) when total values rise, taxing bodies must roll back, so bills don't rise by the same percent, but
+  they may roll forward [S11]; (3) the summer 2027 open-roll period is when to check the new value and appeal; the
+  window for the 2027 roll **closed Aug. 20, 2026** [S4]; (4) make sure homestead or SAL is on file before then.
 
 ### 2.8 Appeals: steps, places, deadlines
 
@@ -255,16 +269,26 @@ hearings and elections [S11][S13].
 | S29 | Loyola Law Pro Bono Desk Manual §6.5, "Considerations with Immovable Property" (undated practice note) | https://probonodeskmanual.loyno.edu/node/1044 |
 | S30 | Louisiana Tax Commission, Orleans **2026** tax roll files (7 districts; incl. millage and computed tax by parcel), posted Nov. 2025 | https://stax.latax.la.gov/TaxRollsFolder/2025/ |
 | S31 | Louisiana Tax Commission, Orleans **2027** tax roll files, filed Sept. 4, 2026 | https://stax.latax.la.gov/TaxRollsFolder/2026/ |
+| S32 | New Orleans City Council, "Councilmember Eugene Green Clarifies the Difference…" (July 2023): tax years 2024–27 use market values as of Jan. 1, 2023 | https://council.nola.gov/news/july-2023/councilmember-eugene-green-clarifies-the-differenc/ |
+| S33 | Fox 8, "New Orleans City Council approves millage roll-forward…" (Nov. 5, 2026) | https://www.fox8live.com/2026/11/05/new-orleans-city-council-approves-millage-roll-forward-raising-taxes-slashing-budget-deficit/ |
+| S34 | City of New Orleans Treasury, "Paying taxes" (payment plans, partial payments, 1% interest) | https://nola.gov/next/treasury/topics/paying-taxes/ |
+| S35 | City of New Orleans, 2026 property tax bills available, due Feb. 28, 2026 (Jan. 25, 2026) | https://nola.gov/next/mayors-office/news/articles/january-2026/2026-01-25-city-of-new-orleans-2026-property-tax/ |
+| S36 | WAFB/Fox 8 (Ken Daley), "Louisiana voters pass 7 of 10 constitutional amendments" (Nov. 3, 2026; unofficial results) | https://www.wafb.com/2026/11/04/louisiana-voters-pass-7-10-constitutional-amendments-ballot/ |
+| S37 | La. Const. Art. VII §21 (other exemptions; §21(K) disabled veterans) | https://www.legis.la.gov/Legis/Law.aspx?d=206551 |
+| S38 | U.S. Census Bureau Geocoder: roll addresses → 2020 block groups (course crosswalk, 140,850 parcels) | https://geocoding.geo.census.gov/geocoder/ |
+| S39 | U.S. Census Bureau, American Community Survey 2020–2024 5-year, block groups (course data, Social Explorer export) | https://www.census.gov/programs-surveys/acs |
 
-**How to rank sources:** official government sources (S1–S15, S27) outrank everything else. Use news,
-nonprofit and legal-aid sources (S16–S26, S28–S29) for context, or when no official source exists. Label
+**How to rank sources:** official government sources (S1–S15, S27, S30–S32, S34–S35, S37–S39) outrank everything
+else. Use news, nonprofit, legal-aid and other parishes' sources (S16–S26, S28–S29, S33, S36) for context, or when no
+official source exists. Label
 them as such in answers. Never cite commercial "property tax appeal" sites or
 data-aggregator sites. During research they gave dates that contradicted the Assessor.
 
-> Research note: sources were found through web search on Oct. 19, 2026. The research
-> sandbox could not open nolaassessor.com, nola.gov, or council.nola.gov directly.
-> **Open every S-link in a browser and confirm each `VERIFY` item before the final
-> submission.**
+> Research note: sources were found through web search on Oct. 19, 2026. On Nov. 13, 2026 these pages were opened
+> and read directly: S32, S33, S34, S35, S36, S37 and S19. nolaassessor.com still blocks automated access (403), so
+> S4–S10 have not been re-read since October. **Still `VERIFY`:** the 2026-roll BOR date (Aug. 18 vs. 20, 2025), the
+> 2027 bill due date, the first tax year of the $150,000 SAL limit, the 2028 reappraisal timing, heirs' paperwork,
+> and certification of the Nov. 3 results.
 
 ---
 
@@ -280,6 +304,8 @@ Raw files go in `data/raw/` and are **never committed**: they hold owner names. 
 | `data/raw/ltc2027/`: raw LTC files `ORLEANS1–7_2027_*_TAXROLL.zip` (TaxRollsFolder/2026, filed Sept. 4, 2026) | **2027** | 163,138 parcels; compared with 2026 by parcel ID (`pipeline/compare_rolls.py`) |
 | 2025 roll | 2025 | **Not available.** It's not in Box, and the LTC site keeps only its two latest upload years. |
 | `data/outside/acs_orleans_tracts.csv` | Census ACS 2024 5-year, 184 tracts | Pulled via the Census Reporter API (`pipeline/fetch_acs.py`). Tract matching tested: 86% of a 504-parcel sample, 94% of homes (`docs/outside-data-matching.md`) |
+| `data/raw/box/parcel_blockgroup_crosswalk.csv` (course Box, "Census Block Group Analysis/output") | Census geocoder results for every roll address | **140,850 of 163,135 parcels (86.3%)** matched to a 2020 block group, with coordinates; 20,517 matches are approximate. Same rate as our own 504-parcel test. Joined **by parcel ID** in `export_web.py` |
+| `data/raw/box/bg_merged.csv` (same folder) | ACS 2020–2024 5-year, 439 block groups (Social Explorer export) + roll medians | → `data/web/2026/bg.json` (`pipeline/census_bg.py`): the neighborhood profile in property answers |
 
 **Raw LTC file format:** comma-separated with `~` quotes, keyed by (year, district FIPS, parcel). Tables:
 - `ASSMT`: type RE/PP, status, owner, mailing address
@@ -300,7 +326,7 @@ Column positions are documented in `pipeline/ltc_roll.py`.
 - **Key:** `Parcel ID(s)` is unique and identical to `Tax Bill #` and `Assessment Parcel Number(s)`. Use it to join
   years and outside data. **Never join on address.**
 - **Valuation date:** `Assessment Date(s)` is **01/01/2023** on every row, in the 2026 **and** the 2027 roll. That's
-  likely the 2024 reappraisal's valuation date (`VERIFY`).
+  the 2024 reappraisal's valuation date, used for tax years 2024–2027 (confirmed by [S32]).
 - **Identities that hold on every row:**
   - market = land + improvement
   - assessed = land + improvement
@@ -331,14 +357,21 @@ Column positions are documented in `pipeline/ltc_roll.py`.
   - Year built 1994 (42,390 parcels, mostly vacant or commercial)
   - Transfer date 12/31/1994 (8,112)
   - Purchase price 0 or nominal (50,933; none verified)
+- **2027 roll changes worth knowing** (by parcel ID): 2,165 parcels lose their homestead on the 2027 roll, 184 go from
+  exempt to taxable, and some record a newer transfer. The export keeps these (`h27`, `st27`, `td27`) so answers
+  never present a 2026 fact as current when the 2027 roll differs. 930 parcels have $0 market and assessed value
+  (no value set); answers treat that as missing.
+- **Parcel IDs:** 46% contain letters (`39W305216`) or have 10 digits; lookup checks the ID list directly.
 - **Unknown codes:** Freeze Code 1–4, Other Exemption codes, LTC subclass codes, most instrument types. Veteran type
   1/2/3 *appears* to be $2,500 / $4,500 / full exemption (inferred).
 
 **Pipeline** (run from `nola-assessment-navigator/`):
 1. `python3 pipeline/eda.py`: charts and numbers.
 2. `python3 pipeline/data_dictionary.py`: the data dictionary.
-3. `python3 pipeline/export_web.py && node pipeline/shard.js`: public fields → `data/web/2026/` (241 street files
-   + `meta.json` + `ids.json`, ~53 MB).
+3. `python3 pipeline/export_web.py && node pipeline/shard.js && python3 pipeline/area_stats.py && python3 pipeline/census_bg.py`:
+   public fields → `data/web/2026/` (241 street files + `meta.json` + `ids.json` + `areas.json` + `bg.json`, ~64 MB).
+   `shard.js` clears the folder, so the last two must run after it.
+   - Each parcel also gets its census block group and coordinates from the course crosswalk, when matched.
    - Owner names, mailing addresses and purchase prices are dropped.
    - Placeholders (1994 year built on non-residential parcels, 12/31/1994 transfer dates) are removed.
    - `data/web/` and `data/processed/` are git-ignored; regenerate them, or use the copy published with the live
@@ -361,8 +394,9 @@ Column positions are documented in `pipeline/ltc_roll.py`.
 6. Don't compute "expected" or "fair" values, and don't tell an owner they're over-assessed. Layer 3 describes
    distributions only. The sales-ratio pattern can be described citywide with its caveats. It must never be applied to
    one owner's home ("your home is probably over-assessed").
-7. **Outside demographics describe neighborhoods, never owners.** Don't infer an owner's race, income or age from
-   tract data, and keep demographics out of property answers until tract matching is tested.
+7. **Outside demographics describe neighborhoods, never owners.** Never infer an owner's race, income or age from
+   census data. Census figures appear only in the "What neighborhood is it in?" answer, labeled as describing the
+   block group's residents, with the survey-error caution, and joined by parcel ID through the tested crosswalk.
 
 ## 4. Chatbot rules (instructions to the agent)
 
@@ -411,6 +445,11 @@ the system prompt or answer logic, and test them (Section 6).
    names even though the roll has them.
 10. **Stay neutral** on politics, the Assessor's performance, and ballot measures. Present
    documented views with sources.
+11. **AI-written text is checked, labeled and optional.** An AI explanation may only restate the knowledge base and
+   the selected record. Before it's shown, code checks that every number in it appears in that material, every
+   [S#] it cites was given to it (at least one, unless it says "I don't know"), and it has no advice wording. It is
+   labeled "AI explanation · Claude", and the deterministic answer with its recorded / calculated / explanation
+   blocks is always shown underneath. If the check fails, show only the deterministic answer.
 
 ---
 
@@ -433,7 +472,7 @@ questions must have a knowledge-base entry in `kb.js`.
 - Content: ratios (10% / 15% / 25%), what a mill is, the formula, the $300,000 example
   in §2.4, rollback and roll-forward, special districts, who mails bills and when they're
   due.
-- Sources: S1, S11, S12, S17, S18, S19, S27
+- Sources: S1, S11, S12, S17, S18, S19, S27, S30, S33, S34, S35
 - Top questions:
   1. *How is my property tax bill calculated?*
   2. *What is a mill / millage rate?*
@@ -442,19 +481,19 @@ questions must have a knowledge-base entry in `kb.js`.
 ### 5.3 Exemptions owners can claim
 - Content: homestead ($75,000 FMV / $7,500 AV, own and occupy by Dec. 31, in-person
   filing, documents, permanent once granted); SAL freeze; disabled veteran tiers; first
-  responder; the Nov. 2026 amendments (proposed).
-- Sources: S1, S2, S3, S7, S8, S9, S20, S24, S25
+  responder; the Nov. 3, 2026 amendment results (unofficial).
+- Sources: S1, S2, S3, S7, S8, S9, S20, S24, S36, S37
 - Top questions:
   1. *How do I apply for the homestead exemption, and what do I bring?*
   2. *I'm over 65. Can my assessment be frozen?*
   3. *Do I have to reapply every year?*
 
 ### 5.4 What the 2027 reassessment means for owners
-- Content: what the filed 2027 roll actually shows (98% of values unchanged, millage up, median home +$25; §2.7); 2024 comparison (~20%); rollback and
-  roll-forward; the City's two proposed levies (12.23 vs. 13.91 mills; ~$178 on a $300,000
-  homestead); there is no 10% cap (2022 amendment failed); what to check before bills
-  arrive.
-- Sources: S1, S4, S19, S21, S23, S26
+- Content: the four-year cycle (2024–27 values as of Jan. 1, 2023) and the reappraisal during 2027 for the 2028
+  roll; what the 2027 roll shows (98% of values unchanged, millage up, median home +$25); 2024 comparison (~20%);
+  rollback and roll-forward, including the Council's Nov. 5 partial roll-forward (4.039 mills); there is no 10% cap
+  (2022 amendment failed); what to check before the summer 2027 open-roll period.
+- Sources: S1, S4, S11, S19, S23, S26, S31, S32, S33
 - Top questions:
   1. *My value went up a lot. Will my taxes go up the same amount?*
   2. *Why is there a reassessment in 2027?*
@@ -474,26 +513,29 @@ questions must have a knowledge-base entry in `kb.js`.
 
 ## 6. Build, test, and project conventions
 
-**Current files** (static site, no build step, no API key; served by GitHub Pages from
-this repo):
+**Current files** (static site, no build step, no API key; served by GitHub Pages from this repo, and published as a
+Claude artifact with the `sample` capability so it can ask Claude):
 
 ```
 nola-assessment-navigator/
   CLAUDE.md          ← this file
   README.md          ← project overview, live link
-  index.html         ← chatbot UI: property search + chat
-  kb.js              ← Layer 1 knowledge base: SOURCES + ENTRIES (answers, keywords, source IDs)
-  app.js             ← retrieval, guardrails, lookup flow, rendering
+  index.html         ← one chat: property search + questions
+  kb.js              ← Layer 1 knowledge base: SOURCES (S1–S39) + ENTRIES (answers, keywords, source IDs)
+  app.js             ← retrieval, guardrails, lookup flow, combining the layers, rendering
   address.js         ← address normalizer + matcher (browser and Node)
-  lookup.js          ← loads data/web/2026 files, finds parcels by address or ID
-  property.js        ← Layer 2 answers about the selected parcel (recorded / calculated / explanation)
+  lookup.js          ← loads data/web/2026 files, finds parcels by address or parcel ID
+  property.js        ← Layers 2–3: answers about the selected parcel (recorded / calculated / explanation)
+  ai.js              ← optional AI explanation (Claude via the claude.ai runtime) + its validator
   style.css
-  pipeline/          ← eda.py, data_dictionary.py, export_web.py, shard.js, ltc_roll.py, compare_rolls.py,
-                       compare_years.py, fetch_acs.py, geocode_sample.py, build_report.py, build_standalone.py
-  tests/             ← address.test.js (unit), address_eval.js (19 real addresses), chatbot_eval.js (10 questions),
-                       property_sweep.js (14 intents × 305 parcels), expected_from_raw.py
-  data/              ← raw/ (ignored), processed/ (ignored), web/ (ignored, generated), README.md
-  docs/              ← week2-report.md, data-dictionary.md, address-matching-results.md, outside-data.md,
+  pipeline/          ← eda.py, data_dictionary.py, ltc_roll.py, compare_rolls.py, export_web.py, shard.js,
+                       area_stats.py, census_bg.py, compare_years.py, fetch_acs.py, geocode_sample.py,
+                       build_report.py, report_pdf.js, build_standalone.py
+  tests/             ← address.test.js, address_eval.js (19 addresses), chatbot_eval.js (10 Part 2 questions),
+                       property_sweep.js (all parcels), final_eval.js (29 end-to-end checks), expected_from_raw.py
+  data/              ← raw/ (ignored), processed/ (ignored), web/ (ignored, generated), outside/, README.md
+  docs/              ← final-draft-summary.md (1-page summary), week2-report.md (+ PDF), data-dictionary.md,
+                       address-matching-results.md, year-comparison.md, outside-data.md, outside-data-matching.md,
                        eda/, sample-questions.md, verification-checklist.md, screenshots/
 ```
 
@@ -501,7 +543,8 @@ nola-assessment-navigator/
 keyword, +2 per `core` subject word, +3 per phrase. Guardrails run first: personal data,
 advice requests, property lookups, and other parishes. After an advice or lookup
 refusal, the matching general entry is still shown. Below a score threshold, the bot says
-"I don't know" and gives contacts. If the question uses a word the knowledge base never
+"I don't know" and gives contacts. Misspelled words are read as the closest knowledge-base word ("homstead" →
+"homestead"). If the question uses a word the knowledge base never
 mentions (e.g. "installments"), the bot says it doesn't know about that term **before**
 showing the closest entry, so it never silently answers a different question. Deadline
 and bill dates are computed from today's date and the `APPEAL_WINDOWS` table in
@@ -509,30 +552,41 @@ and bill dates are computed from today's date and the `APPEAL_WINDOWS` table in
 list at least one source ID. A check in `app.js` refuses to render an entry without one.
 
 **How Layer 2 works:**
-1. **Find.** The owner types an address or a 9-digit parcel ID. `lookup.js` normalizes it with `address.js`, loads only
-   the file for that street (plus close spellings if the street isn't found), and returns one of four results: exact,
-   multiple, close, or not found with a reason. When the owner gave N/S, records whose legal description agrees are
-   listed first.
-2. **Confirm.** The owner picks the record ("Is this your property?").
-3. **Answer.** Questions that match one of `property.js`'s intents get a recorded / calculated / explanation answer
-   built from that record:
-   - value, assessed, taxable, tax
-   - homestead, freeze, other exemptions
-   - comparison with 2025, building size, year built, last sale, owner, property type
-   - "my value is wrong"
+1. **Find.** The owner types an address or a parcel ID, in the Find box or inside a question ("What's the tax on 2216
+   Claiborne Ave?"). `lookup.js` normalizes it with `address.js`, loads only the file for that street (plus close
+   spellings if the street isn't found), and returns one of four results: exact, multiple, close (typo, missing unit,
+   ½ address), or not found with a reason. Parcel IDs, including those with letters, are checked against `ids.json`.
+2. **Confirm.** The owner picks the record ("Is this your property?"). Each candidate list remembers its own records.
+3. **Answer.** `property.js` matches the question to one of 20 intents and builds a recorded / calculated /
+   explanation answer from that record:
+   - value, assessed (10% and 15% rules), taxable, tax (leads with the next bill: the 2027 roll, plus the Nov. 5
+     roll-forward as a calculated range), homestead, freeze, veteran, all exemptions
+   - 2026 → 2027 change, naming every cause the record shows (homestead removed, exempt status, value, millage)
+   - Layer 3 "area" (distribution of similar parcels in the roll's Subdivision; ward or city when too few)
+   - "place": roll location, a map link, and the census block group profile (ACS), with the neighborhood caution
+   - building size (not in the roll), year built, last transfer (incl. a newer 2027 one), owner (not shown),
+     property type, parcel number, special districts (not in the roll), "my value is wrong" (with appeal status)
+4. **Together.** Questions that start like "how do I…", "where…" or "when will…" go to Layer 1 even with a property
+   selected, and the answer adds a "Your property" panel with what the record shows on that topic
+   (`NolaProperty.context`). A property question asked before a lookup is answered right after the pick.
+   Guardrails (privacy, out-of-scope, other parishes, advice) run first, with or without a property.
 
-   Questions that start like "how do I…" or "where…" go to Layer 1 even with a property selected.
+**How the AI explanation works (`ai.js`):** on claude.ai, the page asks Claude through the artifact runtime's
+`sample` capability; the API key never touches the page. The prompt holds §4's rules, today's date, the appeal
+status, the whole knowledge base as text, the selected record's facts (`NolaProperty.facts`, every line tagged with
+its roll and source) and the last three exchanges. `validate()` then rejects any answer with a number not in that
+material, an unknown [S#], no citation (unless it says "I don't know") or advice wording; rejected answers aren't
+shown. Tested with a mocked runtime (`tests/final_eval.js`) and by having a model answer eight captured real prompts:
+all eight passed validation. Elsewhere (GitHub Pages, the single-file copy) there's no runtime and the page works
+exactly as before.
 
-**Tests to run before committing** (server: `python3 -m http.server 8765`):
-- `node tests/address.test.js`
-- `node tests/address_eval.js`
-- `node tests/chatbot_eval.js`
-- `node tests/property_sweep.js`: 14 question types × 305 random parcels; must report 0 problems
-
-**Planned upgrade:** replace keyword retrieval with an LLM (Claude API) that answers only
-from retrieved `kb.js` passages, using Section 4 as the system prompt. Keep the
-retrieval step, so sources stay grounded. The API key must never sit in client-side
-code. That requires a small server or serverless function.
+**Tests to run before committing** (server: `python3 -m http.server 8765` in this folder):
+- `node tests/address.test.js`: address normalizer unit tests
+- `node tests/address_eval.js`: 19 real addresses (19/19)
+- `node tests/chatbot_eval.js`: the 10 Part 2 property questions, checked against the raw files (10/10)
+- `node tests/property_sweep.js`: 21 question types × 305 sampled parcels, plus 5 data-heavy questions × **every**
+  parcel (about 822,000 answers); must report 0 problems
+- `node tests/final_eval.js`: 29 end-to-end browser checks (demo trio, combined flows, guardrails, AI mock, phone)
 
 **Rules for changing code**
 - Match the parent site's style: plain HTML, CSS, and vanilla JS, no frameworks or build
@@ -547,42 +601,52 @@ code. That requires a small server or serverless function.
 
 ---
 
-## 7. Live draft chatbot (Layers 1 and 2)
+## 7. Live prototype (final draft, Layers 1–3)
 
 - **Live link:** https://claude.ai/artifact/PMnTiHc5EGih7pzGky6bWB. This is a Claude artifact, private until the owner
-  shares it from the page's Share menu.
+  shares it from the page's Share menu. Published with the `sample` capability, so viewers signed in to claude.ai get
+  the AI explanation (they're asked once to allow it).
+- **Offline copy:** `python3 pipeline/build_standalone.py <out.html>` inlines the CSS, the six scripts and every
+  `data/web/2026` file (gzip + base64), so the page opens by double-click with no server. `app.js` uses
+  `window.NOLA_LOAD` when it exists and `fetch` otherwise. The output is generated: don't commit it.
 - **Repo copy:** `nola-assessment-navigator/index.html`. Once this branch merges to `main`, GitHub Pages serves it
   at `<pages-site>/nola-assessment-navigator/`.
-- It answers the Layer 1 questions in Section 5 and shows inline `[S#]` citations plus a source list under every
-  answer. It labels secondary sources, appends human contacts, checks the appeal deadline against today's date,
-  and refuses advice requests.
-- **Layer 2 (Nov. 2):** property search by address or parcel ID across all 163,135 parcels in the 2026 roll, a
-  candidate list for multiple matches, a confirm step, a property card, and record-grounded answers. Each answer
-  shows the data year and source.
-- **Single-file copy (works offline, double-click to open):** `python3 pipeline/build_standalone.py <out.html>` inlines
-  the CSS, the five scripts and every `data/web/2026` file (gzip + base64, ~14 MB), so the page needs no server.
-  `app.js` uses `window.NOLA_LOAD` when it exists and `fetch` otherwise. The output is generated: don't commit it.
-- **To rebuild the artifact:** inline `style.css`, `kb.js`, `address.js`, `lookup.js`, `property.js` and `app.js` into
-  one HTML file, publish the files in `data/web/2026/` alongside it at the same relative paths, and republish to the
-  same URL.
+- **Demo script (Nov. 16):** general: "How do I apply for the homestead exemption?"; lookup: "1205 St. Charles Ave,
+  Apt 607" → "How much tax will I pay?" → "How do I apply for the homestead exemption?" (shows the record panel);
+  refuse / hand off: "Should I appeal my assessment?"
+- **To rebuild the artifact:** inline `style.css`, `kb.js`, `address.js`, `lookup.js`, `property.js`, `ai.js` and
+  `app.js` into one HTML file, publish the files in `data/web/2026/` alongside it at the same relative paths, and
+  republish to the same URL with `capabilities: {sample: {}}`.
 
 ## 8. Sample questions and known gaps
 
 Full write-up and screenshots: `docs/sample-questions.md`, `docs/screenshots/` (version 1 failures in
 `docs/screenshots/v1/`).
 
-| # | Question | Version 1 (Oct. 19) | Version 2 (Oct. 21) |
-|---|---|---|---|
-| 1 | How is my property tax bill calculated? | ✅ Formula + $300,000 worked example, caveats, 5 sources | ✅ Same |
-| 2 | How do I apply for the homestead exemption? | ✅ Amount, eligibility, in-person filing, documents, 5 sources | ✅ Same |
-| 3 | What does the 2027 reassessment mean for me? | ⚠️ Correct and date-aware, but leans on secondary sources | ⚠️ Same |
-| 4 | Should I appeal? My house is worth less than what the Assessor says. | ⚠️ Refused advice but left out the appeal steps it promised | ✅ Refuses advice, then shows appeal steps, status and contacts |
-| 5 | Can I pay my property taxes in installments? | ❌ Answered with due dates instead of "I don't know" | ⚠️ Says "I don't know about installments" first, then the closest topic |
+| # | Question | Version 1 (Oct. 19) | Version 2 (Oct. 21) | Version 3 (Nov. 13, final draft) |
+|---|---|---|---|---|
+| 1 | How is my property tax bill calculated? | ✅ Formula + $300,000 worked example, caveats, 5 sources | ✅ Same (but 121.20 mills, unverified) | ✅ 131.99 mills from the state roll files, $3,056.10, police/fire exception |
+| 2 | How do I apply for the homestead exemption? | ✅ Amount, eligibility, in-person filing, documents, 5 sources | ✅ Same | ✅ Same, plus a "Your property" panel when a property is selected |
+| 3 | What does the 2027 reassessment mean for me? | ⚠️ Correct and date-aware, but leans on secondary sources | ⚠️ Same | ✅ Official source [S32]: 2024–27 values as of 1/1/2023; reappraisal during 2027 for the 2028 roll |
+| 4 | Should I appeal? My house is worth less than what the Assessor says. | ⚠️ Refused advice but left out the appeal steps it promised | ✅ Refuses advice, then shows appeal steps, status and contacts | ✅ Same, also with a property selected |
+| 5 | Can I pay my property taxes in installments? | ❌ Answered with due dates instead of "I don't know" | ⚠️ Says "I don't know about installments" first, then the closest topic | ✅ Sourced answer: no formal plan, partial payments in person or by mail, 1%/month [S34] |
 
 **Week 2 (Nov. 2):** ten property-grounded test questions, all checked against the raw CSV, are in
 `docs/week2-report.md` §5 (`node tests/chatbot_eval.js`, 10/10 pass). Three answers needed fixes first: the exempt
 parcel's $0 wasn't explained, "Who owns…" went to the general contacts answer, and N/S Claiborne wasn't ranked.
 
-**Still open:** a sourced entry on payment plans (Q5); official sources to replace the secondary ones in
-Q3; checking every remaining `VERIFY` item using `docs/verification-checklist.md`. (The millage figure is now resolved
-from the state roll files.)
+**Final draft (Nov. 13):** an outside QA pass (695 interactions) found real defects, all fixed and now under test:
+- tax changes blamed on millage when the homestead was removed (4,043 parcels) or exempt status changed
+- an older candidate list selecting the wrong record
+- parcel IDs with letters not found (46% of parcels)
+- the next bill shown from the 2026 roll instead of 2027
+- guardrails skipped once a property was selected
+- $0 placeholder values presented as facts
+- the wrong assessment ratio for non-residential buildings
+- the $178 roll-forward estimate attributed to the wrong millage
+Sample questions 1, 3 and 5 above were re-run (`docs/sample-questions.md`, version 3): Q1 now uses the verified
+131.99 mills; Q3 explains the four-year cycle from an official source [S32]; Q5 has a sourced answer [S34].
+
+**Still open:** the 2027 bill due date and final millages (not announced); official sources for heirs' paperwork;
+the Assessor's pages (S4–S10) re-checked in a browser; certification of the Nov. 3 results; Layer 3 is
+distribution-only by design (no "fair value" estimates, data rule 6).

@@ -11,7 +11,7 @@
 - **Inferred:** our best reading of the pattern; not confirmed by the Assessor or the LTC.
 - **Unknown:** we could not work out what it means.
 
-Examples are hidden for owner and mailing fields (privacy).
+Examples are hidden for owner, contact, mailing and business-name fields (privacy).
 
 | Field | Status | Fill % | Distinct | Most common values | Meaning |
 |---|---|---|---|---|---|
@@ -114,7 +114,7 @@ Examples are hidden for owner and mailing fields (privacy).
 | Owner Mailing Address 1 | Verified | 100% | 107,375 | (private) | Owner mailing address line 1. Not used in the app. |
 | Owner Mailing Address 2 | Verified | 18% | 21,244 | (private) | Owner mailing address line 2. Not used in the app. |
 | Owner Mailing Address 3 | Verified | 100% | 5,516 | (private) | Owner mailing city/state/ZIP. Not used in the app. |
-| TEP Business Name(s) | Inferred | 0% | 31 | `FOLGER COFFEE COMPANY`, `THE FOLGER COFFEECO`, `SUMMIT NOLA IV LLC` | Business holding a tax exemption program contract (57 parcels). |
+| TEP Business Name(s) | Inferred | 0% | 31 | (private) | Business holding a tax exemption program contract (57 parcels). |
 | TEP Contract Start Date(s) | Inferred | 0% | 11 | `08/01/2023`, `08/01/2021`, `08/01/2022` | Exemption contract start date. |
 | TEP Contract End Date(s) | Inferred | 0% | 10 | `07/31/2026`, `07/31/2027`, `07/31/2028` | Exemption contract end date. |
 | TEP Contract Status Type(s) | Unknown | 0% | 0 |  | Always blank. |
@@ -130,6 +130,85 @@ Examples are hidden for owner and mailing fields (privacy).
 | TEP Industrial Exemption Type(s) | Unknown | 0% | 3 | `3`, `0`, `1` | Exemption program type 0/1/3. Meanings unknown. |
 | LTC Source Archive | Verified | 100% | 7 | `ORLEANSDISTRICT3_2026_TAXROL`, `ORLEANSDISTRICT5_2026_TAXROL`, `ORLEANSDISTRICT6_2026_TAXROL` | Which LTC zip file the row came from (one per municipal district). |
 | LTC Source URL | Verified | 100% | 7 | `https://stax.latax.la.gov/Ta`, `https://stax.latax.la.gov/Ta`, `https://stax.latax.la.gov/Ta` | Where the LTC publishes the rolls: https://stax.latax.la.gov/TaxRollsFolder. |
+
+## Derived and web-export fields
+
+The chatbot doesn't read the CSV above. `pipeline/export_web.py` writes one JSON record per parcel with short keys
+(`data/processed/roll2026_public.jsonl`), `node pipeline/shard.js` splits it into `data/web/2026/s_XX.json` street
+files plus `meta.json` (sources, usual mills per district, street list) and `ids.json` (parcel ID → file), and
+`pipeline/area_stats.py` writes `data/web/2026/areas.json`. Run `area_stats.py` **after** `shard.js`, which clears
+the folder. Owner names, contacts, mailing addresses, business names and purchase prices are never exported. Keys
+with an empty, 0 or default value are left out to keep the files small; the app reads a missing number as 0.
+
+**From the 2026 roll file** (one key per field):
+
+| Key | Roll field | How it's changed |
+|---|---|---|
+| `id` | `Parcel ID(s)` | As in the roll. |
+| `a` | `Property Address(es)` | Kept as in the roll, several addresses still joined with " \| ". |
+| `d` | `Municipal District` | As in the roll. |
+| `w` | `Ward(s)` | As in the roll. |
+| `sub` | `Subdivision(s)` | As in the roll. |
+| `occ` | `Occupancy Type(s)` | As in the roll. |
+| `st` | `Assessment Status(es)` | Left out when AC (active), so it appears only as EX. |
+| `yb` | `Year(s) Built` | 1994 on a non-residential parcel (placeholder) is dropped. |
+| `td` | `Transfer Date(s)` | 12/31/1994 (placeholder) is dropped. |
+| `it` | `Instrument Type(s)` | As in the roll. |
+| `fz` | `Freeze Code(s)` | Left out when 0 (no freeze). |
+| `hsp` | `Value Homestead Percentage(s)` | As in the roll. |
+| `vt` | `Veteran Exemption Type Code(s)` | Left out when 0 (no veteran exemption). |
+| `legal` | `Legal Description(s)` | Spaces collapsed, cut to 90 characters. |
+| `n` | `Assessment Record Count` | Left out when 1. |
+| `lmv` | `Land Market Value` | Whole dollars. Left out when 0. |
+| `imv` | `Improvement Market Value` | Whole dollars. Left out when 0. |
+| `tmv` | `Total Market Value` | Whole dollars. Left out when 0. |
+| `lav` | `Land Assessed Value` | Whole dollars. Left out when 0. |
+| `iav` | `Improvement Assessed Value` | Whole dollars. Left out when 0. |
+| `tav` | `Total Assessed Value` | Whole dollars. Left out when 0. |
+| `hs` | `Homestead Exemption Amount` | Whole dollars. Left out when 0. |
+| `oe` | `Other Exemption Amount` | Whole dollars. Left out when 0. |
+| `ve` | `Veteran Exemption Amount` | Whole dollars. Left out when 0. |
+| `fr` | `First Responder Exemption Amount` | Whole dollars. Left out when 0. |
+| `tx` | `Taxable Assessed Value` | Whole dollars. Kept even when 0, so a fully exempt parcel shows $0 rather than "missing". |
+
+**From the parsed state tax-roll files** (`pipeline/ltc_roll.py`, joined on parcel ID). These are *computed* from
+the state files' levy rows, not printed on a bill, and leave out special-district fees (DDD, security districts):
+
+| Key | Roll | Source column | Meaning |
+|---|---|---|---|
+| `t26` | 2026 roll [S30] | `tax_net` | Computed net tax: sum of the parcel's AMILLAGE net-tax rows. Kept even when 0. |
+| `ml26` | 2026 roll [S30] | `mills` | Total mills over the parcel's levies. Stored only when it differs from its district's usual rate (`meta.json` → `mills`); the app falls back to that rate. |
+| `th26` | 2026 roll [S30] | `tax_homestead_reduction` | Tax removed by the homestead exemption (sum of AMILLAGE homestead-reduction rows). |
+| `m27` | 2027 roll [S31] | `market` | Total market value. Stored only when it differs from 2026 `tmv`; the app falls back to `tmv`. |
+| `a27` | 2027 roll [S31] | `assessed` | Total assessed value. Stored only when it differs from 2026 `tav`. |
+| `h27` | 2027 roll [S31] | `homestead` | Homestead exemption amount. Stored only when it differs from 2026 `hs`. |
+| `x27` | 2027 roll [S31] | `taxable` | Taxable assessed value. Stored only when it differs from 2026 `tx` (kept when 0). |
+| `t27` | 2027 roll [S31] | `tax_net` | Computed net tax on the 2027 roll. Kept even when 0. |
+| `ml27` | 2027 roll [S31] | `mills` | Total mills, stored only when it differs from the district's usual 2027 rate. |
+| `th27` | 2027 roll [S31] | `tax_homestead_reduction` | Tax removed by homestead on the 2027 roll. |
+| `no27` | 2027 roll [S31] | (parcel ID not found) | 1 when the parcel ID isn't in the 2027 roll (195 parcels); the app then shows no 2027 values. |
+
+**`data/web/2026/areas.json`** (Layer 3, market context; `pipeline/area_stats.py`). It describes distributions
+only: no "fair" or expected values (CLAUDE.md §3, data rule 6).
+- **Groups:** parcels of the same occupancy type (first type listed, for multi-record parcels) in the same area.
+  A `sub` or `ward` group is stored only when it has at least 10 parcels (`min`), and the app (`property.js`) uses
+  the first group it finds for the parcel, in this order:
+  1. `sub`: Subdivision within Municipal District, key `"<district>|<subdivision>|<occupancy>"`;
+  2. `ward`: Ward within District, key `"<district>|<ward>|<occupancy>"`;
+  3. `city`: the whole city, key `"<occupancy>"` (no minimum).
+- **Top-level keys:** `min` (10), `quantiles` ([0.1, 0.25, 0.5, 0.75, 0.9]), `source`, then `sub`, `ward`, `city`.
+- **Fields of each group:**
+
+| Field | Meaning |
+|---|---|
+| `n` | Number of parcels in the group. |
+| `mv` | Total market value (2026 `tmv`, parcels with a value above $0) at the 10th, 25th, 50th, 75th and 90th percentiles. Nearest-rank, so each is a real parcel's value. |
+| `hs` | Share of parcels with a homestead exemption amount above $0 (2026). |
+| `fz` | Share of parcels with a freeze code other than 0 (2026). |
+| `t26` | Median computed net tax, 2026 roll. |
+| `t27` | Median computed net tax, 2027 roll (parcels in both rolls). |
+| `chg` | Share of the group's parcels in the 2027 roll whose 2027 market value differs from 2026. |
+| `dt` | Median change in computed net tax, 2026 → 2027, for parcels with both taxes. |
 
 ## What we could not figure out
 

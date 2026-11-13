@@ -170,6 +170,7 @@
     const q = parse(input);
     const result = { query: q, status: "not_found", candidates: [], reason: "" };
     if (q.otherCity) { result.reason = `${q.otherCity} is outside Orleans Parish, so it isn't in this roll. Contact that parish's assessor.`; return result; }
+    if (/\bp\.?\s*o\.?\s*box\b/i.test(String(input))) { result.reason = "That looks like a PO box. The roll lists each property by its street address, so enter the property's own address."; return result; }
     if (!q.number) { result.reason = "No house number found. Enter it like \"1234 Magazine St\"."; return result; }
     if (!q.name) { result.reason = "No street name found."; return result; }
 
@@ -197,9 +198,14 @@
     const narrow = (list, pred) => { const k = list.filter(pred); return k.length ? k : list; };
     if (q.dir) c = narrow(c, x => x.p.dir === q.dir);
     if (q.suffix) c = narrow(c, x => x.p.suffix === q.suffix);
-    if (q.unit) c = narrow(c, x => x.p.unit === q.unit);
-    else c = [...c].sort((a, b) => (a.p.unit ? 1 : 0) - (b.p.unit ? 1 : 0)); // building record first, then units
-    if (q.half) c = narrow(c, x => x.p.half);
+    let unitNote = "";
+    if (q.unit) {
+      const k = c.filter(x => x.p.unit === q.unit);
+      if (k.length) c = k;
+      else unitNote = `no unit ${q.unit} is recorded at this address`;
+    } else c = [...c].sort((a, b) => (a.p.unit ? 1 : 0) - (b.p.unit ? 1 : 0)); // building record first, then units
+    // "1/2" addresses are separate parcels: prefer the one that matches what the owner typed, and flag it otherwise.
+    c = narrow(c, x => !!x.p.half === !!q.half);
     // One parcel can list several addresses; show it once.
     const seen = new Set();
     c = c.filter(x => { const id = x.rec.id; if (seen.has(id)) return false; seen.add(id); return true; });
@@ -212,6 +218,8 @@
         nameNote || "same street",
         q.suffix && x.p.suffix && x.p.suffix !== q.suffix ? `suffix differs (${x.p.suffix})` : "",
         q.dir && x.p.dir && x.p.dir !== q.dir ? `direction differs (${x.p.dir})` : "",
+        !!x.p.half !== !!q.half ? (x.p.half ? "this is the ½ address, which differs" : "you typed ½, but this record differs") : "",
+        unitNote ? `unit ${q.unit} differs: no such unit is recorded here` : "",
         x.p.unit ? `unit ${x.p.unit}` : ""
       ].filter(Boolean).join("; ")
     }));

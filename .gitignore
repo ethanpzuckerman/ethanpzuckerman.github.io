@@ -3,6 +3,8 @@
 serve.py
 *.zip
 .DS_Store
+__pycache__/
+*.pyc
 
 # NOLA Assessment Navigator raw assessment rolls (may contain owner names)
 nola-assessment-navigator/data/raw/
@@ -11,3 +13,5 @@ nola-assessment-navigator/data/raw/
 nola-assessment-navigator/data/processed/
 nola-assessment-navigator/data/web/
 nola-assessment-navigator/docs/report.html
+# Single-file offline build (pipeline/build_standalone.py, ~14-20 MB; regenerate it)
+nola-assessment-navigator/docs/NOLA Assessment Navigator.html

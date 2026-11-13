@@ -19,9 +19,9 @@
 
   <header class="top">
     <div class="wrap">
-      <p class="eyebrow">Orleans Parish · General guidance + your property</p>
+      <p class="eyebrow">Orleans Parish · General guidance + your property + your area</p>
       <h1>NOLA Assessment Navigator</h1>
-      <p class="lede">Ask how assessments, millage, exemptions, and appeals work in the City of New Orleans, or find your property and ask about its 2026 record. Every answer lists its sources.</p>
+      <p class="lede">Ask how assessments, millage, exemptions, and appeals work in the City of New Orleans, or find your property and ask about its record, its tax, and how it compares with its area. Every answer lists its sources.</p>
     </div>
   </header>
 
@@ -29,7 +29,7 @@
     <form id="find" class="find" autocomplete="off">
       <label for="addr">Find your property</label>
       <div class="find-row">
-        <input id="addr" name="addr" type="text" placeholder="Address (1234 Magazine St, Apt 2) or parcel ID" />
+        <input id="addr" name="addr" type="text" placeholder="Address (1234 Magazine St, Apt 2) or parcel ID" autocomplete="off" />
         <button type="submit">Search</button>
       </div>
     </form>
@@ -42,9 +42,13 @@
 
     <form id="ask" class="ask" autocomplete="off">
       <label for="q" class="sr-only">Your question</label>
-      <input id="q" name="q" type="text" placeholder="e.g. How do I apply for the homestead exemption?" />
+      <input id="q" name="q" type="text" placeholder="Ask a question, or type an address" />
       <button type="submit">Ask</button>
     </form>
+    <div id="ai-bar" class="ai-bar" hidden>
+      <label><input type="checkbox" id="ai-on" checked /> AI explanations by Claude</label>
+      <span>Checked against the sources; the full answer is always shown.</span>
+    </div>
 
     <section class="suggest">
       <p class="label">Common questions</p>
@@ -53,13 +57,14 @@
   </main>
 
   <footer class="wrap foot">
-    <p>Built by Ethan Zuckerman as a student project. Facts last researched Oct. 19, 2026. General answers come from a curated knowledge base; property answers come from the Louisiana Tax Commission's 2026 and 2027 Orleans Parish rolls (values as of 1/1/2023), including each parcel's computed tax. Owner names are not shown.</p>
+    <p>Built by Ethan Zuckerman as a student project. Facts last checked Nov. 13, 2026. General answers come from a curated knowledge base; property answers come from the Louisiana Tax Commission's 2026 and 2027 Orleans Parish rolls (values as of 1/1/2023), including each parcel's computed tax; neighborhood figures come from the Census (ACS 2020–2024, block groups). Owner names are not shown.</p>
   </footer>
 
   <script src="kb.js"></script>
   <script src="address.js"></script>
   <script src="lookup.js"></script>
   <script src="property.js"></script>
+  <script src="ai.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

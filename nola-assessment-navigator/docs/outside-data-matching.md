@@ -28,12 +28,13 @@ ACS tract table (`data/outside/acs_orleans_tracts.csv`).
 | VACANT LAND |     97 |        55 |     8 |         34 |       55 |          0 |                  0.567 |
 
 **Why parcels fail:**
-- **Ties** are mostly streets that split North/South while the roll drops the direction. Examples: 237 PETERS ST, New Orleans, LA, , 117 MURAT ST, New Orleans, LA, , 1218 COLUMBUS ST, New Orleans, LA, , 322 WHITE ST, New Orleans, LA, , 511 OLYMPIA ST, New Orleans, LA, .
+- **Ties** are mostly streets that split North/South while the roll drops the direction. Examples (as sent): 237 PETERS ST; 117 MURAT ST; 1218 COLUMBUS ST; 322 WHITE ST; 511 OLYMPIA ST.
 - **No match:** vacant lots and other parcels with no mailable address, plus streets the geocoder spells or names
-  differently. Examples: 1294401 MAGELLAN ST, New Orleans, LA, , 5383803 HIGHLAND AVE, New Orleans, LA, , 29132 SQUARE, New Orleans, LA, , 1926 MAGIC WALK, New Orleans, LA, , 56434 VERONESE RD, New Orleans, LA, , 1143001 BEHRMAN AVE, New Orleans, LA, , 1135501 SHEPARD ST, New Orleans, LA, , 4287, New Orleans, LA, .
-- **Not sent:** roll addresses with no house number, such as vacant lots described only by street.
+  differently. Examples (as sent): 1294401 MAGELLAN ST; 5383803 HIGHLAND AVE; 29132 SQUARE; 1926 MAGIC WALK; 56434 VERONESE RD;
+  1143001 BEHRMAN AVE; 1135501 SHEPARD ST; 4287. Several have 5- to 7-digit numbers that aren't real house numbers.
+- **Not sent:** roll addresses with no house number, such as vacant lots described only by street (none in this sample).
 
 **Verdict:** address geocoding is **reliable enough for neighborhood context on homes** (see the residential row), but
-not for every parcel. Vacant land and exempt parcels fail far more often. A parcel-ID join to the City's parcel GIS layer
-would avoid most of these failures and is the next thing to test. Until then, the chatbot doesn't use tract data in
-property answers.
+not for every parcel. Vacant land fails far more often (57% joined), and commercial parcels somewhat more (81%). A
+parcel-ID join to the City's parcel GIS layer would avoid most of these failures and is the next thing to test. Until
+then, the chatbot doesn't use tract data in property answers.

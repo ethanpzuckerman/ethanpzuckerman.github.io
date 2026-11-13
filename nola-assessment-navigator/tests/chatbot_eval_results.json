@@ -30,7 +30,7 @@
     "ok": true,
     "missing": [],
     "shot": "docs/screenshots/week2/t02.png",
-    "got": "1205 ST CHARLES AV 607 parcel 102000079 RECORDED IN THE 2026 ROLL Computed property tax on the 2026 roll: $1,019, from 131.99 total mills, after a homestead reduction of $904. Taxable assessed value: $7,070. Source: the LTC roll's millage file, which lists eve"
+    "got": "1205 ST CHARLES AV 607 parcel 102000079 RECORDED IN THE 2026 AND 2027 ROLLS Computed tax on the 2027 roll (your next bill, due early 2027): $1,030 at 133.48 mills, after a homestead reduction of $915 [S31]. Computed tax on the 2026 roll (bills that were due ea"
   },
   {
     "n": 3,
@@ -59,7 +59,7 @@
     "ok": true,
     "missing": [],
     "shot": "docs/screenshots/week2/t04.png",
-    "got": "1503 TCHOUPITOULAS ST parcel 101101410 RECORDED IN THE 2026 ROLL Assessed value: $25,620 (land $2,310 + buildings $23,310). Field: Total Assessed Value. CALCULATED BY THE NAVIGATOR $25,620 ÷ $325,000 market value = 7.9%. WHAT IT MEANS Louisiana assesses proper"
+    "got": "1503 TCHOUPITOULAS ST parcel 101101410 RECORDED IN THE 2026 ROLL Assessed value: $25,620 (land $2,310 + buildings $23,310). Field: Total Assessed Value. CALCULATED BY THE NAVIGATOR $25,620 ÷ $325,000 market value = 7.9%. WHAT IT MEANS Louisiana assesses land a"
   },
   {
     "n": 5,
@@ -91,7 +91,7 @@
     "ok": true,
     "missing": [],
     "shot": "docs/screenshots/week2/t06.png",
-    "got": "1770 TCHOUPITOULAS ST parcel 101100301 RECORDED IN THE 2026 ROLL Computed property tax on the 2026 roll: $0, from 131.99 total mills. Taxable assessed value: $0. Source: the LTC roll's millage file, which lists every levy on the parcel [S30]. This parcel is ex"
+    "got": "1770 TCHOUPITOULAS ST parcel 101100301 RECORDED IN THE 2026 AND 2027 ROLLS Computed tax on the 2027 roll (your next bill, due early 2027): $0 at 133.48 mills [S31]. Computed tax on the 2026 roll (bills that were due early 2026): $0, from 131.99 total mills. Ta"
   },
   {
     "n": 7,
@@ -122,7 +122,7 @@
     "ok": true,
     "missing": [],
     "shot": "docs/screenshots/week2/t08.png",
-    "got": "1205 ST CHARLES AV 607 parcel 102000079 NOT IN THIS RECORD I don't know. This roll doesn't include square footage, bedrooms, bathrooms or condition: those fields are blank or zero for every parcel. The Assessor's property search may show them, and wrong buildi"
+    "got": "1205 ST CHARLES AV 607 parcel 102000079 NOT IN THIS RECORD I don't know. This roll doesn't include square footage, bedrooms, bathrooms, condition or features: those fields are blank or zero for every parcel. The Assessor's property search may show them, and wr"
   },
   {
     "n": 9,
@@ -150,6 +150,6 @@
     "ok": true,
     "missing": [],
     "shot": "docs/screenshots/week2/t10.png",
-    "got": "3 records match \"701 S Claiborne Ave\". 3 records share this address. Pick yours. 1 of them has \"S CLAIBORNE\" in the legal description, listed first. 701 CLAIBORNE AV Vacant Land · District 1, Ward 03 · Hospital District · Market value $97,500 SQ 460 LOT 7 S CL"
+    "got": "3 records match \"701 S Claiborne Ave\". 3 records share this address. Pick yours. 1 of them has \"S CLAIBORNE\" in the legal description, listed first. 701 CLAIBORNE AV Vacant Land · District 1, Ward 03 · Hospital District · Market value $97,500 · Parcel 10310730"
   }
 ]

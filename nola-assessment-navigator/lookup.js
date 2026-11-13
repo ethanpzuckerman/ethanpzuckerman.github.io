@@ -24,16 +24,18 @@
       return (await shard(k)).find(r => r.id === id) || null;
     }
 
-    /* Find a property from what an owner types: an address or a 9-digit parcel ID.
+    /* Find a property from what an owner types: an address or a parcel ID.
        Returns { status, candidates:[{record, why}], reason, query }. */
     async function find(input) {
       const q = String(input || "").trim();
-      const digits = q.replace(/[\s-]/g, "");
-      if (/^\d{9}$/.test(digits)) {
-        const rec = await byId(digits);
-        return rec
-          ? { status: "exact", candidates: [{ record: rec, why: "parcel ID" }], reason: "", query: { raw: q } }
-          : { status: "not_found", candidates: [], reason: `No parcel with ID ${digits} in the 2026 roll.`, query: { raw: q } };
+      // Parcel IDs: most are 9 digits, but many have letters ("39W305216") or 10 digits. Check the ID list itself.
+      const id = q.replace(/[\s-]/g, "").toUpperCase();
+      if (/^\d[0-9A-Z]{6,11}$/.test(id) && /\d{4}/.test(id) && !/\s\D{3,}/.test(q)) {
+        const rec = await byId(id);
+        if (rec) return { status: "exact", candidates: [{ record: rec, why: "parcel ID" }], reason: "", query: { raw: q } };
+        if (/^[0-9A-Z]+$/.test(q.replace(/[\s-]/g, "").toUpperCase()) && !/\s/.test(q.replace(/-/g, ""))) {
+          return { status: "not_found", candidates: [], reason: `No parcel with ID ${id} in the 2026 roll. Check the number on your tax bill.`, query: { raw: q } };
+        }
       }
       const p = A.parse(q);
       if (!p.number || !p.name) return A.match(A.buildIndex([]), q);

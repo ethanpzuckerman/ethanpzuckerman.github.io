@@ -16,16 +16,17 @@ Joined on **parcel ID**. Sources: `stax.latax.la.gov/TaxRollsFolder/2025/ORLEANS
 | Parcels (real estate) | 163,135 | 163,138 |
 | In both rolls | 162,940 | |
 | Only in one roll (new, split, merged or retired IDs) | 195 | 198 |
-| Total market value | $75.54B | $76.55B |
-| Total taxable assessed value | $4.69B | $4.78B |
-| Total computed net tax (all levies in the file) | $625.1M | $643.1M |
+| Total market value, all parcels in each roll | $75.65B | $76.78B |
+| Total market value, 162,940 parcels in both rolls | $75.54B | $76.55B |
+| Total taxable assessed value, parcels in both rolls | $4.69B | $4.78B |
+| Total computed net tax (all levies in the file), parcels in both rolls | $625.1M | $643.1M |
 | Median total millage, residential parcels | 131.99 | 133.48 |
 | Median computed tax, homesteaded homes | $1,965 | $2,032 |
 | Valuation date on every parcel | 01/01/2023 | |
 
 **What changed**
 - **98.0% of parcels have exactly the same market value** in both rolls. 2,381 went
-  up and 803 went down. Among those that changed, the middle half moved between -0% and
+  up and 803 went down. Among those that changed, the middle half moved between -0.1% and
   +87%.
 - Changes are concentrated in parcels that recently sold. The rest are likely construction, demolition or corrections (not checked).
   - 55% of increases are on parcels with a recorded sale in 2025–2027.
@@ -33,7 +34,7 @@ Joined on **parcel ID**. Sources: `stax.latax.la.gov/TaxRollsFolder/2025/ORLEANS
     same reset-on-sale pattern seen in the 2026 sales study.
 - **Taxes move mostly because the millage went up**: the median residential rate rose from
   131.99 to 133.48 mills. The median home's computed
-  tax changed by $+25, and 84% of homes see an
+  tax changed by +$25, and 84% of homes see an
   increase.
 
 **What this means for the "2027 reassessment"**

@@ -6,11 +6,15 @@ Meanings are written by hand. Each is tagged:
   Inferred  - our best reading of the data pattern; not confirmed by the Assessor or LTC
   Unknown   - we could not work out what it means (listed again at the end)
 Fill rates and examples are computed. Examples are omitted for fields that hold
-owner names or mailing addresses (privacy rule, CLAUDE.md §3).
+owner names, mailing addresses or business names (privacy rule, CLAUDE.md §3).
+The last section documents the short keys the web app reads (from export_web.py) and data/web/2026/areas.json
+(from area_stats.py).
 """
 from pathlib import Path
 
 import pandas as pd
+
+from export_web import INT, STR  # the web export's key → roll field maps, so this file stays in step with them
 
 ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / "data/raw/Orleans_Parish_2026_LTC_Expanded_Real_Estate_Roll.csv"
@@ -18,7 +22,8 @@ OUT = ROOT / "docs/data-dictionary.md"
 
 PRIVATE = {"Owner(s)", "Primary Owner(s)", "Assessment Contact Name(s)", "Owner Contact Name(s)",
            "Assessment Mailing Address 1", "Assessment Mailing Address 2", "Assessment Mailing Address 3",
-           "Owner Mailing Address 1", "Owner Mailing Address 2", "Owner Mailing Address 3"}
+           "Owner Mailing Address 1", "Owner Mailing Address 2", "Owner Mailing Address 3",
+           "TEP Business Name(s)"}
 
 V, I, U = "Verified", "Inferred", "Unknown"
 MEANING = {
@@ -140,6 +145,91 @@ MEANING = {
 }
 
 
+# Notes on how export_web.py changes a roll field on its way to the web files.
+WEB_NOTES = {
+    "a": "Kept as in the roll, several addresses still joined with \" | \".",
+    "yb": "1994 on a non-residential parcel (placeholder) is dropped.",
+    "td": "12/31/1994 (placeholder) is dropped.",
+    "legal": "Spaces collapsed, cut to 90 characters.",
+    "fz": "Left out when 0 (no freeze).",
+    "vt": "Left out when 0 (no veteran exemption).",
+    "st": "Left out when AC (active), so it appears only as EX.",
+    "n": "Left out when 1.",
+    "tx": "Kept even when 0, so a fully exempt parcel shows $0 rather than \"missing\".",
+}
+
+# Keys added from the parsed state files (pipeline/ltc_roll.py → data/processed/ltc<roll>_parcels.csv).
+LTC_KEYS = [
+    ("t26", "2026 roll [S30]", "`tax_net`", "Computed net tax: sum of the parcel's AMILLAGE net-tax rows. Kept even when 0."),
+    ("ml26", "2026 roll [S30]", "`mills`", "Total mills over the parcel's levies. Stored only when it differs from its district's usual rate (`meta.json` → `mills`); the app falls back to that rate."),
+    ("th26", "2026 roll [S30]", "`tax_homestead_reduction`", "Tax removed by the homestead exemption (sum of AMILLAGE homestead-reduction rows)."),
+    ("m27", "2027 roll [S31]", "`market`", "Total market value. Stored only when it differs from 2026 `tmv`; the app falls back to `tmv`."),
+    ("a27", "2027 roll [S31]", "`assessed`", "Total assessed value. Stored only when it differs from 2026 `tav`."),
+    ("h27", "2027 roll [S31]", "`homestead`", "Homestead exemption amount. Stored only when it differs from 2026 `hs`."),
+    ("x27", "2027 roll [S31]", "`taxable`", "Taxable assessed value. Stored only when it differs from 2026 `tx` (kept when 0)."),
+    ("t27", "2027 roll [S31]", "`tax_net`", "Computed net tax on the 2027 roll. Kept even when 0."),
+    ("ml27", "2027 roll [S31]", "`mills`", "Total mills, stored only when it differs from the district's usual 2027 rate."),
+    ("th27", "2027 roll [S31]", "`tax_homestead_reduction`", "Tax removed by homestead on the 2027 roll."),
+    ("no27", "2027 roll [S31]", "(parcel ID not found)", "1 when the parcel ID isn't in the 2027 roll (195 parcels); the app then shows no 2027 values."),
+]
+
+AREA_FIELDS = [
+    ("n", "Number of parcels in the group."),
+    ("mv", "Total market value (2026 `tmv`, parcels with a value above $0) at the 10th, 25th, 50th, 75th and 90th percentiles. Nearest-rank, so each is a real parcel's value."),
+    ("hs", "Share of parcels with a homestead exemption amount above $0 (2026)."),
+    ("fz", "Share of parcels with a freeze code other than 0 (2026)."),
+    ("t26", "Median computed net tax, 2026 roll."),
+    ("t27", "Median computed net tax, 2027 roll (parcels in both rolls)."),
+    ("chg", "Share of the group's parcels in the 2027 roll whose 2027 market value differs from 2026."),
+    ("dt", "Median change in computed net tax, 2026 → 2027, for parcels with both taxes."),
+]
+
+
+def derived_section():
+    cell = lambda x: str(x).replace("|", "\\|")
+    web = [f"| `{k}` | `{cell(c)}` | {cell(WEB_NOTES.get(k, 'As in the roll.'))} |" for k, c in STR.items()]
+    web += [f"| `{k}` | `{c}` | Whole dollars. Left out when 0{' (kept for tx)' if k == 'tx' else ''}. |" for k, c in INT.items() if k != "tx"]
+    web.insert(len(STR) + list(INT).index("tx"), "| `tx` | `Taxable Assessed Value` | Whole dollars. " + WEB_NOTES["tx"] + " |")
+    ltc = [f"| `{k}` | {src} | {col} | {note} |" for k, src, col, note in LTC_KEYS]
+    area = [f"| `{k}` | {note} |" for k, note in AREA_FIELDS]
+    return """## Derived and web-export fields
+
+The chatbot doesn't read the CSV above. `pipeline/export_web.py` writes one JSON record per parcel with short keys
+(`data/processed/roll2026_public.jsonl`), `node pipeline/shard.js` splits it into `data/web/2026/s_XX.json` street
+files plus `meta.json` (sources, usual mills per district, street list) and `ids.json` (parcel ID → file), and
+`pipeline/area_stats.py` writes `data/web/2026/areas.json`. Run `area_stats.py` **after** `shard.js`, which clears
+the folder. Owner names, contacts, mailing addresses, business names and purchase prices are never exported. Keys
+with an empty, 0 or default value are left out to keep the files small; the app reads a missing number as 0.
+
+**From the 2026 roll file** (one key per field):
+
+| Key | Roll field | How it's changed |
+|---|---|---|
+""" + "\n".join(web) + """
+
+**From the parsed state tax-roll files** (`pipeline/ltc_roll.py`, joined on parcel ID). These are *computed* from
+the state files' levy rows, not printed on a bill, and leave out special-district fees (DDD, security districts):
+
+| Key | Roll | Source column | Meaning |
+|---|---|---|---|
+""" + "\n".join(ltc) + """
+
+**`data/web/2026/areas.json`** (Layer 3, market context; `pipeline/area_stats.py`). It describes distributions
+only: no "fair" or expected values (CLAUDE.md §3, data rule 6).
+- **Groups:** parcels of the same occupancy type (first type listed, for multi-record parcels) in the same area.
+  A `sub` or `ward` group is stored only when it has at least 10 parcels (`min`), and the app (`property.js`) uses
+  the first group it finds for the parcel, in this order:
+  1. `sub`: Subdivision within Municipal District, key `"<district>|<subdivision>|<occupancy>"`;
+  2. `ward`: Ward within District, key `"<district>|<ward>|<occupancy>"`;
+  3. `city`: the whole city, key `"<occupancy>"` (no minimum).
+- **Top-level keys:** `min` (10), `quantiles` ([0.1, 0.25, 0.5, 0.75, 0.9]), `source`, then `sub`, `ward`, `city`.
+- **Fields of each group:**
+
+| Field | Meaning |
+|---|---|
+""" + "\n".join(area)
+
+
 def main():
     df = pd.read_csv(RAW, dtype=str, encoding="utf-8-sig", low_memory=False)
     missing = [c for c in df.columns if c not in MEANING]
@@ -168,11 +258,11 @@ def main():
 - **Inferred:** our best reading of the pattern; not confirmed by the Assessor or the LTC.
 - **Unknown:** we could not work out what it means.
 
-Examples are hidden for owner and mailing fields (privacy).
+Examples are hidden for owner, contact, mailing and business-name fields (privacy).
 
 | Field | Status | Fill % | Distinct | Most common values | Meaning |
 |---|---|---|---|---|---|
-""" + "\n".join(rows) + f"""
+""" + "\n".join(rows) + "\n\n" + derived_section() + f"""
 
 ## What we could not figure out
 
