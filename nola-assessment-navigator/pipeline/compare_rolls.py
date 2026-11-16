@@ -128,16 +128,21 @@ Joined on **parcel ID**. Sources: `stax.latax.la.gov/TaxRollsFolder/2025/ORLEANS
   - {s['changed_up_recent_sale_share']:.0%} of increases are on parcels with a recorded sale in {int(y0)-1}–{y1}.
   - {s['changed_at_92pct_of_recent_sale']:,} changed parcels now sit at about 92% of their recent sale price, the
     same reset-on-sale pattern seen in the 2026 sales study.
-- **Taxes move mostly because the millage went up**: the median residential rate rose from
+- **Taxes move mostly because one millage went up** (the East Bank levee district's, 10.79 → 12.28 mills; the
+  citywide millages are unchanged at 121.20): the median residential rate rose from
   {s['residential_median_mills'][0]:.2f} to {s['residential_median_mills'][1]:.2f} mills. The median home's computed
   tax changed by {'+' if s['residential_median_tax_change'] >= 0 else '−'}${abs(s['residential_median_tax_change']):,.0f}, and {s['residential_share_tax_up']:.0%} of homes see an
   increase.
 
 **What this means for the "2027 reassessment"**
-Our sources said the 2027 roll would carry new reappraised values. **The roll the Assessor filed with the LTC doesn't
-show that.** Values are unchanged for 98% of parcels and the valuation date is still 01/01/2023. Either the
-reappraisal hasn't been applied to this filing, or it changed very few values. **Ask the Assessor's Office**
-(`docs/verification-checklist.md`). The chatbot now says what the filed roll shows and that the reason is unknown.
+**The 2027 roll is not a reappraisal, and the data shows it.** Values are unchanged for 98% of parcels and the
+valuation date is still 01/01/2023. That is what the four-year cycle predicts: the Legislative Auditor's report on the
+tax year 2024 reappraisal says property is valued as of "January 1, 2023 for tax years 2024 through 2027" [S15], and
+the City Council said the same in July 2023 [S32]. Between reappraisals the Assessor can still update a parcel for a
+sale, construction, demolition, deterioration or remodeling [S15], which fits the 2% that changed. The pattern (2020,
+2024) points to tax year 2028 for the next reappraisal; that part is an inference, not an announcement.
+*(An earlier version of this page said our sources expected a reappraisal on the 2027 roll. Those were secondary
+sources and they were wrong.)*
 
 **Limits**
 - "Tax" here is the sum of the levies listed in the roll file: parish-wide millages plus the East Bank or Algiers levee

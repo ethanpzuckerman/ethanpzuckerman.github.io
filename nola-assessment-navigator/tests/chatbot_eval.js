@@ -63,7 +63,8 @@ const CASES = [
     // Screenshot the question and the answer together.
     await p.evaluate(() => { const l = document.querySelectorAll(".msg"); l.forEach((m, k) => { if (k < l.length - 2) m.style.display = "none"; }); });
     await p.locator("#log").screenshot({ path: path.join(__dirname, "..", shot) });
-    rows.push({ n: i + 1, ...c, ok: missing.length === 0, missing, shot, got: text.replace(/\s+/g, " ").slice(0, 260) });
+    // "full" keeps the whole answer as the owner sees it, for docs/chatbot-test-log.md.
+    rows.push({ n: i + 1, ...c, ok: missing.length === 0, missing, shot, got: text.replace(/\s+/g, " ").slice(0, 260), full: text });
     console.log(`${missing.length ? "FAIL" : "PASS"} ${i + 1}. ${c.q} ${missing.length ? "missing: " + missing.join(", ") : ""}`);
   }
   await b.close();

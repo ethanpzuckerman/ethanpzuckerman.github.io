@@ -187,7 +187,7 @@ ${typeof r.t26 === "number" ? row("This parcel's computed tax", `${usd(r.t26)}${
 ${g.chg != null ? row("Market value changed on the 2027 roll", `${pct(g.chg)} of these parcels; this one ${r.has27 ? (r.m27 === r.tmv ? "didn't change" : "did") : "isn't in the 2027 roll"}`, "2026 vs 2027 roll, by parcel ID") : ""}
 ${g.dt != null && dt != null ? row("Tax change, 2026 → 2027", `middle ${sgn(g.dt)}; this parcel ${sgn(dt)}`, "LTC millage files") : ""}
 </table>`, "Calculated by the Navigator from the 2026 and 2027 rolls"),
-      block("explanation", `<p>This only describes how values are spread in the area. It <strong>doesn't mean your value is too high or too low</strong>: parcels differ in size, condition, lot and use, and this roll doesn't include building size, so I can't compare like with like. "Area" here is the roll's Subdivision field, which isn't the same as the Assessor's 393 valuation neighborhoods <cite>S15</cite>. Values are from the 2026 roll <cite>S30</cite>; the 2027 figures are from the roll filed with the state <cite>S31</cite>.</p>`)
+      block("explanation", `<p>This only describes how values are spread in the area. It <strong>doesn't mean your value is too high or too low</strong>: parcels differ in size, condition, lot and use, and this roll doesn't include building size, so I can't compare like with like. "Area" here is the roll's Subdivision field, which may not match the neighborhoods the Assessor uses to set values. Values are from the 2026 roll <cite>S30</cite>; the 2027 figures are from the roll filed with the state <cite>S31</cite>.</p>`)
     ];
   }
 
@@ -285,7 +285,7 @@ ${row("Race and ethnicity", `${share(B.bl)} Black, ${share(B.wh)} white, ${share
         if (noValue(r)) return missingValue();
         return out([
           block("recorded", `<p>Total market value: <strong>${usd(r.tmv)}</strong> (land ${usd(r.lmv)} + buildings ${usd(r.imv)}). Fields: Total, Land and Improvement Market Value.</p>`),
-          block("explanation", `<p>This is the Assessor's mass-appraisal estimate of what the property would sell for, not an appraisal of your specific house <cite>S10</cite>. It reflects the market as of ${esc(meta.assessmentDate)}; values from the last reappraisal are used for tax years 2024 through 2027 <cite>S32</cite>.${r.has27 ? (r.m27 === r.tmv ? ` The 2027 roll filed with the state keeps it at the same ${usd(r.m27)} <cite>S31</cite>.` : ` The 2027 roll filed with the state changes it to ${usd(r.m27)} <cite>S31</cite>.`) : ""}</p>`)
+          block("explanation", `<p>This is the Assessor's mass-appraisal estimate of what the property would sell for, not an appraisal of your specific house <cite>S10</cite>. It reflects the market as of ${esc(meta.assessmentDate)}; values from the last reappraisal are used for tax years 2024 through 2027 <cite>S15</cite><cite>S32</cite>.${r.has27 ? (r.m27 === r.tmv ? ` The 2027 roll filed with the state keeps it at the same ${usd(r.m27)} <cite>S31</cite>.` : ` The 2027 roll filed with the state changes it to ${usd(r.m27)} <cite>S31</cite>.`) : ""}</p>`)
         ]);
       case "assessed": {
         if (noValue(r)) return missingValue();
@@ -339,7 +339,7 @@ ${row("Race and ethnicity", `${share(B.bl)} Black, ${share(B.wh)} white, ${share
             ? `<p>On the 2027 roll the homestead exemption is <strong>${usd(r.h27)}</strong> <cite>S31</cite>.</p>`
             : `<p><strong>On the 2027 roll this parcel has no homestead exemption</strong> <cite>S31</cite>. The roll doesn't say why (for example a sale, a move, or an owner's death). If you still own and live here, ask the Assessor's Office right away.</p>`, "Recorded in the 2027 roll") : "",
           block("explanation", r.hs || r.h27
-            ? `<p>The full exemption is $7,500 of assessed value, the first $75,000 of market value <cite>S2</cite>. Once granted, it stays on, and you don't reapply each year, unless something changes, like a sale or a change in ownership <cite>S8</cite>.${r.hs && r.hs < 7500 ? " Yours is less than $7,500, usually because only part of the ownership qualifies, or the assessed value is below $7,500." : ""}</p>`
+            ? `<p>The full exemption is $7,500 of assessed value, the first $75,000 of market value <cite>S2</cite>. Once granted, it stays on, and you don't reapply each year, unless something changes, like a sale or a change in ownership <cite>S8</cite>.${r.hs && r.hs < 7500 ? " Yours is less than $7,500, usually because only the owners who live here count (the exemption is limited to their ownership share) <cite>S2</cite>, or because the assessed value is below $7,500." : ""}</p>`
             : `<p>If you own this home and live in it as your primary residence, you can apply at the Assessor's Office <cite>S7</cite><cite>S8</cite>. Ask me "How do I apply for the homestead exemption?" for the documents to bring.</p>`)
         ]);
       }
@@ -349,8 +349,8 @@ ${row("Race and ethnicity", `${share(B.bl)} Black, ${share(B.wh)} white, ${share
             ? `<p>No assessment freeze is recorded. Field: Freeze Code(s) = 0.</p>`
             : `<p>This parcel has an assessment freeze (Special Assessment Level), code <strong>${esc(r.fz)}</strong>. Field: Freeze Code(s).</p>`),
           block("explanation", r.fz === "0"
-            ? `<p>Owners 65+, permanently disabled owners, and veterans with a 50%+ rating who have homestead and meet the income limit can freeze their assessed value <cite>S1</cite><cite>S24</cite>.${r.hs ? "" : " The freeze requires a homestead exemption, and none is recorded here."}</p>`
-            : `<p>The freeze locks the assessed value, not the tax bill; millage changes still apply <cite>S24</cite>. <strong>I don't know</strong> what code ${esc(r.fz)} means (age, disability, or veteran). The roll's code table isn't published with this file, so ask the Assessor's Office.</p>`)
+            ? `<p>Owners 65+, permanently disabled owners, and veterans with a 50%+ rating who have homestead and meet the income limit can freeze their assessed value <cite>S1</cite>.${r.hs ? "" : " The freeze requires a homestead exemption, and none is recorded here."}</p>`
+            : `<p>The freeze locks the assessed value, not the tax bill; millage changes still apply <cite>S1</cite>. <strong>I don't know</strong> what code ${esc(r.fz)} means (age, disability, or veteran). The roll's code table isn't published with this file, so ask the Assessor's Office.</p>`)
         ]);
       case "veteran":
       case "exemptions": {
@@ -388,7 +388,7 @@ ${row("Computed tax", `${usd(r.t26 || 0)} → ${usd(r.t27)}`, "LTC millage files
 </table>`, "Recorded in the 2026 and 2027 rolls"),
           block("calculated", `<p>Market value ${dm === 0 ? "<strong>didn't change</strong>" : `changed by <strong>${sgn(dm)}</strong> (${dm > 0 ? "+" : "−"}${pct(Math.abs(dm) / (r.tmv || 1))})`}. ${taxLine}${dm > 0 && dx === 0 && r.fz !== "0" ? " Taxable value stayed the same because of the assessment freeze on this parcel." : ""}</p>`),
           nextRoll(meta) === 2027 ? rollForward(r) : "",
-          block("explanation", `<p>Compared by parcel ID ${esc(r.id)}. Values from the last reappraisal (market as of Jan. 1, 2023) are used for tax years 2024 through 2027 <cite>S32</cite>, so 98% of parcels keep the same value on the 2027 roll <cite>S31</cite>; changes usually come from sales, new construction, corrections or appeals. New values are expected with the reappraisal in 2027, for the 2028 roll. I can't compare with 2025: that roll isn't available to me.</p>`)
+          block("explanation", `<p>Compared by parcel ID ${esc(r.id)}. Values from the last reappraisal (market as of Jan. 1, 2023) are used for tax years 2024 through 2027 <cite>S15</cite><cite>S32</cite>, so 98% of parcels keep the same value on the 2027 roll <cite>S31</cite>. Between reappraisals a value can still change for a sale, construction, demolition, damage or remodeling <cite>S15</cite>. On the East Bank the total millage rises because the levee district's rate goes from 10.79 to 12.28 mills. The four-year pattern points to tax year 2028 for the next reappraisal (my inference; confirm with the Assessor). I can't compare with 2025: that roll isn't available to me.</p>`)
         ]);
       }
       case "area":

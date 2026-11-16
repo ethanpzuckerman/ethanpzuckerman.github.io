@@ -3,7 +3,7 @@
    {{APPEAL_STATUS}} is filled in by app.js based on today's date. */
 
 const SOURCES = {
-  S1:  { label: "La. Const. Art. VII §18 (classification, ratios, reappraisal)", url: "https://www.legis.la.gov/Legis/Law.aspx?d=206545", official: true },
+  S1:  { label: "La. Const. Art. VII §18 (ratios, reappraisal every four years, phase-in, special assessment level)", url: "https://www.legis.la.gov/Legis/Law.aspx?d=206545", official: true },
   S2:  { label: "La. Const. Art. VII §20 (homestead exemption)", url: "https://legis.la.gov/legis/law.aspx?d=206550", official: true },
   S3:  { label: "La. R.S. 47:1703 (homestead statute)", url: "https://legis.la.gov/legis/law.aspx?d=101333", official: true },
   S4:  { label: "Orleans Parish Assessor — 2027 Assessment Rolls Open July 15 to Aug. 17 (July 13, 2026)", url: "https://www.nolaassessor.com/2026/07/13/2027-assessment-rolls-open-for-public-inspection-july-15-to-august-17/", official: true },
@@ -13,11 +13,11 @@ const SOURCES = {
   S8:  { label: "Orleans Parish Assessor — Homestead flyer: Once Gained, Permanently Applied", url: "https://www.nolaassessor.com/wp-content/uploads/sites/80/2023/01/2021-homestead-exempt-flyer_071221.pdf", official: true },
   S9:  { label: "Orleans Parish Assessor — Homestead Exemption application", url: "https://www.nolaassessor.com/wp-content/uploads/sites/80/2024/02/OPAO-HE-Appl.pdf", official: true },
   S10: { label: "Orleans Parish Assessor — Mass appraisal process flyer", url: "https://www.nolaassessor.com/wp-content/uploads/sites/80/2023/01/mass_process_flyer2021.pdf", official: true },
-  S11: { label: "City of New Orleans Treasury — Millages: How Taxes are Calculated", url: "https://nola.gov/next/treasury/topics/how-taxes-are-calculated/", official: true },
+  S11: { label: "City of New Orleans Treasury — Millages: How Taxes are Calculated (2026 millage table: 121.20 mills citywide)", url: "https://nola.gov/next/treasury/topics/how-taxes-are-calculated/", official: true },
   S12: { label: "City of New Orleans Treasury — FAQ", url: "https://nola.gov/next/treasury/topics/faq/", official: true },
   S13: { label: "New Orleans City Council — Property Tax Assessments and Appeals", url: "https://council.nola.gov/resources/property-tax-assessments-and-appeals/", official: true },
   S14: { label: "La. Admin. Code tit. 61 §V-3103 — Appeals to the Louisiana Tax Commission", url: "https://www.law.cornell.edu/regulations/louisiana/La-Admin-Code-tit-61-SS-V-3103", official: true },
-  S15: { label: "La. Legislative Auditor — Evaluation of OPAO's 2024 quadrennial reappraisal", url: "https://lla.la.gov/publicreports.nsf/0/f74bf8c6ffebdf7f86258a8d00657f6c/$file/000037d0b.pdf", official: true },
+  S15: { label: "La. Legislative Auditor — Tax Year 2024 Quadrennial Reappraisal, Orleans Parish Assessor (Dec. 2023)", url: "https://lla.la.gov/publicreports.nsf/0/f74bf8c6ffebdf7f86258a8d00657f6c/$file/000037d0b.pdf", official: true },
   S16: { label: "The Center Square — Audit: Orleans Parish used prohibited 'sales chasing'", url: "https://www.thecentersquare.com/louisiana/article_29aad166-a5cc-11ee-97ed-8324ed068b6d.html", official: false },
   S17: { label: "Bureau of Governmental Research — About Your Property Taxes", url: "https://www.bgr.org/about-your-property-taxes/", official: false },
   S18: { label: "Bureau of Governmental Research — 2026 Property Tax Dashboard", url: "https://www.bgr.org/report-index/2026-property-tax-dashboard-update/", official: false },
@@ -55,20 +55,21 @@ const ENTRIES = [
     keywords: ["decide", "worth", "value", "determine", "mass", "appraisal", "cama", "model", "comparable", "sales", "estimate", "calculate", "figure"],
     phrases: ["assessment based on", "value based on", "how does the assessor", "what my house is worth", "how is my value", "mass appraisal", "how are values set", "how is value determined", "market value determined"],
     answer: `<p>The Orleans Parish Assessor must value property at <strong>fair market value</strong>, roughly what it would sell for between a willing buyer and seller <cite>S1</cite>.</p>
-<p>Because there are far too many parcels to appraise one by one, the office uses <strong>computer-assisted mass appraisal (CAMA)</strong>. The model looks at sales of similar properties nearby, your property's features (size, age, condition, use, building type), location, and market trends. Sales comparison is the preferred method. The cost and income approaches are used for some property types <cite>S10</cite><cite>S15</cite>.</p>
-<p>For the 2024 reappraisal the office split the parish into <strong>393 valuation neighborhoods</strong> <cite>S15</cite><cite>S16</cite>. The Constitution requires a full reappraisal at least every four years <cite>S1</cite>. Today's values reflect the market as of <strong>Jan. 1, 2023</strong> and are used for tax years 2024 through 2027 <cite>S32</cite>.</p>
+<p>Because there are far too many parcels to appraise one by one, the office uses <strong>mass appraisal</strong>: a computer model estimates each value from sales of similar properties, the property's features (such as building size, land size, condition and grade) and its neighborhood <cite>S15</cite>. The Assessor's own flyer (2021) describes the process and says sales comparison is the main method, with cost and income approaches for some property types <cite>S10</cite>.</p>
+<p><strong>Values are set for four years at a time.</strong> State law requires a reappraisal at least every four years <cite>S1</cite>. The last one was for tax year 2024, and it values every property as of <strong>Jan. 1, 2023</strong> for tax years 2024 through 2027 <cite>S15</cite><cite>S32</cite>. In between, the Assessor can still update a parcel for a sale, construction, demolition, damage or remodeling <cite>S15</cite>.</p>
 <p><strong>Tip:</strong> check the property features listed for your parcel on the Assessor's site. A wrong square footage or condition is one of the easiest things to get corrected.</p>`,
-    sources: ["S1", "S10", "S15", "S16", "S32"]
+    sources: ["S1", "S15", "S10", "S32"]
   },
   {
     id: "value-up-no-change", topic: "How values are set",
     title: "Why your value can change when you didn't change anything",
     keywords: ["inspect", "inspection", "visit", "nothing", "didn't", "changed", "went", "increase", "jump", "why", "higher"],
     phrases: ["why did my value go up", "didn't change anything", "come inspect", "value went up", "assessment went up", "why is my assessment higher"],
-    answer: `<p>Mass appraisal values whole neighborhoods from sales data. So your value can rise because <strong>similar homes near you sold for more</strong>, even if no one visited your house and you made no changes <cite>S10</cite><cite>S15</cite>.</p>
-<p>Values move most in a <strong>reappraisal year</strong>. The 2024 reappraisal raised total assessed value about 20% <cite>S26</cite>. Its values (market as of Jan. 1, 2023) carry through tax year 2027 <cite>S32</cite>, which is why the 2027 roll filed with the state keeps 98% of values the same as 2026 <cite>S31</cite>. Between reappraisals, changes usually come from a sale, a permit or renovation, new construction, a demolition, or a correction. The next big change comes with the reappraisal in 2027 for the 2028 roll.</p>
-<p>A higher value does <em>not</em> automatically raise your bill by the same percent. In reassessment years taxing bodies must roll back millage <cite>S11</cite>. Ask me "Will my taxes go up the same amount?" for more.</p>`,
-    sources: ["S10", "S15", "S26", "S32", "S31", "S11"]
+    answer: `<p>Mass appraisal values property from sales data. So your value can rise because <strong>similar homes near you sold for more</strong>, even if no one visited your house and you made no changes <cite>S15</cite>.</p>
+<p>Values move most in a <strong>reappraisal year</strong>, because they have to catch up with four years of price changes. In the tax year 2024 reappraisal, the total appraised value of single- and two-family homes was 23.2% higher than at the 2020 reappraisal <cite>S15</cite>. Those values (the market as of Jan. 1, 2023) are used through tax year 2027 <cite>S15</cite><cite>S32</cite>, which is why the 2027 roll filed with the state keeps 98% of values the same as 2026 <cite>S31</cite>.</p>
+<p>Between reappraisals, the Assessor can update a parcel for a sale, construction, demolition, damage or remodeling <cite>S15</cite>.</p>
+<p>A higher value does <em>not</em> automatically raise your bill by the same percent. In a reappraisal year each millage is rolled back <cite>S15</cite>. Ask me "Will my taxes go up the same amount?" for more.</p>`,
+    sources: ["S15", "S32", "S31"]
   },
   {
     id: "assessed-vs-market", topic: "How values are set",
@@ -89,12 +90,12 @@ const ENTRIES = [
     core: ["audit", "fair"],
     keywords: ["audit", "auditor", "chasing", "fair", "accurate", "accuracy", "dispersion", "bgr", "criticism", "legislative"],
     phrases: ["sales chasing", "legislative auditor", "are assessments fair", "is the assessor accurate", "coefficient of dispersion", "assessment accuracy", "uniform"],
-    answer: `<p>At the City Council's request, the Louisiana Legislative Auditor reviewed the tax year 2024 reappraisal <cite>S15</cite>. Reported findings:</p>
-<ul><li>About <strong>3,803 parcels</strong> may have been "sales chased," meaning set at their recent sale price, which Tax Commission rules prohibit <cite>S16</cite>.</li>
-<li>Assessments were <strong>not too high or too low in the aggregate</strong> <cite>S16</cite>.</li>
-<li>The Assessor disputes the sales-chasing claim and cites a <strong>coefficient of dispersion of 17.6%</strong>, which he says is in the acceptable range <cite>S16</cite>. The Bureau of Governmental Research has raised related concerns <cite>S26</cite>.</li></ul>
-<p>I'm presenting these views neutrally. Read the full report for details.</p>`,
-    sources: ["S15", "S16", "S26"]
+    answer: `<p>At the City Council's request, the Louisiana Legislative Auditor reviewed the tax year 2024 reappraisal. Its December 2023 report found <cite>S15</cite>:</p>
+<ul><li><strong>Overall accuracy was within accepted ranges.</strong> Assessments "were not in the aggregate too high or too low." The median value was 91.6% to 97.3% of sale price (accepted range: 90% to 110%), and the <strong>coefficient of dispersion</strong>, a measure of how uneven values are, was 6.0% to 17.6% (accepted range: 5% to 20%), depending on the sample.</li>
+<li><strong>Likely "sales chasing."</strong> The office likely set some values from the home's own recent sale price, which Tax Commission rules prohibit. The auditor identified <strong>3,803</strong> single- and two-family homes as potentially sales chased. They were valued 13.3% higher than similar unsold homes, about $611 in extra tax per house.</li>
+<li><strong>The Assessor disagrees</strong> with that finding. His office's response says a verified arm's-length sale is the best indicator of market value.</li></ul>
+<p>The Bureau of Governmental Research has raised related concerns <cite>S26</cite>. I'm presenting these views neutrally and can't say whether any one home's value is right. Read the full report for details.</p>`,
+    sources: ["S15", "S26"]
   },
 
   /* ---------- 5.2 Assessed value + millage → bill ---------- */
@@ -104,18 +105,22 @@ const ENTRIES = [
     core: ["calculate"],
     keywords: ["bill", "calculate", "calculated", "compute", "formula", "how", "much", "owe", "pay", "taxes", "example", "estimate"],
     phrases: ["how is my tax bill calculated", "how is my property tax calculated", "how much tax", "worked example", "tax bill calculated", "how are taxes calculated", "calculate my taxes"],
-    answer: `<p><strong>Tax = (assessed value − exemptions) × millage ÷ 1,000</strong>, added up across every millage that applies to the property <cite>S11</cite><cite>S17</cite>.</p>
+    answer: `<p><strong>Tax = (assessed value − exemptions) × millage ÷ 1,000</strong>, added up across every millage that applies to the property <cite>S11</cite>.</p>
+<p>The City's 2026 table lists <strong>121.20 mills citywide</strong>. Levee district millage is added on top: 10.79 mills on the East Bank, 10.81 in Algiers <cite>S11</cite>. Example: a $300,000 home on the East Bank with a homestead exemption, 2026 rates.</p>
 <table><tr><th>Step</th><th>Math</th><th>Result</th></tr>
 <tr><td>Fair market value</td><td>set by Assessor</td><td>$300,000</td></tr>
 <tr><td>× 10% residential ratio</td><td>$300,000 × 0.10</td><td>$30,000 assessed</td></tr>
 <tr><td>− Homestead exemption</td><td>$30,000 − $7,500</td><td>$22,500 taxable</td></tr>
-<tr><td>× 131.99 mills (2026 roll, East Bank)</td><td>$22,500 × 0.13199</td><td>$2,969.78</td></tr>
-<tr><td>+ police &amp; fire mills homestead doesn't reduce</td><td>$7,500 × 0.01151</td><td>$86.33</td></tr>
-<tr><td><strong>Total</strong></td><td></td><td><strong>$3,056.10 / year</strong></td></tr>
+<tr><td>× 121.20 citywide mills</td><td>$22,500 × 0.12120</td><td>$2,727.00</td></tr>
+<tr><td>+ police &amp; fire mills that get no homestead reduction (11.51)</td><td>$7,500 × 0.01151</td><td>$86.33</td></tr>
+<tr><td><strong>Citywide subtotal</strong></td><td></td><td><strong>$2,813.33</strong></td></tr>
+<tr><td>+ East Bank levee district (10.79)</td><td>$22,500 × 0.01079</td><td>$242.78</td></tr>
+<tr><td><strong>Total, East Bank (131.99 mills)</strong></td><td></td><td><strong>$3,056.10 / year</strong></td></tr>
 <tr><td>Same home, no homestead</td><td>$30,000 × 0.13199</td><td>$3,959.70 / year</td></tr></table>
-<p>Sources: ratio <cite>S1</cite>, homestead amount <cite>S2</cite>, millage rates and the police/fire exception from the 2026 roll's millage file <cite>S30</cite>.</p>
-<p><strong>Caveats:</strong> 131.99 is the total on the East Bank; Algiers (District 5) is 132.01 because it's in a different levee district <cite>S30</cite>. Special districts like the Downtown Development District or a neighborhood security district add fees that aren't in this total <cite>S17</cite>. Find your property above to see its own recorded tax.</p>`,
-    sources: ["S11", "S17", "S1", "S2", "S30"]
+<p><strong>What homestead saves here:</strong> $903.60 a year ($822.68 of it on the citywide millages). That's less than $7,500 × the full rate, because the 11.51 police and fire mills "without applying homestead exemption" are charged on the whole assessed value <cite>S11</cite><cite>S30</cite>.</p>
+<p>Sources: ratio <cite>S1</cite>, homestead amount <cite>S2</cite>, rates <cite>S11</cite>. The state roll files show the same totals on every parcel: 131.99 mills on the East Bank and 132.01 in Algiers <cite>S30</cite>. Line amounts are rounded to the cent.</p>
+<p><strong>Not included:</strong> special districts. The Downtown Development District adds 13.73 mills, some security districts add about 7 mills, and others charge flat fees, mostly a few hundred dollars a year <cite>S11</cite>. Find your property above to see its own recorded tax.</p>`,
+    sources: ["S11", "S1", "S2", "S30"]
   },
   {
     id: "mill", topic: "From value to tax bill",
@@ -124,9 +129,10 @@ const ENTRIES = [
     keywords: ["mill", "mills", "millage", "rate", "rates", "who", "sets", "levy"],
     phrases: ["what is a mill", "what is millage", "millage rate", "who sets the millage", "tax rate"],
     answer: `<p>A <strong>mill</strong> is one-tenth of one percent: <strong>$1 of tax per $1,000 of taxable assessed value</strong> <cite>S13</cite><cite>S11</cite>.</p>
-<p>Each taxing body (the City, School Board, levee and drainage districts, libraries, police, fire, and others) sets its own millage, and some changes need voter approval. They add up to your total rate <cite>S11</cite>. BGR reports which rates apply where <cite>S18</cite>. In the 2026 roll the total is <strong>131.99 mills</strong> on the East Bank and 132.01 in Algiers; the 2027 roll raises the East Bank total to <strong>133.48</strong> <cite>S30</cite><cite>S31</cite>.</p>
+<p>Each taxing body sets its own millage. The City's 2026 table adds up to <strong>121.20 mills citywide</strong>: the City (including police, fire and libraries), the School Board (45.31), the Sewerage &amp; Water Board, debt service, parks and the Law Enforcement District. On top of that, every parcel pays a <strong>levee district</strong> millage: 10.79 mills on the East Bank or 10.81 in Algiers, for totals of <strong>131.99</strong> and <strong>132.01</strong> <cite>S11</cite><cite>S30</cite>.</p>
+<p>In the 2027 roll filed with the state, the citywide total is still 121.20, but the East Bank levee millage rises from 10.79 to 12.28, so the East Bank total becomes <strong>133.48</strong> <cite>S31</cite>. That file predates the City Council's Nov. 5, 2026 roll-forward <cite>S33</cite>.</p>
 <p>You can't appeal a millage. Rates change through public hearings and elections <cite>S13</cite>.</p>`,
-    sources: ["S13", "S11", "S18", "S30", "S31"]
+    sources: ["S13", "S11", "S30", "S31", "S33"]
   },
   {
     id: "rollback", topic: "From value to tax bill",
@@ -134,10 +140,10 @@ const ENTRIES = [
     core: ["rollback"],
     keywords: ["rollback", "roll", "forward", "back", "neutral", "revenue", "reduce", "lower"],
     phrases: ["roll back", "roll forward", "rollback", "revenue neutral"],
-    answer: `<p>When a reassessment raises total property values, Louisiana law requires each taxing body to <strong>roll back</strong> its millage so it collects about the same revenue. It may then vote to <strong>roll forward</strong>, raising the rate back up toward its prior maximum <cite>S11</cite>.</p>
-<p><strong>For 2027:</strong> in September the City proposed raising a group of city millages by about 7.44 mills, from 44.67 to 52.11, which Fox 8 estimated at about $178 a year on a $300,000 homesteaded home <cite>S19</cite>. On <strong>Nov. 5, 2026</strong> the City Council unanimously approved a smaller, partial roll-forward totaling <strong>4.039 mills</strong> <cite>S33</cite>. I don't know the final rate for each millage yet.</p>
-<p>The 2027 roll the Assessor filed with the state on Sept. 4, 2026 came before that vote: it still lists the City's general tax at 12.23 mills <cite>S31</cite>. So the 2027 tax figures in that file are probably <strong>lower than the bills will be</strong>.</p>`,
-    sources: ["S11", "S19", "S33", "S31"]
+    answer: `<p>In a reappraisal year, if assessed values rise, the Louisiana Constitution automatically <strong>rolls back</strong> each millage so it raises the same total tax as before. Each taxing body may then <strong>roll forward</strong>, up to its previous rate, by a two-thirds vote at a public meeting <cite>S15</cite>.</p>
+<p><strong>For 2027:</strong> the City proposed rolling forward a list of city millages by about 7.44 mills in total, for example General Alimony from 12.23 to 13.91 <cite>S11</cite>. Fox 8 estimated that at about $178 a year on a $300,000 homesteaded home <cite>S19</cite>. On <strong>Nov. 5, 2026</strong> the City Council unanimously approved a smaller, partial roll-forward totaling <strong>4.039 mills</strong> <cite>S33</cite>. I don't know the final rate for each millage yet.</p>
+<p>The 2027 roll the Assessor filed with the state on Sept. 4, 2026 came before that vote: it still lists General Alimony at 12.23 mills <cite>S31</cite>. So the 2027 tax figures in that file are probably <strong>lower than the bills will be</strong>.</p>`,
+    sources: ["S15", "S11", "S19", "S33", "S31"]
   },
   {
     id: "bill-due", topic: "From value to tax bill",
@@ -166,10 +172,14 @@ const ENTRIES = [
     title: "Why neighbors can have different tax rates",
     keywords: ["district", "districts", "downtown", "ddd", "security", "levee", "west", "bank", "algiers", "different", "neighbor", "fee"],
     phrases: ["special district", "security district", "downtown development district", "west bank", "different rate"],
-    answer: `<p>Not every millage applies everywhere. East Bank and West Bank parcels fall in different levee districts, and some areas also pay the <strong>Downtown Development District</strong>, a neighborhood <strong>security or improvement district</strong>, or a flat fee <cite>S17</cite><cite>S18</cite>. That's why two homes with the same value can get different bills.</p>
-<p>BGR's dashboard estimates bills by area <cite>S18</cite>, and the Treasury lists rates by taxing body <cite>S11</cite>.</p>
-<p>The state roll files list the parish-wide millages and the East Bank or Algiers levee district for every parcel, but <strong>not</strong> special-district fees, so I can\'t tell you which ones apply to a property <cite>S30</cite>.</p>`,
-    sources: ["S17", "S18", "S11", "S30"]
+    answer: `<p>Not every charge applies everywhere. The City's 2026 table lists, on top of the 121.20 citywide mills <cite>S11</cite>:</p>
+<ul><li><strong>Levee districts:</strong> 10.79 mills on the East Bank, 10.81 in Algiers</li>
+<li><strong>Downtown Development District:</strong> 13.73 mills</li>
+<li><strong>Security districts charged by millage:</strong> Garden District 7.13, Touro Bouligny 7.10</li>
+<li><strong>Neighborhood districts charged as flat fees:</strong> for example Broadmoor $100, Lakeview $150, Mid-City $195 for a home, Upper Audubon $700</li></ul>
+<p>That's why two homes with the same value can get different bills. BGR's dashboard estimates bills by area <cite>S18</cite>.</p>
+<p>The state roll files record the citywide millages and the levee district for every parcel, but <strong>not</strong> the special districts, so I can't tell you which ones apply to a property <cite>S30</cite>.</p>`,
+    sources: ["S11", "S18", "S30"]
   },
   {
     id: "commercial", topic: "From value to tax bill",
@@ -189,14 +199,28 @@ const ENTRIES = [
     core: ["homestead"],
     keywords: ["homestead", "apply", "application", "bring", "documents", "file", "sign", "need", "proof", "register", "claim", "condo", "condominium", "townhouse"],
     phrases: ["apply for homestead", "homestead exemption", "what do i bring", "how do i get homestead", "file for homestead", "sign up for homestead"],
-    answer: `<p>The <strong>homestead exemption</strong> takes <strong>$7,500 off your assessed value</strong>, which equals the first <strong>$75,000 of market value</strong>. It applies only to the home you <strong>own and live in</strong> as your primary residence, and you must own and occupy it by <strong>December 31</strong> of the tax year <cite>S2</cite><cite>S3</cite><cite>S7</cite>.</p>
-<p><strong>How to apply:</strong> <strong>All owners who live in the home must go in person</strong> to the Assessor's Office, City Hall, 1300 Perdido St., Room 4E01 <cite>S8</cite><cite>S9</cite>. Bring:</p>
+    answer: `<p>The <strong>homestead exemption</strong> takes <strong>$7,500 off your assessed value</strong>, which equals the first <strong>$75,000 of market value</strong>. It applies only to the home you <strong>own and live in</strong>, and you must own and occupy it by <strong>December 31</strong> of the year you claim it <cite>S2</cite><cite>S3</cite>. A person or married couple can have only one <cite>S2</cite>.</p>
+<p><strong>How to apply:</strong> you apply with the Orleans Parish Assessor's Office, City Hall, 1300 Perdido St., Room 4E01 <cite>S9</cite>. The Assessor's application form and flyer ask for <cite>S8</cite><cite>S9</cite>:</p>
 <ul><li>Proof of ownership: act of sale or deed</li>
 <li>A Louisiana driver's license or state ID showing the property address</li>
-<li>A current Entergy (or cable) bill for the property. The name, service address, and mailing address must match <cite>S7</cite><cite>S8</cite>.</li></ul>
-<p>If your mailing address differs from the property, you'll need a recorded power of attorney. A married couple gets only one homestead <cite>S9</cite>.</p>
-<p>In Orleans the exemption reduces state, general city, school, levee, and levee-district taxes <cite>S2</cite>, but not every millage.</p>`,
-    sources: ["S2", "S3", "S7", "S8", "S9"], contact: true
+<li>A current Entergy (or cable) bill for the property, with matching name, service address and mailing address</li></ul>
+<p>Those documents say every owner who lives in the home applies in person, and that a mailing address different from the property needs a recorded power of attorney <cite>S8</cite><cite>S9</cite>. <strong>They date from 2021 and 2024, and I can't check the Assessor's website myself, so please confirm the current steps</strong> (including whether you can apply online or by appointment) at nolaassessor.com or by phone before you go.</p>
+<p>Homestead lowers most of your bill but not all of it: the police and fire millages "without applying homestead exemption" (11.51 mills) are charged on your full assessed value <cite>S11</cite>.</p>`,
+    sources: ["S2", "S3", "S9", "S8", "S11"], contact: true
+  },
+  {
+    id: "double", topic: "Exemptions",
+    title: "Homestead when you live in half of a double",
+    core: ["double", "duplex"],
+    keywords: ["double", "duplex", "half", "side", "shotgun", "two-family", "fourplex", "units", "tenant", "rent", "renting", "upstairs", "downstairs", "multi-family"],
+    phrases: ["half of a double", "one side of a double", "live in one side", "live in half", "rent out the other", "rent the other side", "other half", "owner occupied double", "two family", "shotgun double", "live in one unit"],
+    answer: `<p><strong>Short answer: you can get a homestead exemption on a double you own and live in, but I don't know exactly how the Assessor applies it to the rented half.</strong> That is a question for the Assessor's Office.</p>
+<p>What the law says:</p>
+<ul><li>The exemption covers the home that is <strong>owned and occupied</strong> by the owner, up to $7,500 of assessed value <cite>S2</cite>. A rental you don't live in can't get it.</li>
+<li>One person or couple can have only <strong>one</strong> homestead exemption, so you can't claim both sides <cite>S2</cite>.</li>
+<li>When a home has several owners, the exemption is limited to the <strong>ownership share of the owners who live there</strong> <cite>S2</cite>. In the 2026 roll, 1,358 parcels have a homestead recorded at 50% of ownership, and each gets $3,750 instead of $7,500 <cite>S30</cite>.</li></ul>
+<p><strong>What I don't know:</strong> whether the Assessor treats the rented side of an owner-occupied double differently, for example by applying the exemption only to your side's share of the value. The roll doesn't record which parcels are doubles. If you find your property above, I can show you the homestead amount and percentage on your record.</p>`,
+    sources: ["S2", "S30"], contact: true
   },
   {
     id: "homestead-renew", topic: "Exemptions",
@@ -205,9 +229,9 @@ const ENTRIES = [
     keywords: ["reapply", "renew", "every", "year", "annual", "annually", "permanent", "again", "keep"],
     phrases: ["reapply every year", "renew my homestead", "do i have to reapply", "every year"],
     answer: `<p><strong>No.</strong> Once your homestead exemption is granted, it stays on. The Assessor's Office says you don't need to reapply every year <cite>S8</cite>.</p>
-<p>You do need to act if something changes: you sell or move out, an owner dies, or the deed changes. In those cases contact the Assessor's Office. Owners who qualified for the <strong>Special Assessment Level</strong> under 65 may need to re-certify their income each year <cite>S24</cite>.</p>
+<p>You do need to act if something changes: you sell or move out, an owner dies, or the deed changes. In those cases contact the Assessor's Office. Owners under 65 who have the <strong>Special Assessment Level</strong> certify their income each year <cite>S1</cite>.</p>
 <p>It's worth checking each summer, during the open-roll period, that your exemptions still show on your parcel <cite>S4</cite>.</p>`,
-    sources: ["S8", "S24", "S4"], contact: true
+    sources: ["S8", "S1", "S4"], contact: true
   },
   {
     id: "sal", topic: "Exemptions",
@@ -215,12 +239,12 @@ const ENTRIES = [
     core: ["freeze","sal"],
     keywords: ["freeze", "frozen", "senior", "65", "older", "elderly", "age", "disabled", "disability", "sal", "special", "level", "income", "limit"],
     phrases: ["special assessment level", "over 65", "freeze my assessment", "senior freeze", "assessment frozen", "income limit", "have the freeze", "with the freeze", "frozen but", "freeze but"],
-    answer: `<p>The <strong>Special Assessment Level (SAL)</strong> freezes your home's <strong>assessed value</strong> at the level when you qualified <cite>S1</cite><cite>S7</cite>.</p>
-<p><strong>Who qualifies:</strong> you must already have the homestead exemption and be (a) 65 or older, (b) permanently and totally disabled, (c) a veteran with a service-connected disability rating of 50% or more, or (d) certain surviving spouses or military families <cite>S1</cite><cite>S24</cite>. Your household adjusted gross income must be at or below a limit: a <strong>$100,000 base, indexed for inflation</strong>. I don't have an official figure for the current year, so <strong>please confirm it</strong> with the Assessor <cite>S24</cite>.</p>
-<p><strong>Important:</strong> the freeze locks your <em>assessed value</em>, not your bill. If millage rates rise, your taxes can still go up <cite>S24</cite>.</p>
-<p>Apply at the Assessor's Office with proof of age or disability and income <cite>S7</cite>.</p>
-<p><strong>Change coming:</strong> on Nov. 3, 2026 voters approved <strong>Amendment 9</strong>, which raises the income limit to <strong>below $150,000</strong> and delays the inflation adjustment to 2028, according to unofficial results <cite>S36</cite><cite>S20</cite>. Please confirm with the Assessor which tax year the new limit starts.</p>`,
-    sources: ["S1", "S7", "S24", "S36", "S20"], contact: true
+    answer: `<p>The <strong>Special Assessment Level (SAL)</strong> freezes your home's <strong>assessed value</strong> at the level of the first year you qualify <cite>S1</cite>.</p>
+<p><strong>Who qualifies</strong> under the Louisiana Constitution <cite>S1</cite>: your home must have the homestead exemption, and you must be (a) 65 or older, (b) permanently and totally disabled, (c) a veteran with a service-connected disability rating of 50% or more, or (d) the owner's family in certain military cases (killed or missing in action, or a prisoner of war).</p>
+<p><strong>Income limit</strong> <cite>S1</cite>: your adjusted gross income on last year's federal return can't be over <strong>$100,000</strong>, a figure that is adjusted for inflation starting with tax year 2026. A change voters approved on Nov. 3, 2026 raises the limit to <strong>$150,000</strong> effective Jan. 1, 2027, with inflation adjustments from tax year 2028 <cite>S1</cite><cite>S36</cite>. I don't have the exact inflation-adjusted figure for this year, so please confirm it with the Assessor.</p>
+<p><strong>Important:</strong> the freeze locks your <em>assessed value</em>, not your bill. Millage rates still apply in full, so your taxes can go up if rates rise <cite>S1</cite>. Owners who qualified at 65 or older, or as permanently disabled, don't re-certify income each year; owners under 65 who qualified another way do <cite>S1</cite>.</p>
+<p>Apply through the Assessor's Office with proof of age or disability and income <cite>S7</cite>.</p>`,
+    sources: ["S1", "S36", "S7"], contact: true
   },
   {
     id: "veteran", topic: "Exemptions",
@@ -233,9 +257,9 @@ const ENTRIES = [
 <li><strong>70% to under 100%:</strong> the next <strong>$4,500</strong> of assessed value</li>
 <li><strong>100% unemployability or totally disabled:</strong> the <strong>rest of the home's assessed value</strong></li></ul>
 <p>Even a fully exempted home still pays two levies that homestead and these exemptions don't reduce: the police and fire millages "without homestead exemption," 11.51 mills in total <cite>S30</cite>. A surviving spouse who keeps owning and living in the home can keep the exemption <cite>S37</cite>. Apply at the Assessor's Office <cite>S7</cite>.</p>
-<p>Qualifying veterans may also be eligible for the Special Assessment Level freeze <cite>S24</cite>. Bring your VA rating letter, proof of homestead, ID, and an Entergy bill <cite>S7</cite>.</p>
+<p>Veterans with a 50% or higher rating can also qualify for the Special Assessment Level freeze <cite>S1</cite>. Bring your VA rating letter along with your homestead documents <cite>S7</cite>.</p>
 <p>On Nov. 3, 2026 voters approved <strong>Amendment 1</strong>, letting a disabled veteran's surviving spouse move the exemption to a new home once (unofficial results) <cite>S36</cite>.</p>`,
-    sources: ["S37", "S30", "S7", "S24", "S36"], contact: true
+    sources: ["S37", "S30", "S7", "S1", "S36"], contact: true
   },
   {
     id: "first-responder", topic: "Exemptions",
@@ -268,34 +292,36 @@ const ENTRIES = [
     title: "Will my taxes rise as much as my value?",
     keywords: ["taxes", "go", "up", "same", "amount", "rise", "increase", "percent", "reassessment", "2027", "2028", "higher"],
     phrases: ["will my taxes go up", "same amount", "taxes go up the same", "value went up a lot", "how much will my taxes", "why did my taxes go up", "taxes going up", "bill so high", "taxes so high", "why is my bill", "bill went up"],
-    answer: `<p><strong>Not necessarily.</strong> In a reassessment year, when total values go up, each taxing body must <strong>roll back</strong> its millage so it collects about the same total revenue. That means a 20% value increase usually doesn't produce a 20% tax increase <cite>S11</cite><cite>S32</cite>.</p>
+    answer: `<p><strong>Not necessarily.</strong> In a reappraisal year, if assessed values rise, each millage is automatically <strong>rolled back</strong> so it raises the same total tax as before. That means a 20% value increase usually doesn't produce a 20% tax increase <cite>S15</cite><cite>S32</cite>.</p>
 <p>Two things can still raise your bill:</p>
 <ul><li>If your value rose <strong>more than the citywide average</strong>, you carry a larger share of the total.</li>
-<li>Taxing bodies may vote to <strong>roll forward</strong>. For 2027, the City Council approved a partial roll-forward of <strong>4.039 mills</strong> on Nov. 5, 2026 <cite>S33</cite>. The September proposal was larger, about 7.44 mills, or about $178 a year on a $300,000 homesteaded home <cite>S19</cite>.</li></ul>
-<p>For the <strong>2027 bills</strong>, values mostly didn't change, because the 2024 reappraisal's values run through tax year 2027 <cite>S32</cite>. In the 2027 roll filed with the state, the East Bank rate went from 131.99 to 133.48 mills and 84% of homes' computed taxes went up (median +$25) <cite>S30</cite><cite>S31</cite>. That file predates the Council's roll-forward, so actual 2027 bills will likely be a bit higher <cite>S33</cite>. Find your property above to see your own numbers.</p>`,
-    sources: ["S11", "S32", "S33", "S19", "S30", "S31"]
+<li>Taxing bodies may vote to <strong>roll forward</strong> <cite>S15</cite>. For 2027, the City Council approved a partial roll-forward of <strong>4.039 mills</strong> on Nov. 5, 2026 <cite>S33</cite>. The City's first proposal was larger, about 7.44 mills <cite>S11</cite>.</li></ul>
+<p>For the <strong>2027 bills</strong>, values mostly didn't change, because the 2024 reappraisal's values run through tax year 2027 <cite>S15</cite>. In the 2027 roll filed with the state, the East Bank rate goes from 131.99 to 133.48 mills because the levee district's millage rises from 10.79 to 12.28; Algiers stays at 132.01. In that file, 84% of homes' computed taxes go up, by a median of $25 <cite>S30</cite><cite>S31</cite>. The file predates the Council's roll-forward, so actual 2027 bills will likely be higher <cite>S33</cite>. Find your property above to see your own numbers.</p>`,
+    sources: ["S15", "S32", "S33", "S11", "S30", "S31"]
   },
   {
     id: "why-2027", topic: "2027 reassessment",
     title: "What the 2027 reassessment is",
-    core: ["reassessment"],
-    keywords: ["2027", "2028", "reassessment", "reappraisal", "why", "quadrennial", "new", "values", "what", "next"],
-    phrases: ["why is there a reassessment", "2027 reassessment", "what is the reassessment", "what does the 2027", "reassessment mean", "next reappraisal", "next reassessment", "when will values change"],
-    answer: `<p>Louisiana reappraises every property <strong>at least every four years</strong> <cite>S1</cite>. The last reappraisal set values at the market as of <strong>Jan. 1, 2023</strong>, and those values are used for <strong>tax years 2024 through 2027</strong> <cite>S32</cite>. That's why the 2027 roll the Assessor filed on Sept. 4, 2026 keeps 98% of values the same as 2026 <cite>S31</cite>.</p>
-<p>So <strong>the 2027 reassessment is the next reappraisal, done during 2027</strong>. It should set new values for the <strong>2028 roll</strong>, posted for inspection in summer 2027, with bills due in early 2028. I'm inferring that timing from the four-year cycle <cite>S32</cite><cite>S1</cite>, so please confirm it with the Assessor's Office. The last reappraisal raised total assessed value about 20% <cite>S26</cite>.</p>
-<p>Orleans names each roll for the year the bill is due. The "2027 roll" was posted in July–August 2026 <cite>S4</cite> and its bills come in early 2027.</p>
-<p><strong>What it means for owners:</strong> (1) your value may change in 2027 even if you change nothing; (2) when total values rise, taxing bodies must roll back millage, so your bill doesn't rise by the same percent, though they can vote to roll forward <cite>S11</cite>; (3) the summer 2027 open-roll period is the time to check your new value and appeal if you disagree; (4) make sure your homestead or freeze is on file before then. {{APPEAL_STATUS}}</p>`,
-    sources: ["S1", "S32", "S31", "S26", "S4", "S11"], contact: true
+    core: ["reassessment", "reappraisal"],
+    keywords: ["2027", "2028", "reassessment", "reappraisal", "why", "quadrennial", "new", "values", "what", "next", "cycle"],
+    phrases: ["why is there a reassessment", "2027 reassessment", "what is the reassessment", "what does the 2027", "reassessment mean", "next reappraisal", "next reassessment", "when will values change", "four year cycle", "reappraisal year", "reassessment year", "a reappraisal", "2027 roll"],
+    answer: `<p><strong>What's established:</strong> Louisiana reappraises all property on a four-year cycle <cite>S1</cite>. Tax year 2024 was a reappraisal year. The Legislative Auditor's report says property is valued as of <strong>Jan. 1, 2023 "for tax years 2024 through 2027"</strong> <cite>S15</cite>, and the City Council said the same in 2023 <cite>S32</cite>.</p>
+<p>So <strong>the 2027 roll is not a new reappraisal.</strong> It was open for inspection July 15 – Aug. 17, 2026 <cite>S4</cite>, and the copy the Assessor filed with the state keeps 98% of values the same as 2026, every one still dated 01/01/2023 <cite>S31</cite>. Between reappraisals the Assessor can still change a value for a sale, construction, demolition, damage or remodeling <cite>S15</cite>.</p>
+<p><strong>What comes next:</strong> the four-year pattern (2020, 2024) points to <strong>tax year 2028</strong> as the next reappraisal year, with property valued as of Jan. 1, 2027. That means the reappraisal work happens during 2027 and the new values appear on the 2028 roll, posted in summer 2027. I'm inferring that from the cycle <cite>S15</cite><cite>S1</cite>; I haven't found an official announcement, so please confirm with the Assessor's Office.</p>
+<p><strong>What it means for owners:</strong> (1) your value may change in the next reappraisal even if you change nothing; (2) in a reappraisal year each millage is rolled back so it raises the same total, though taxing bodies can vote to roll forward <cite>S15</cite>; (3) the open-roll period in summer 2027 is the time to check a new value and appeal if you disagree; (4) make sure your homestead or freeze is on file before then. {{APPEAL_STATUS}}</p>`,
+    sources: ["S1", "S15", "S32", "S4", "S31"], contact: true
   },
   {
     id: "cap", topic: "2027 reassessment",
     title: "Is there a cap on assessment increases?",
     core: ["cap"],
-    keywords: ["cap", "limit", "maximum", "capped", "10%", "percent", "limited"],
-    phrases: ["is there a cap", "cap on assessment", "limit on how much", "10 percent cap", "how much can my assessment"],
+    keywords: ["cap", "limit", "maximum", "capped", "10%", "percent", "limited", "phase", "phased"],
+    phrases: ["is there a cap", "cap on assessment", "limit on how much", "10 percent cap", "how much can my assessment", "phase in", "phased in"],
     answer: `<p><strong>There's no general yearly cap in Orleans Parish.</strong> In 2022 voters narrowly <strong>rejected</strong> that year's Amendment 6, which would have capped yearly increases on Orleans homesteads at 10% (642,462 against, 635,559 for) <cite>S23</cite>.</p>
-<p>The closest thing to a cap is the <strong>Special Assessment Level freeze</strong> for eligible seniors, disabled owners, and veterans, which locks assessed value but not millage <cite>S1</cite><cite>S24</cite>.</p>`,
-    sources: ["S23", "S1", "S24"]
+<p>Two rules in the Louisiana Constitution do limit increases for some owners <cite>S1</cite>:</p>
+<ul><li><strong>Four-year phase-in.</strong> If a reappraisal raises a homesteaded home's assessed value by <strong>more than 50%</strong>, the extra tax is phased in: one-fourth of the increase counts in the first year, half in the second, three-fourths in the third, and all of it in the fourth. It ends if the home is sold, and it doesn't cover increases from construction or improvements.</li>
+<li><strong>Special Assessment Level ("the freeze")</strong> for eligible seniors, disabled owners and veterans, which locks assessed value but not millage.</li></ul>`,
+    sources: ["S23", "S1"]
   },
   {
     id: "roll-years", topic: "2027 reassessment",
@@ -404,7 +430,7 @@ const ENTRIES = [
     keywords: ["heir", "heirs", "inherit", "inherited", "died", "dies", "death", "passed", "away", "succession", "estate", "spouse", "widow", "widower", "mother", "father", "parent", "family"],
     phrases: ["passed away", "inherited a house", "inherited property", "surviving spouse", "owner died", "heir property", "my mother died", "my father died", "usufruct", "succession"],
     answer: `<p>The Louisiana Constitution extends the homestead exemption to a <strong>surviving spouse who keeps living in the home</strong>, whether the spouse owns an interest, holds a usufruct (the right to use the property), or the home is in a qualifying trust <cite>S2</cite>.</p>
-<p>For <strong>heirs</strong>, a Loyola Law practice manual says an heir who lives in the home is entitled to a share of the homestead exemption matching their share of ownership. For example, two of three heirs living there would get two-thirds of the benefit <cite>S29</cite>. If you live in an inherited home but the title isn't in your name, you may need to open a <strong>succession</strong>, the court process that transfers a deceased person's property <cite>S28</cite>.</p>
+<p>For <strong>heirs</strong>, the Constitution says the exemption on a home with several owners is limited to the ownership share of the owners who live there <cite>S2</cite>. A Loyola Law practice manual gives the example of two of three heirs living in the home getting two-thirds of the benefit <cite>S29</cite>. If you live in an inherited home but the title isn't in your name, you may need to open a <strong>succession</strong>, the court process that transfers a deceased person's property <cite>S28</cite>.</p>
 <p><strong>What I don't know:</strong> exactly what the Orleans Parish Assessor asks heirs to bring, or whether they'll grant the exemption before a succession is finished. The manual says some assessors wrongly wait for a court judgment <cite>S29</cite>. Ask the Assessor's Office, and for the succession itself, talk to a lawyer or a legal aid office.</p>`,
     sources: ["S2", "S29", "S28"], contact: true
   }

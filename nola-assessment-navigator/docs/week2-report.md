@@ -127,7 +127,9 @@ fields). Its last section documents the short keys the web app uses and the Laye
 **What we couldn't figure out:**
 - **Code meanings:** what Freeze Code 1–4 each mean, the "other exemption" codes, the LTC subclass codes, and most of
   the 434 instrument-type codes.
-- **The assessment date:** whether 01/01/2023 on every row is the 2024 reappraisal's valuation date.
+- ~~**The assessment date:** whether 01/01/2023 on every row is the 2024 reappraisal's valuation date.~~ Resolved
+  Nov. 16: yes. The Legislative Auditor's report says property is valued as of Jan. 1, 2023 for tax years 2024
+  through 2027 [S15].
 - **Mislabeled fields:** "Living Square Feet" is actually a record count, not square footage.
 - **Empty fields:** 39 are always blank, zero or "NOT AVAILABLE", including building size, bedrooms, bathrooms,
   condition, tax-sale status and special taxing district.
@@ -222,15 +224,22 @@ Market, land and taxable values match on all 163,135 parcels.
   reported, not guessed.
 - **Values barely moved: 98% of parcels have exactly the same market value**, and every parcel is still dated
   01/01/2023. Of the increases, 55% are on parcels with a recorded sale since 2025. The rest are likely construction, demolition or corrections (not checked).
-- **Taxes moved because millage went up:** the median home's total rate went from **131.99 to 133.48 mills**. 84% of
-  homes' computed tax rises, with a median increase of **$25**. The median homesteaded home goes from $1,965 to $2,032.
-- **This contradicts our earlier sources,** which said the 2027 roll would carry a parish-wide reappraisal. The filed roll
-  doesn't show one. The chatbot now says what the filed roll shows and that it doesn't know why. Ask the Assessor's
-  Office (verification checklist).
+- **Taxes moved because one millage went up:** the East Bank total went from **131.99 to 133.48 mills**. The citywide
+  millages are unchanged at 121.20; the whole difference is the East Bank levee district, 10.79 → 12.28 mills. Algiers
+  stays at 132.01. 84% of homes' computed tax rises, with a median increase of **$25**. The median homesteaded home goes
+  from $1,965 to $2,032.
+- **This is what the reappraisal cycle predicts.** In Part 1 we wrote that the 2027 roll would carry a parish-wide
+  reappraisal. That was wrong, and the data caught it. The Legislative Auditor's report says property is valued as of
+  "January 1, 2023 for tax years 2024 through 2027" [S15], and the City Council said the same in 2023 [S32]. The 2027
+  roll is the last year of that cycle; the next reappraisal year is expected to be 2028 (inferred from the pattern).
+  *(Updated Nov. 16, after instructor feedback. The Nov. 2 version of this report said the reason was unknown.)*
 
 **Bonus from the same files:** each parcel's millage rows give its **actual computed tax**, so the chatbot no longer
-estimates. The unverified 121.20-mill figure was too low; the real 2026 East Bank total is 131.99 mills. The files also
-confirm that homestead doesn't reduce the police and fire millages "without homestead exemption" (11.51 mills).
+estimates. The City's own table explains the 121.20-mill figure used in Part 1: it's the **citywide** subtotal, and
+the levee district (10.79 mills on the East Bank, 10.81 in Algiers) comes on top, for 131.99 and 132.01 [S11]. The
+files also confirm that homestead doesn't reduce the police and fire millages "without homestead exemption" (11.51
+mills), so the Part 1 example understated the bill: the citywide subtotal on a $300,000 homesteaded home is $2,813.33,
+not $2,727, and $3,056.10 with the East Bank levee millage. *(Updated Nov. 16.)*
 
 ## 5. Ten test questions
 
@@ -264,7 +273,8 @@ The final sweep: **0 problems**.
 ## Remaining limitations
 
 - **No 2025 roll anywhere we can reach,** so "change from 2025" is answered with 2026 → 2027 and a clear note.
-- **The 2027 reappraisal question is open:** the filed 2027 roll keeps 98% of values. Confirm with the Assessor.
+- **The 2027 reappraisal question is resolved:** 2027 is the last year of the 2024–27 cycle [S15][S32], which is
+  why the filed 2027 roll keeps 98% of values. Only the timing of the *next* reappraisal (2028) is inferred.
 - **Taxes exclude special-district fees** (DDD, security districts). They aren't in the state roll files.
 - **Demographics aren't in property answers yet.** Matching works for 94% of homes but not for vacant land; a parcel-ID
   GIS join is next.

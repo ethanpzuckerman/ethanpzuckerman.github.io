@@ -5,12 +5,15 @@ their assessment, the exemptions they can claim, and how to appeal. Owners can f
 property in the 2026 roll and ask about its actual record. It's not an official government
 tool and doesn't give legal or tax advice.
 
-- **Live chatbot (general guidance + property lookup):** https://claude.ai/artifact/PMnTiHc5EGih7pzGky6bWB
+- **Live chatbot, public, no sign-in:** https://ethanpzuckerman.github.io/nola-assessment-navigator/ (GitHub Pages, from this folder on `main`)
+- **Same chatbot with the optional AI explanation by Claude:** https://claude.ai/artifact/PMnTiHc5EGih7pzGky6bWB (needs a claude.ai sign-in)
+- **Complete test evidence (every test question with the full answer and a screenshot):** [`docs/chatbot-test-log.md`](docs/chatbot-test-log.md)
+- **Final draft summary (1 page):** [`docs/final-draft-summary.md`](docs/final-draft-summary.md)
 - **Part 2 report (EDA, data dictionary, address matching, outside data, 10 tests):** [`docs/week2-report.md`](docs/week2-report.md), also as a [PDF](docs/NOLA%20Assessment%20Navigator%20-%20Part%202.pdf)
 - **2026 vs 2027 roll comparison:** [`docs/year-comparison.md`](docs/year-comparison.md)
 - **Agent instructions, domain research and sources:** [`CLAUDE.md`](CLAUDE.md)
 - **Sample questions and what it got wrong:** [`docs/sample-questions.md`](docs/sample-questions.md)
-- **Facts still to verify:** [`docs/verification-checklist.md`](docs/verification-checklist.md)
+- **What was verified, from which source, and what's still open:** [`docs/verification-checklist.md`](docs/verification-checklist.md)
 - **Data notes (2026 and 2027 rolls, Census data):** [`data/README.md`](data/README.md)
 
 ## Files
@@ -18,7 +21,7 @@ tool and doesn't give legal or tax advice.
 | File | What it is |
 |---|---|
 | `index.html`, `style.css` | Chat page |
-| `kb.js` | Knowledge base: sources (S1–S31) and answer entries |
+| `kb.js` | Knowledge base: sources (S1–S39) and 30 answer entries |
 | `app.js` | Matching, guardrails, date logic, lookup flow and rendering |
 | `address.js`, `lookup.js` | Address normalizing/matching and the property search |
 | `property.js` | Answers about the selected property |

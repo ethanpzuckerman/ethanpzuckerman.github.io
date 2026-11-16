@@ -1,5 +1,17 @@
 # Five sample questions: draft chatbot (Layer 1)
 
+> **The complete answers are in [`chatbot-test-log.md`](chatbot-test-log.md)** (section A): each of these five
+> questions with the chatbot's full answer, word for word, and a screenshot, re-run on Nov. 16, 2026 after the
+> instructor's feedback. This page keeps the history: what each version got right and wrong.
+>
+> **Two corrections since Part 1** (details in `../CLAUDE.md` §9):
+> - **Q1, tax bill.** Part 1 said ≈ $2,727, with $909 saved by homestead. That used the City's 121.20 citywide
+>   mills as the whole rate and applied homestead to all of it. Correct for the $300,000 example: **$2,813.33
+>   citywide** (the 11.51 police and fire mills get no homestead reduction), **$3,056.10** with the East Bank levee
+>   millage, and homestead saves **$903.60**.
+> - **Q3, 2027 reassessment.** Part 1 said the 2027 roll was a parish-wide reappraisal. It isn't: values are as of
+>   Jan. 1, 2023 for tax years 2024 through 2027 (Legislative Auditor; City Council).
+
 Tested against `nola-assessment-navigator/index.html`, which is the same code as the live artifact.
 Screenshots are in `screenshots/`. `q0-landing.png` shows the opening screen with the prototype
 disclosure. Screenshots of the first version's failures are kept in `screenshots/v1/`.

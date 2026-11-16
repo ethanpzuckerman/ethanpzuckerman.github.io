@@ -9,9 +9,15 @@ __pycache__/
 # NOLA Assessment Navigator raw assessment rolls (may contain owner names)
 nola-assessment-navigator/data/raw/
 
-# NOLA Assessment Navigator generated data (regenerate with pipeline/; published with the live chatbot)
+# NOLA Assessment Navigator intermediate data (regenerate with pipeline/)
 nola-assessment-navigator/data/processed/
-nola-assessment-navigator/data/web/
+# data/web/ IS committed: GitHub Pages serves it so the public chatbot works with no sign-in.
+# It holds public roll fields only (no owner names or mailing addresses; tests/property_sweep.js checks the field list).
 nola-assessment-navigator/docs/report.html
+nola-assessment-navigator/docs/build/
 # Single-file offline build (pipeline/build_standalone.py, ~14-20 MB; regenerate it)
 nola-assessment-navigator/docs/NOLA Assessment Navigator.html
+# Screenshots of records that show an age- or disability-based benefit are not published (CLAUDE.md §4 rule 9)
+nola-assessment-navigator/docs/screenshots/week2/t04.png
+nola-assessment-navigator/docs/screenshots/week2/t05.png
+nola-assessment-navigator/docs/screenshots/week2/t07.png
