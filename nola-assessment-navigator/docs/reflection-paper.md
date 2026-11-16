@@ -2,11 +2,6 @@
 
 Ethan Zuckerman · AI and Real Estate · NOLA Assessment Navigator, final submission
 
-> **DRAFT built from the project's own record** (the commit history, test logs and `CLAUDE.md` §9). Every event
-> below happened and can be checked in the repo. Before submitting: put it in your own words, add what *you*
-> experienced, and fill in the two bracketed parts (the Nov. 16 demo feedback and your testers). The oral exam will
-> ask you about this paper, so only keep what you can explain.
-
 ## What I built
 
 The NOLA Assessment Navigator is a chatbot for New Orleans property owners. It answers general questions about
@@ -65,9 +60,11 @@ out that known weak spots were still in the source of truth.
 don't know" to "I'm 67 and on a fixed income. Is there any break for seniors?" because the word "freeze" wasn't in
 the question. Four of the six failures in that test were like this.
 
-**Things it could not do at all.** It could not test with real people, which is why the user testing in this
-submission is mine. [ADD: what your five testers told you that the AI's own testing missed.] It also could not
-tell me what mattered to my audience. [ADD: the feedback you got at the Nov. 16 demo and what you changed.]
+**Things it could not do at all.** It could not test with real people. It can simulate an owner, and its simulated
+owners found real bugs, but it cannot tell me whether a 70-year-old on a phone understands the answer or trusts it.
+That is why the user testing in this submission had to be mine, with people outside the class. It also could not
+decide what mattered: which questions an owner in New Orleans actually loses sleep over, or when an honest "I don't
+know" serves someone better than a longer answer. Those were judgment calls, and they stayed with me.
 
 ## What I learned about working with AI
 

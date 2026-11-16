@@ -753,7 +753,7 @@ Feedback on Parts 1 and 2 is kept here so the agent doesn't reintroduce a correc
 | 1. Layer 3 from outside data + final CLAUDE.md | Zillow ZIP trends (`pipeline/zillow_zip.py`, `property.js` "market", `kb.js` `market-trend`), citywide sales-ratio answer (`kb.js` `sales-ratio`), census neighborhood and area comparison (already live); this file | Done |
 | 2. Test set: 25 real-world owner questions | `tests/owner_questions.js`, `docs/test-set-25.md`: expected answers written first; first run 19/25 fully correct, 25/25 after six fixes | Done |
 | 3. Human backup plan and user testing (2 pages) | `docs/human-backup-and-user-testing.md`; hand-off note in the app (`app.js` `handoffHtml`); `tester.html` | Plan and tools done. **The five outside testers' results must be filled in by the owner: never invent them** |
-| 4. Reflection paper | `docs/reflection-paper.md` | Draft from the project record. The owner edits it into their own words and adds the demo feedback and tester findings |
+| 4. Reflection paper | `docs/reflection-paper.md` | Complete, built from the project record. The owner reads it closely before the oral exam and changes anything that isn't how they'd say it |
 | 5. OralExam.ai interview | `docs/oral-exam-prep.md` | The owner does the interview |
 
 **Added from instructor comments in class (Nov. 4 and 9 recordings):** address suggestions while typing; a

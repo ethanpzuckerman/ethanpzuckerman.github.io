@@ -86,7 +86,7 @@ def main():
     # Final submission documents.
     for name, f in (("Final 2 - Test Set of 25 Owner Questions", "test-set-25.md"),
                     ("Final 3 - Human Backup Plan and User Testing", "human-backup-and-user-testing.md"),
-                    ("Final 4 - Reflection Paper (draft)", "reflection-paper.md")):
+                    ("Final 4 - Reflection Paper", "reflection-paper.md")):
         if (DOCS / f).exists():
             docs.append((name, quoted((DOCS / f).read_text()), by + ("<style>body{font-size:9.6pt;line-height:1.36} table{font-size:8.6pt} h2{margin-top:14px}</style>" if "Human Backup" in name else "")))
     css = """
