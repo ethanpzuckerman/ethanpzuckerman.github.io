@@ -10,6 +10,7 @@ const P = require(path.join(ROOT, "property.js"));
 const meta = JSON.parse(fs.readFileSync(path.join(D, "meta.json")));
 meta.areas = JSON.parse(fs.readFileSync(path.join(D, "areas.json")));
 meta.bg = JSON.parse(fs.readFileSync(path.join(D, "bg.json")));
+meta.zhvi = JSON.parse(fs.readFileSync(path.join(D, "zhvi.json")));
 meta.now = new Date("2026-11-13T12:00:00-06:00");
 meta.appealStatus = "Status: the appeal window for the 2027 roll closed.";
 const all = [];
@@ -28,10 +29,10 @@ const Q = ["What is my property's market value?", "Why is my assessed value what
   "Do I have a veteran exemption?", "What exemptions do I have?", "How did my value change on the 2027 roll?", "Why did my taxes go up?",
   "How many square feet is my house?", "When was it built?", "When was it sold?", "Who owns this property?", "What district is it in?",
   "I think my value is wrong", "How does my property compare to others in my area?", "What neighborhood is it in?",
-  "Am I in the Downtown Development District?", "What is my parcel number?"];
+  "Am I in the Downtown Development District?", "What is my parcel number?", "How have home prices changed in my ZIP code?"];
 const EXPECT = { "What will my 2027 bill be?": "tax", "Why did my taxes go up?": "compare", "What exemptions do I have?": "exemptions",
   "How does my property compare to others in my area?": "area", "What neighborhood is it in?": "place",
-  "Am I in the Downtown Development District?": "special", "What is my parcel number?": "pid" };
+  "Am I in the Downtown Development District?": "special", "What is my parcel number?": "pid", "How have home prices changed in my ZIP code?": "market" };
 
 const problems = [];
 const text = a => a.html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
@@ -61,7 +62,7 @@ const sampled = sample.length * Q.length;
 const ALLOWED = new Set("id a d w sub occ st yb td it fz hsp vt legal n lmv imv tmv lav iav tav hs oe ve fr tx t26 ml26 th26 m27 a27 h27 x27 t27 ml27 th27 st27 td27 no27 bg lat lon ge".split(" "));
 for (const r of uniq) for (const k of Object.keys(r)) if (!ALLOWED.has(k)) { problems.push([r.id, k, "unexpected field in web data"]); break; }
 
-const FULL = ["What will my 2027 bill be?", "Why did my taxes go up?", "How does my property compare to others in my area?", "What neighborhood is it in?", "What exemptions do I have?"];
+const FULL = ["How have home prices changed in my ZIP code?", "What will my 2027 bill be?", "Why did my taxes go up?", "How does my property compare to others in my area?", "What neighborhood is it in?", "What exemptions do I have?"];
 let full = 0;
 for (const r of uniq) for (const q of FULL) { check(r, q, P.answer(r, q, meta)); full++; }
 

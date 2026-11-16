@@ -29,13 +29,15 @@
     <form id="find" class="find" autocomplete="off">
       <label for="addr">Find your property</label>
       <div class="find-row">
-        <input id="addr" name="addr" type="text" placeholder="Address (1234 Magazine St, Apt 2) or parcel ID" autocomplete="off" />
+        <input id="addr" name="addr" type="text" placeholder="Address (1234 Magazine St, Apt 2) or parcel ID" autocomplete="off" list="streets" />
+        <datalist id="streets"></datalist>
         <button type="submit">Search</button>
       </div>
     </form>
     <div id="selected" class="selected" hidden>
       <span class="sel-text"></span>
-      <button type="button" id="clear-prop">Change property</button>
+      <span class="sel-actions"><button type="button" id="download-prop">Download summary</button>
+      <button type="button" id="clear-prop">Change property</button></span>
     </div>
 
     <section id="log" class="log" aria-live="polite"></section>

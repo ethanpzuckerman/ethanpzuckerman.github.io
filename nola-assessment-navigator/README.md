@@ -8,6 +8,7 @@ tool and doesn't give legal or tax advice.
 - **Live chatbot, public, no sign-in:** https://ethanpzuckerman.github.io/nola-assessment-navigator/ (GitHub Pages, from this folder on `main`)
 - **Same chatbot with the optional AI explanation by Claude:** https://claude.ai/artifact/PMnTiHc5EGih7pzGky6bWB (needs a claude.ai sign-in)
 - **Complete test evidence (every test question with the full answer and a screenshot):** [`docs/chatbot-test-log.md`](docs/chatbot-test-log.md)
+- **Final submission:** [25-question test set](docs/test-set-25.md) · [human backup plan and user testing](docs/human-backup-and-user-testing.md) · [reflection paper](docs/reflection-paper.md) · [tester page](tester.html)
 - **Final draft summary (1 page):** [`docs/final-draft-summary.md`](docs/final-draft-summary.md)
 - **Part 2 report (EDA, data dictionary, address matching, outside data, 10 tests):** [`docs/week2-report.md`](docs/week2-report.md), also as a [PDF](docs/NOLA%20Assessment%20Navigator%20-%20Part%202.pdf)
 - **2026 vs 2027 roll comparison:** [`docs/year-comparison.md`](docs/year-comparison.md)
@@ -21,7 +22,7 @@ tool and doesn't give legal or tax advice.
 | File | What it is |
 |---|---|
 | `index.html`, `style.css` | Chat page |
-| `kb.js` | Knowledge base: sources (S1–S39) and 30 answer entries |
+| `kb.js` | Knowledge base: sources (S1–S41) and 33 answer entries |
 | `app.js` | Matching, guardrails, date logic, lookup flow and rendering |
 | `address.js`, `lookup.js` | Address normalizing/matching and the property search |
 | `property.js` | Answers about the selected property |

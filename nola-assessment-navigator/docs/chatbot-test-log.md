@@ -68,7 +68,7 @@ lookup, the layers together, refusal).
 > 
 > Those documents say every owner who lives in the home applies in person, and that a mailing address different from the property needs a recorded power of attorney [S8][S9]. They date from 2021 and 2024, and I can't check the Assessor's website myself, so please confirm the current steps (including whether you can apply online or by appointment) at nolaassessor.com or by phone before you go.
 > 
-> Homestead lowers most of your bill but not all of it: the police and fire millages "without applying homestead exemption" (11.51 mills) are charged on your full assessed value [S11].
+> What it saves: about $903.60 a year on the East Bank at 2026 rates ($7,500 × 120.48 mills). It lowers most of your bill but not all of it: the police and fire millages "without applying homestead exemption" (11.51 of the 131.99 mills) are charged on your full assessed value [S11][S30].
 > 
 > SOURCES
 > S2 La. Const. Art. VII §20 (homestead exemption)
@@ -76,11 +76,13 @@ lookup, the layers together, refusal).
 > S9 Orleans Parish Assessor — Homestead Exemption application
 > S8 Orleans Parish Assessor — Homestead flyer: Once Gained, Permanently Applied
 > S11 City of New Orleans Treasury — Millages: How Taxes are Calculated (2026 millage table: 121.20 mills citywide)
+> S30 Louisiana Tax Commission — Orleans 2026 tax roll files, incl. millage by parcel (posted Nov. 2025)
 > Talk to a person:
 > Orleans Parish Assessor's Office, City Hall, 1300 Perdido St., Room 4E01. Appraiser appointments: (504) 754-8811. nolaassessor.com
 > Board of Review (City Council): council.nola.gov
 > Tax bills and payments: nola.gov/property-tax
 > Free legal help: Southeast Louisiana Legal Services, slls.org
+> Prepare a note to hand this to a person
 
 ![Screenshot of answer A2](screenshots/log/a2.png)
 
@@ -98,6 +100,8 @@ lookup, the layers together, refusal).
 > 
 > What comes next: the four-year pattern (2020, 2024) points to tax year 2028 as the next reappraisal year, with property valued as of Jan. 1, 2027. That means the reappraisal work happens during 2027 and the new values appear on the 2028 roll, posted in summer 2027. I'm inferring that from the cycle [S15][S1]; I haven't found an official announcement, so please confirm with the Assessor's Office.
 > 
+> Will the 2027 bills go up? Mostly yes, a little, but from rates, not values: the East Bank levee millage rises from 10.79 to 12.28 [S31], and on Nov. 5, 2026 the City Council approved a partial roll-forward of 4.039 mills on top [S33].
+> 
 > What it means for owners: (1) your value may change in the next reappraisal even if you change nothing; (2) in a reappraisal year each millage is rolled back so it raises the same total, though taxing bodies can vote to roll forward [S15]; (3) the open-roll period in summer 2027 is the time to check a new value and appeal if you disagree; (4) make sure your homestead or freeze is on file before then. Status: the appeal window for the 2027 roll closed at 4 p.m. on Thursday, Aug. 20, 2026 [S4]. The next window, for the 2028 roll, should open in summer 2027 (it usually runs mid-July to mid-August) [S4][S5]. The exact dates haven't been announced, so I don't know them yet.
 > 
 > SOURCES
@@ -106,12 +110,14 @@ lookup, the layers together, refusal).
 > S32 New Orleans City Council — Councilmember Green on assessments vs. taxes: 2024–27 values as of Jan. 1, 2023 (July 2023)
 > S4 Orleans Parish Assessor — 2027 Assessment Rolls Open July 15 to Aug. 17 (July 13, 2026)
 > S31 Louisiana Tax Commission — Orleans 2027 tax roll files (filed Sept. 4, 2026)
+> S33 Fox 8 — City Council approves millage roll-forward (Nov. 5, 2026) secondary
 > S5 Orleans Parish Assessor — 2026 Assessment Rolls Open July 15 to Aug. 15 (July 14, 2025)
 > Talk to a person:
 > Orleans Parish Assessor's Office, City Hall, 1300 Perdido St., Room 4E01. Appraiser appointments: (504) 754-8811. nolaassessor.com
 > Board of Review (City Council): council.nola.gov
 > Tax bills and payments: nola.gov/property-tax
 > Free legal help: Southeast Louisiana Legal Services, slls.org
+> Prepare a note to hand this to a person
 
 ![Screenshot of answer A3](screenshots/log/a3.png)
 
@@ -151,6 +157,7 @@ lookup, the layers together, refusal).
 > Board of Review (City Council): council.nola.gov
 > Tax bills and payments: nola.gov/property-tax
 > Free legal help: Southeast Louisiana Legal Services, slls.org
+> Prepare a note to hand this to a person
 
 ![Screenshot of answer A4](screenshots/log/a4.png)
 
@@ -174,6 +181,7 @@ lookup, the layers together, refusal).
 > Board of Review (City Council): council.nola.gov
 > Tax bills and payments: nola.gov/property-tax
 > Free legal help: Southeast Louisiana Legal Services, slls.org
+> Prepare a note to hand this to a person
 
 ![Screenshot of answer A5](screenshots/log/a5.png)
 
@@ -206,6 +214,7 @@ lookup, the layers together, refusal).
 > Board of Review (City Council): council.nola.gov
 > Tax bills and payments: nola.gov/property-tax
 > Free legal help: Southeast Louisiana Legal Services, slls.org
+> Prepare a note to hand this to a person
 
 ![Screenshot of answer A6](screenshots/log/a6.png)
 
@@ -280,6 +289,7 @@ Expected values were pulled from the raw 2026 roll and the state's millage files
 > Board of Review (City Council): council.nola.gov
 > Tax bills and payments: nola.gov/property-tax
 > Free legal help: Southeast Louisiana Legal Services, slls.org
+> Prepare a note to hand this to a person
 
 ![Screenshot of answer B2](screenshots/week2/t02.png)
 
@@ -315,6 +325,7 @@ Expected values were pulled from the raw 2026 roll and the state's millage files
 > Board of Review (City Council): council.nola.gov
 > Tax bills and payments: nola.gov/property-tax
 > Free legal help: Southeast Louisiana Legal Services, slls.org
+> Prepare a note to hand this to a person
 
 ![Screenshot of answer B3](screenshots/week2/t03.png)
 
@@ -421,6 +432,7 @@ Expected values were pulled from the raw 2026 roll and the state's millage files
 > Board of Review (City Council): council.nola.gov
 > Tax bills and payments: nola.gov/property-tax
 > Free legal help: Southeast Louisiana Legal Services, slls.org
+> Prepare a note to hand this to a person
 
 ![Screenshot of answer B6](screenshots/week2/t06.png)
 
@@ -462,6 +474,7 @@ Expected values were pulled from the raw 2026 roll and the state's millage files
 > Board of Review (City Council): council.nola.gov
 > Tax bills and payments: nola.gov/property-tax
 > Free legal help: Southeast Louisiana Legal Services, slls.org
+> Prepare a note to hand this to a person
 
 *Screenshot withheld: this record shows a benefit tied to age or disability, so the address isn't published.*
 
@@ -487,6 +500,7 @@ Expected values were pulled from the raw 2026 roll and the state's millage files
 > Board of Review (City Council): council.nola.gov
 > Tax bills and payments: nola.gov/property-tax
 > Free legal help: Southeast Louisiana Legal Services, slls.org
+> Prepare a note to hand this to a person
 
 ![Screenshot of answer B8](screenshots/week2/t08.png)
 
@@ -510,6 +524,7 @@ Expected values were pulled from the raw 2026 roll and the state's millage files
 > Board of Review (City Council): council.nola.gov
 > Tax bills and payments: nola.gov/property-tax
 > Free legal help: Southeast Louisiana Legal Services, slls.org
+> Prepare a note to hand this to a person
 
 ![Screenshot of answer B9](screenshots/week2/t09.png)
 
@@ -613,6 +628,7 @@ Expected values were pulled from the raw 2026 roll and the state's millage files
 > Board of Review (City Council): council.nola.gov
 > Tax bills and payments: nola.gov/property-tax
 > Free legal help: Southeast Louisiana Legal Services, slls.org
+> Prepare a note to hand this to a person
 
 ![Screenshot of answer C2](screenshots/log/c2.png)
 
@@ -634,7 +650,7 @@ Expected values were pulled from the raw 2026 roll and the state's millage files
 > 
 > Those documents say every owner who lives in the home applies in person, and that a mailing address different from the property needs a recorded power of attorney [S8][S9]. They date from 2021 and 2024, and I can't check the Assessor's website myself, so please confirm the current steps (including whether you can apply online or by appointment) at nolaassessor.com or by phone before you go.
 > 
-> Homestead lowers most of your bill but not all of it: the police and fire millages "without applying homestead exemption" (11.51 mills) are charged on your full assessed value [S11].
+> What it saves: about $903.60 a year on the East Bank at 2026 rates ($7,500 × 120.48 mills). It lowers most of your bill but not all of it: the police and fire millages "without applying homestead exemption" (11.51 of the 131.99 mills) are charged on your full assessed value [S11][S30].
 > 
 > SOURCES
 > S2 La. Const. Art. VII §20 (homestead exemption)
@@ -642,6 +658,7 @@ Expected values were pulled from the raw 2026 roll and the state's millage files
 > S9 Orleans Parish Assessor — Homestead Exemption application
 > S8 Orleans Parish Assessor — Homestead flyer: Once Gained, Permanently Applied
 > S11 City of New Orleans Treasury — Millages: How Taxes are Calculated (2026 millage table: 121.20 mills citywide)
+> S30 Louisiana Tax Commission — Orleans 2026 tax roll files, incl. millage by parcel (posted Nov. 2025)
 > YOUR PROPERTY: 1205 ST CHARLES AV 607 · PARCEL 102000079
 > 
 > A homestead exemption of $7,500 is on this parcel (Homestead Exemption Amount), removing $904 of 2026 tax.
@@ -653,6 +670,7 @@ Expected values were pulled from the raw 2026 roll and the state's millage files
 > Board of Review (City Council): council.nola.gov
 > Tax bills and payments: nola.gov/property-tax
 > Free legal help: Southeast Louisiana Legal Services, slls.org
+> Prepare a note to hand this to a person
 
 ![Screenshot of answer C3](screenshots/log/c3.png)
 
@@ -719,5 +737,6 @@ Expected values were pulled from the raw 2026 roll and the state's millage files
 > Board of Review (City Council): council.nola.gov
 > Tax bills and payments: nola.gov/property-tax
 > Free legal help: Southeast Louisiana Legal Services, slls.org
+> Prepare a note to hand this to a person
 
 ![Screenshot of answer C5](screenshots/log/c5.png)

@@ -41,7 +41,9 @@ const SOURCES = {
   S36: { label: "WAFB / Fox 8 — Louisiana voters pass 7 of 10 constitutional amendments (Nov. 3, 2026; unofficial results)", url: "https://www.wafb.com/2026/11/04/louisiana-voters-pass-7-10-constitutional-amendments-ballot/", official: false },
   S37: { label: "La. Const. Art. VII §21 (other exemptions, incl. disabled veterans, §21(K))", url: "https://www.legis.la.gov/Legis/Law.aspx?d=206551", official: true },
   S38: { label: "U.S. Census Bureau Geocoder — roll addresses matched to 2020 block groups (course crosswalk, 140,850 parcels)", url: "https://geocoding.geo.census.gov/geocoder/", official: true },
-  S39: { label: "U.S. Census Bureau — American Community Survey 2020–2024 5-year estimates, block groups (course data)", url: "https://www.census.gov/programs-surveys/acs", official: true }
+  S39: { label: "U.S. Census Bureau — American Community Survey 2020–2024 5-year estimates, block groups (course data)", url: "https://www.census.gov/programs-surveys/acs", official: true },
+  S40: { label: "Zillow Research — Zillow Home Value Index by ZIP code, through Sept. 2026 (course data; a private company's estimate)", url: "https://www.zillow.com/research/data/", official: false },
+  S41: { label: "U.S. Census Bureau — 2020 ZIP Code Tabulation Area to census tract relationship file", url: "https://www.census.gov/geographies/reference-files/time-series/geo/relationship-files.2020.html", official: true }
 };
 
 /* keywords: single words (weight 1). core: the entry's main subject words (weight 2 more).
@@ -205,8 +207,8 @@ const ENTRIES = [
 <li>A Louisiana driver's license or state ID showing the property address</li>
 <li>A current Entergy (or cable) bill for the property, with matching name, service address and mailing address</li></ul>
 <p>Those documents say every owner who lives in the home applies in person, and that a mailing address different from the property needs a recorded power of attorney <cite>S8</cite><cite>S9</cite>. <strong>They date from 2021 and 2024, and I can't check the Assessor's website myself, so please confirm the current steps</strong> (including whether you can apply online or by appointment) at nolaassessor.com or by phone before you go.</p>
-<p>Homestead lowers most of your bill but not all of it: the police and fire millages "without applying homestead exemption" (11.51 mills) are charged on your full assessed value <cite>S11</cite>.</p>`,
-    sources: ["S2", "S3", "S9", "S8", "S11"], contact: true
+<p><strong>What it saves:</strong> about <strong>$903.60 a year</strong> on the East Bank at 2026 rates ($7,500 × 120.48 mills). It lowers most of your bill but not all of it: the police and fire millages "without applying homestead exemption" (11.51 of the 131.99 mills) are charged on your full assessed value <cite>S11</cite><cite>S30</cite>.</p>`,
+    sources: ["S2", "S3", "S9", "S8", "S11", "S30"], contact: true
   },
   {
     id: "double", topic: "Exemptions",
@@ -223,6 +225,20 @@ const ENTRIES = [
     sources: ["S2", "S30"], contact: true
   },
   {
+    id: "homestead-lost", topic: "Exemptions",
+    title: "If your homestead exemption was cancelled or is missing",
+    core: ["cancelled", "canceled", "removed", "revoked"],
+    keywords: ["cancelled", "canceled", "cancel", "removed", "revoked", "lost", "missing", "gone", "disappeared", "dropped", "letter", "notice", "took", "taken", "away", "reinstate", "restore"],
+    phrases: ["exemption was cancelled", "exemption was canceled", "cancelled my homestead", "canceled my homestead", "lost my homestead", "homestead was removed", "homestead is gone", "took away my homestead", "homestead is missing", "no longer have homestead", "get my homestead back", "reinstate"],
+    answer: `<p><strong>I don't know why a particular exemption was cancelled.</strong> Only the Assessor's Office can tell you, and it's worth contacting them right away, before the next bill is set.</p>
+<p>What the rules say:</p>
+<ul><li>The exemption belongs to a home that is <strong>owned and occupied</strong> by the owner, and one person or couple can have only one <cite>S2</cite>. You must own and occupy the home by Dec. 31 of the year you claim it <cite>S3</cite>.</li>
+<li>Once granted it normally stays on without reapplying <cite>S8</cite>. It can end when the home is sold, the owner moves out or dies, or the ownership on the deed changes.</li>
+<li>Exemptions do come off the roll: between the 2026 and 2027 rolls, <strong>2,165 parcels</strong> that had a homestead exemption no longer have one <cite>S31</cite>. The roll doesn't record the reason for any of them.</li></ul>
+<p>If you still own and live in the home, ask the Assessor what they need to put it back; bring the same documents as a new application (proof of ownership, Louisiana ID with the property address, a current utility bill) <cite>S9</cite>. Find your property above and I can show whether a homestead is on your 2026 and 2027 records.</p>`,
+    sources: ["S2", "S3", "S8", "S31", "S9"], contact: true
+  },
+  {
     id: "homestead-renew", topic: "Exemptions",
     title: "Do you need to reapply every year?",
     core: ["reapply","renew"],
@@ -237,8 +253,8 @@ const ENTRIES = [
     id: "sal", topic: "Exemptions",
     title: "Special Assessment Level (\"the freeze\") for seniors, disabled owners, and veterans",
     core: ["freeze","sal"],
-    keywords: ["freeze", "frozen", "senior", "65", "older", "elderly", "age", "disabled", "disability", "sal", "special", "level", "income", "limit"],
-    phrases: ["special assessment level", "over 65", "freeze my assessment", "senior freeze", "assessment frozen", "income limit", "have the freeze", "with the freeze", "frozen but", "freeze but"],
+    keywords: ["freeze", "frozen", "senior", "seniors", "65", "older", "elderly", "retired", "retiree", "age", "disabled", "disability", "sal", "special", "level", "income", "limit", "fixed"],
+    phrases: ["special assessment level", "over 65", "break for seniors", "senior citizen", "fixed income", "i'm 6", "i am 6", "i'm 7", "i am 7", "years old", "freeze my assessment", "senior freeze", "assessment frozen", "income limit", "have the freeze", "with the freeze", "frozen but", "freeze but"],
     answer: `<p>The <strong>Special Assessment Level (SAL)</strong> freezes your home's <strong>assessed value</strong> at the level of the first year you qualify <cite>S1</cite>.</p>
 <p><strong>Who qualifies</strong> under the Louisiana Constitution <cite>S1</cite>: your home must have the homestead exemption, and you must be (a) 65 or older, (b) permanently and totally disabled, (c) a veteran with a service-connected disability rating of 50% or more, or (d) the owner's family in certain military cases (killed or missing in action, or a prisoner of war).</p>
 <p><strong>Income limit</strong> <cite>S1</cite>: your adjusted gross income on last year's federal return can't be over <strong>$100,000</strong>, a figure that is adjusted for inflation starting with tax year 2026. A change voters approved on Nov. 3, 2026 raises the limit to <strong>$150,000</strong> effective Jan. 1, 2027, with inflation adjustments from tax year 2028 <cite>S1</cite><cite>S36</cite>. I don't have the exact inflation-adjusted figure for this year, so please confirm it with the Assessor.</p>
@@ -308,8 +324,9 @@ const ENTRIES = [
     answer: `<p><strong>What's established:</strong> Louisiana reappraises all property on a four-year cycle <cite>S1</cite>. Tax year 2024 was a reappraisal year. The Legislative Auditor's report says property is valued as of <strong>Jan. 1, 2023 "for tax years 2024 through 2027"</strong> <cite>S15</cite>, and the City Council said the same in 2023 <cite>S32</cite>.</p>
 <p>So <strong>the 2027 roll is not a new reappraisal.</strong> It was open for inspection July 15 – Aug. 17, 2026 <cite>S4</cite>, and the copy the Assessor filed with the state keeps 98% of values the same as 2026, every one still dated 01/01/2023 <cite>S31</cite>. Between reappraisals the Assessor can still change a value for a sale, construction, demolition, damage or remodeling <cite>S15</cite>.</p>
 <p><strong>What comes next:</strong> the four-year pattern (2020, 2024) points to <strong>tax year 2028</strong> as the next reappraisal year, with property valued as of Jan. 1, 2027. That means the reappraisal work happens during 2027 and the new values appear on the 2028 roll, posted in summer 2027. I'm inferring that from the cycle <cite>S15</cite><cite>S1</cite>; I haven't found an official announcement, so please confirm with the Assessor's Office.</p>
+<p><strong>Will the 2027 bills go up?</strong> Mostly yes, a little, but from rates, not values: the East Bank levee millage rises from 10.79 to 12.28 <cite>S31</cite>, and on Nov. 5, 2026 the City Council approved a partial roll-forward of 4.039 mills on top <cite>S33</cite>.</p>
 <p><strong>What it means for owners:</strong> (1) your value may change in the next reappraisal even if you change nothing; (2) in a reappraisal year each millage is rolled back so it raises the same total, though taxing bodies can vote to roll forward <cite>S15</cite>; (3) the open-roll period in summer 2027 is the time to check a new value and appeal if you disagree; (4) make sure your homestead or freeze is on file before then. {{APPEAL_STATUS}}</p>`,
-    sources: ["S1", "S15", "S32", "S4", "S31"], contact: true
+    sources: ["S1", "S15", "S32", "S4", "S31", "S33"], contact: true
   },
   {
     id: "cap", topic: "2027 reassessment",
@@ -336,6 +353,32 @@ const ENTRIES = [
 <tr><td>2028 (next reappraisal, expected)</td><td>summer 2027</td><td>early 2028</td></tr></table>
 <p>Rolls 2024 through 2027 all use the same values, the market as of Jan. 1, 2023 <cite>S32</cite>. The Treasury says bills are usually due January 31 <cite>S12</cite>, but 2026 bills were due Feb. 28 <cite>S35</cite>.</p>`,
     sources: ["S22", "S5", "S4", "S32", "S12", "S35"]
+  },
+
+  /* ---------- Layer 3: market context ---------- */
+  {
+    id: "market-trend", topic: "Market context",
+    title: "Home prices since the last reappraisal",
+    core: ["market", "prices"],
+    keywords: ["market", "prices", "price", "zillow", "housing", "dropped", "falling", "fell", "down", "trend", "trends", "worth", "less", "crash", "decline", "declined", "zip"],
+    phrases: ["home prices", "house prices", "housing market", "real estate market", "prices have dropped", "prices dropped", "market dropped", "market is down", "values have dropped", "prices are falling", "worth less now", "since 2023", "market went down"],
+    answer: `<p><strong>Home prices in New Orleans have fallen since the roll's values were set.</strong> Zillow's typical home value is lower in September 2026 than in January 2023 in <strong>every one of the city's 17 ZIP codes</strong>: from 5.3% lower (70124) to 27.1% lower (70113), with the middle ZIP down 13.4% <cite>S40</cite>.</p>
+<p><strong>Why your assessment didn't follow:</strong> the roll values every property as of <strong>Jan. 1, 2023</strong>, and that date holds for tax years 2024 through 2027 <cite>S15</cite>. Prices moving afterward, up or down, don't change the roll until the next reappraisal, which the four-year pattern puts at tax year 2028 (my inference; confirm with the Assessor) <cite>S15</cite><cite>S1</cite>.</p>
+<p><strong>Cautions:</strong> Zillow's index is a private company's estimate for the <em>typical</em> home in a ZIP code. It isn't an official figure, and it says nothing about one particular home <cite>S40</cite>. I can't tell you what your home is worth or whether your value is right. Find your property above and ask "How have home prices changed in my ZIP code?" to see your area's numbers.</p>`,
+    sources: ["S40", "S15", "S1"], contact: true
+  },
+  {
+    id: "sales-ratio", topic: "Market context",
+    title: "Are lower-priced homes assessed differently?",
+    core: ["cheaper", "regressive"],
+    keywords: ["cheaper", "cheap", "low", "lower", "priced", "expensive", "poor", "rich", "wealthy", "regressive", "equity", "equitable", "unequal", "biased", "bias", "ratio", "ratios", "neighborhoods"],
+    phrases: ["lower priced homes", "low priced homes", "cheaper homes", "expensive homes", "poor neighborhoods", "rich neighborhoods", "sales ratio", "assessed more than", "over assessed", "price related", "vertical equity", "treated the same"],
+    answer: `<p>Two pieces of evidence, which point in somewhat different directions:</p>
+<ul><li><strong>The state auditor</strong> tested the 2024 reappraisal for bias between high- and low-value homes ("vertical equity") and found it <strong>within the accepted range</strong>: assessments were not "systematically biased for or against high-value or low-value homes" <cite>S15</cite>.</li>
+<li><strong>The 2026 roll itself</strong>, in this project's analysis: among 8,604 home sales recorded from 2023 to 2025, the cheapest tenth (sold for about $15,000 to $130,000) were valued at a middle figure of <strong>118%</strong> of their sale price, while every other tenth sat at 92% to 94% <cite>S30</cite>.</li></ul>
+<p><strong>Why these can both be true, and the limits:</strong> the roll's sale prices aren't verified, and the cheapest sales include many that aren't ordinary market sales (family transfers, damaged or tax-sale property), which makes values look high next to the price. The auditor used verified sales and a different year. So this is a pattern worth asking about, <strong>not proof</strong> that low-priced homes are over-valued, and it says nothing about any one home.</p>
+<p>I can't tell you whether your value is right. If you think it's wrong, the path is an informal review with the Assessor, then an appeal.</p>`,
+    sources: ["S15", "S30"], contact: true
   },
 
   /* ---------- 5.5 Appeals ---------- */
@@ -428,7 +471,8 @@ const ENTRIES = [
     title: "When an owner dies: heirs, surviving spouses, and the homestead",
     core: ["heir", "inherit", "died", "death", "succession"],
     keywords: ["heir", "heirs", "inherit", "inherited", "died", "dies", "death", "passed", "away", "succession", "estate", "spouse", "widow", "widower", "mother", "father", "parent", "family"],
-    phrases: ["passed away", "inherited a house", "inherited property", "surviving spouse", "owner died", "heir property", "my mother died", "my father died", "usufruct", "succession"],
+    core: ["heir", "inherited", "died", "passed"],
+    phrases: ["mom passed", "mother passed", "dad passed", "father passed", "husband passed", "wife passed", "her house", "his house", "parents' house", "keep her homestead", "keep his homestead", "passed away", "inherited a house", "inherited property", "surviving spouse", "owner died", "heir property", "my mother died", "my father died", "usufruct", "succession"],
     answer: `<p>The Louisiana Constitution extends the homestead exemption to a <strong>surviving spouse who keeps living in the home</strong>, whether the spouse owns an interest, holds a usufruct (the right to use the property), or the home is in a qualifying trust <cite>S2</cite>.</p>
 <p>For <strong>heirs</strong>, the Constitution says the exemption on a home with several owners is limited to the ownership share of the owners who live there <cite>S2</cite>. A Loyola Law practice manual gives the example of two of three heirs living in the home getting two-thirds of the benefit <cite>S29</cite>. If you live in an inherited home but the title isn't in your name, you may need to open a <strong>succession</strong>, the court process that transfers a deceased person's property <cite>S28</cite>.</p>
 <p><strong>What I don't know:</strong> exactly what the Orleans Parish Assessor asks heirs to bring, or whether they'll grant the exemption before a succession is finished. The manual says some assessors wrongly wait for a court judgment <cite>S29</cite>. Ask the Assessor's Office, and for the succession itself, talk to a lawyer or a legal aid office.</p>`,

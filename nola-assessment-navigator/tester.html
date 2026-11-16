@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Help test the NOLA Assessment Navigator</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .t { max-width: 720px; margin: 0 auto; padding: 24px 16px 60px; }
+    .t h1 { font-size: 28px; } .t h2 { font-size: 18px; margin: 26px 0 6px; }
+    .t ol li, .t ul li { margin-bottom: 6px; }
+    .t label { display: block; font-weight: 600; margin: 14px 0 4px; }
+    .t textarea, .t input[type=text], .t select { width: 100%; font: inherit; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
+    .t textarea { min-height: 64px; resize: vertical; }
+    .t .go { font: inherit; font-weight: 600; border: 0; border-radius: 999px; padding: 12px 22px; background: var(--navy); color: var(--on-navy); cursor: pointer; margin-top: 18px; }
+    .t .note { font-size: 14px; color: var(--muted); }
+    .t .box { background: var(--gold-soft); border-radius: 10px; padding: 12px 14px; }
+  </style>
+</head>
+<body>
+<main class="t">
+  <h1>Help test the NOLA Assessment Navigator</h1>
+  <p>Thank you for helping. This takes about <strong>15 minutes</strong>. The Navigator is a student project that explains New Orleans property assessments. It is <strong>not</strong> an official tool. I'm testing the tool, not you: if something is confusing, that's what I need to know.</p>
+  <p class="box"><strong>Privacy:</strong> don't type your name, Social Security number or income anywhere. You can use your own address or this sample one: <strong>1205 St. Charles Ave, Apt 607</strong>. Nothing on this page is sent anywhere by itself: at the end you copy your answers and send them to Ethan.</p>
+
+  <h2>Step 1. Open the Navigator in a new tab</h2>
+  <p><a href="index.html" target="_blank" rel="noopener">Open the NOLA Assessment Navigator</a> and keep this page open.</p>
+
+  <h2>Step 2. Try these five things</h2>
+  <ol>
+    <li>Ask it a question you really have about property taxes or assessments, in your own words.</li>
+    <li>Find a property (yours or the sample) and confirm it.</li>
+    <li>Ask: <em>How much tax will I pay?</em></li>
+    <li>Ask anything else you're curious about for that property (your neighborhood, home prices, exemptions).</li>
+    <li>Ask: <em>Should I appeal my assessment?</em> Then press <em>Prepare a note to hand this to a person</em>.</li>
+  </ol>
+
+  <h2>Step 3. Tell me how it went</h2>
+  <form id="f">
+    <label for="who">Which best describes you?</label>
+    <select id="who"><option></option><option>Homeowner in New Orleans</option><option>Landlord or owner of rental property</option><option>Renter</option><option>Housing counselor, real estate or legal professional</option><option>Family member helping an owner</option><option>Other</option></select>
+    <label for="q1">What did you ask first, in your own words?</label><textarea id="q1"></textarea>
+    <label for="a1">Did the answer help? What was missing or wrong?</label><textarea id="a1"></textarea>
+    <label for="find">Finding the property: easy, OK or hard? What happened?</label><textarea id="find"></textarea>
+    <label for="tax">Did you understand the tax answer? What, if anything, confused you?</label><textarea id="tax"></textarea>
+    <label for="trust">Did you trust the answers? Why or why not?</label><textarea id="trust"></textarea>
+    <label for="hand">The hand-off note: would you actually use it to call or visit an office?</label><textarea id="hand"></textarea>
+    <label for="stuck">Was there a moment you got stuck or wanted a real person?</label><textarea id="stuck"></textarea>
+    <label for="change">One thing you would change:</label><textarea id="change"></textarea>
+    <label for="score">Overall, from 1 (not useful) to 5 (very useful):</label>
+    <select id="score"><option></option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+    <button type="button" class="go" id="copy">Copy my answers</button>
+    <p class="note" id="status" role="status"></p>
+  </form>
+  <label for="out">Your answers (send this text to Ethan by text or email):</label>
+  <textarea id="out" readonly style="min-height:160px"></textarea>
+</main>
+<script>
+  const ids = ["who", "q1", "a1", "find", "tax", "trust", "hand", "stuck", "change", "score"];
+  const labels = { who: "Tester type", q1: "First question", a1: "Did it help / what was missing", find: "Finding the property", tax: "Tax answer", trust: "Trust", hand: "Hand-off note", stuck: "Got stuck / wanted a person", change: "One change", score: "Overall (1-5)" };
+  document.getElementById("copy").addEventListener("click", () => {
+    const text = "NOLA Assessment Navigator: tester feedback, " + new Date().toLocaleDateString("en-US") + "\n" +
+      ids.map(i => labels[i] + ": " + (document.getElementById(i).value || "(blank)")).join("\n");
+    const out = document.getElementById("out"), status = document.getElementById("status");
+    out.value = text; out.select();
+    const done = ok => { status.textContent = ok ? "Copied. Paste it into a text or email to Ethan." : "Select the text in the box below and copy it."; };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(() => done(true), () => done(false));
+    else done(false);
+  });
+</script>
+</body>
+</html>

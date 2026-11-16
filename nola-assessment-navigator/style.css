@@ -188,3 +188,11 @@ a.cite:hover, a.cite:focus { text-decoration: underline; }
 .ai-bar { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; font-size: 13px; color: var(--muted); margin-top: -10px; }
 .ai-bar[hidden] { display: none; }
 .ai-bar label { display: inline-flex; gap: 6px; align-items: center; color: var(--ink); font-weight: 600; cursor: pointer; }
+
+/* ---------- Hand-off note, summary download ---------- */
+.handoff-btn, .handoff button { font: inherit; font-size: 13px; font-weight: 600; margin-top: 8px; padding: 6px 12px; border: 1px solid var(--navy); border-radius: 8px; background: var(--surface); color: var(--ink); cursor: pointer; }
+.handoff-btn[hidden] { display: none; }
+.handoff { margin-top: 10px; padding: 10px 12px; border: 1px solid var(--gold); border-radius: 8px; background: var(--surface); font-size: 14px; }
+.handoff-note { width: 100%; font: 13px/1.4 ui-monospace, Menlo, monospace; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 8px; resize: vertical; }
+.sel-actions { display: inline-flex; gap: 6px; flex-wrap: wrap; }
+#download-prop[hidden] { display: none; }

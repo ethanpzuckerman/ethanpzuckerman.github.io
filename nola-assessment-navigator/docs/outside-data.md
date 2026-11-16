@@ -69,3 +69,28 @@ by tract. So matching takes two steps: parcel → location → tract. The option
 **Rule for the chatbot (CLAUDE.md §3, data rule 7):** tract demographics can describe a neighborhood ("this tract's median
 household income is about $X ± Y"). They must **never** be used to infer an owner's race, income or age. Matching has
 been tested on a sample (`docs/outside-data-matching.md`), but the chatbot doesn't use tract data in property answers yet.
+
+## Added for the final: market context (Layer 3)
+
+**Zillow Home Value Index by ZIP code: used.**
+- **What it is:** Zillow's estimate of the typical home value (all homes, middle tier, smoothed and seasonally
+  adjusted) for each ZIP code, monthly from 2000 to September 2026. From the course Box folder "Zillow"; the same
+  file is public at zillow.com/research/data. Saved copy of the 17 Orleans rows:
+  `data/outside/zillow_zhvi_orleans_zips.csv`.
+- **Why it's relevant:** the roll values every property as of Jan. 1, 2023, through tax year 2027. Zillow shows what
+  the market did after that date. Typical values are lower in every Orleans ZIP: −5.3% to −27.1%, middle −13.4%.
+- **Can it be matched reliably?** Partly. The roll has no ZIP for the property. The join is parcel ID → census
+  block group (course crosswalk, 86% of parcels) → census tract → the ZIP covering most of that tract's land (Census
+  2020 ZCTA–tract relationship file; `data/outside/zcta_tract_orleans.csv`). 166 of 183 tracts sit at least 60% in
+  one ZIP; 17 are split, and for those the answer tells the owner to check the ZIP.
+- **Limits:** a private company's model, not an official figure; it describes a ZIP's typical home, not one
+  property; ZIP areas are large and mixed. The chatbot says all three every time and never uses it to judge a value.
+- **Script:** `python3 pipeline/zillow_zip.py`.
+
+**Spatial.ai "Proximity" and "PersonaLive" (course Box folder "Spatial"): evaluated, not used.**
+- **What it is:** scores built from social-media activity for every census block group: dozens of lifestyle
+  "affinities" and consumer personas.
+- **Can it be matched?** Yes, easily: it's keyed by the same block group ID as our crosswalk.
+- **Why we left it out:** matching well isn't enough. It describes residents' tastes and identities, which has no
+  bearing on how property is valued or taxed, and showing it next to someone's property record would profile the
+  people who live there. That breaks this project's rule that outside data describes places, never people.

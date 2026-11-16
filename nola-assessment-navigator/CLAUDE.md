@@ -34,9 +34,9 @@ before it works.
 
 | Layer | Name | What it answers | Data | Status |
 |---|---|---|---|---|
-| 1 | **General guidance** | "How does this work?": FMV vs. assessed value, millage, exemptions, appeals, deadlines, payment, the 2027 reassessment | Curated knowledge base (`kb.js`, 29 entries) built from the sources in Section 2 | **Live** |
+| 1 | **General guidance** | "How does this work?": FMV vs. assessed value, millage, exemptions, appeals, deadlines, payment, the 2027 reassessment | Curated knowledge base (`kb.js`, 33 entries) built from the sources in Section 2 | **Live** |
 | 2 | **My property** | "What does this mean for *my* parcel?": find and confirm a parcel, then show its values, exemptions, freeze, recorded 2026/2027 tax, the next bill, the 2026 → 2027 change, and its census neighborhood | 2026 and 2027 LTC rolls (Section 3); the course's parcel → census block group crosswalk and ACS block-group data; the 2025 roll isn't available | **Live**: lookup + 20 question types, and general answers show the selected record |
-| 3 | **Market context** | "How does my parcel compare?": its value and 2026 → 2027 change vs. similar parcels in its area | Same rolls, aggregated by Subdivision × property type (`areas.json`) | **First version live**: distributions only (data rule 6) |
+| 3 | **Market context** | "How does my parcel compare, and what has the market done?": (a) its value and 2026 → 2027 change vs. similar parcels in its area; (b) its census neighborhood; (c) Zillow's typical home value for its ZIP since the Jan. 1, 2023 valuation date; (d) the citywide sales-ratio pattern | Rolls aggregated by Subdivision × property type (`areas.json`); **outside data:** Census ACS block groups (`bg.json`) and Zillow ZHVI by ZIP (`zhvi.json`) | **Live (final)**: distributions and area figures only, never a judgment of one parcel (data rule 6) |
 
 **How the layers come together (final draft, Nov. 15):** one chat. The owner can ask a general question, look up
 a property (in the Find box or by typing an address in the chat), and ask about it. With a property selected, a
@@ -307,9 +307,11 @@ hearings and elections [S11][S13].
 | S37 | La. Const. Art. VII §21 (other exemptions; §21(K) disabled veterans) | https://www.legis.la.gov/Legis/Law.aspx?d=206551 |
 | S38 | U.S. Census Bureau Geocoder: roll addresses → 2020 block groups (course crosswalk, 140,850 parcels) | https://geocoding.geo.census.gov/geocoder/ |
 | S39 | U.S. Census Bureau, American Community Survey 2020–2024 5-year, block groups (course data, Social Explorer export) | https://www.census.gov/programs-surveys/acs |
+| S40 | Zillow Research, Zillow Home Value Index (ZHVI) by ZIP code, monthly through Sept. 2026 (course Box folder "Zillow"; a private company's estimate, tagged secondary) | https://www.zillow.com/research/data/ |
+| S41 | U.S. Census Bureau, 2020 ZIP Code Tabulation Area ↔ census tract relationship file | https://www.census.gov/geographies/reference-files/time-series/geo/relationship-files.2020.html |
 
-**How to rank sources:** official government sources (S1–S15, S27, S30–S32, S34–S35, S37–S39) outrank everything
-else. Use news, nonprofit and legal-aid sources (S17–S23, S26, S28–S29, S33, S36) for context, or when no official
+**How to rank sources:** official government sources (S1–S15, S27, S30–S32, S34–S35, S37–S39, S41) outrank everything
+else. Use news, nonprofit, legal-aid and private-data sources (S17–S23, S26, S28–S29, S33, S36, S40) for context, or when no official
 source exists; the chatbot tags them "secondary." S16, S24 and S25 are retired: no answer cites them. Label
 them as such in answers. Never cite commercial "property tax appeal" sites or
 data-aggregator sites. During research they gave dates that contradicted the Assessor.
@@ -342,6 +344,18 @@ Raw files go in `data/raw/` and are **never committed**: they hold owner names. 
 | `data/outside/acs_orleans_tracts.csv` | Census ACS 2024 5-year, 184 tracts | Pulled via the Census Reporter API (`pipeline/fetch_acs.py`). Tract matching tested: 86% of a 504-parcel sample, 94% of homes (`docs/outside-data-matching.md`) |
 | `data/raw/box/parcel_blockgroup_crosswalk.csv` (course Box, "Census Block Group Analysis/output") | Census geocoder results for every roll address | **140,850 of 163,135 parcels (86.3%)** matched to a 2020 block group, with coordinates; 20,517 matches are approximate. Same rate as our own 504-parcel test. Joined **by parcel ID** in `export_web.py` |
 | `data/raw/box/bg_merged.csv` (same folder) | ACS 2020–2024 5-year, 439 block groups (Social Explorer export) + roll medians | → `data/web/2026/bg.json` (`pipeline/census_bg.py`): the neighborhood profile in property answers |
+
+**Outside data used for Layer 3 (final):**
+
+| File | What it is | How it joins | Status |
+|---|---|---|---|
+| `data/raw/box/Zip_zhvi_…_month.csv` (course Box "Zillow", 124 MB) → `data/outside/zillow_zhvi_orleans_zips.csv` | Zillow Home Value Index, typical home value by ZIP, monthly 2000 – Sept. 2026; 17 Orleans ZIPs | parcel ID → block group (crosswalk) → census tract → the ZIP covering most of the tract's land (Census relationship file, `data/outside/zcta_tract_orleans.csv`) | **Used** (`pipeline/zillow_zip.py` → `zhvi.json`). 86% of parcels get a ZIP; 17 of 183 tracts are split, and the answer says so |
+| Census ACS block groups (above) | Neighborhood profile | parcel ID → block group | **Used** (`bg.json`) |
+| Course Box "Spatial": Spatial.ai *Proximity* and *PersonaLive* | Social-media "affinity" scores and consumer personas by block group (e.g. lifestyle and culture segments) | Would join cleanly by block group | **Evaluated and rejected.** It profiles residents' lifestyles, has nothing to do with value or tax, and would break data rule 7. Documented in `docs/outside-data.md` |
+
+**Finding from the Zillow data:** typical home values are **lower in Sept. 2026 than in Jan. 2023 in all 17 Orleans
+ZIP codes**, from −5.3% (70124) to −27.1% (70113), middle −13.4%. The roll still carries Jan. 1, 2023 values through
+tax year 2027 [S15]. The chatbot reports this as market context for a ZIP and never as evidence about one home.
 
 **Raw LTC file format:** comma-separated with `~` quotes, keyed by (year, district FIPS, parcel). Tables:
 - `ASSMT`: type RE/PP, status, owner, mailing address
@@ -406,7 +420,8 @@ Column positions are documented in `pipeline/ltc_roll.py`.
 2. `python3 pipeline/data_dictionary.py`: the data dictionary.
 3. `python3 pipeline/export_web.py && node pipeline/shard.js && python3 pipeline/area_stats.py && python3 pipeline/census_bg.py`:
    public fields → `data/web/2026/` (241 street files + `meta.json` + `ids.json` + `areas.json` + `bg.json`, ~64 MB).
-   `shard.js` clears the folder, so the last two must run after it.
+   Then `python3 pipeline/zillow_zip.py` (Zillow ZIP trends → `zhvi.json`). `shard.js` clears the folder, so the
+   steps after it must be re-run.
    - Each parcel also gets its census block group and coordinates from the course crosswalk, when matched.
    - Owner names, mailing addresses and purchase prices are dropped.
    - Placeholders (1994 year built on non-residential parcels, 12/31/1994 transfer dates) are removed.
@@ -480,9 +495,12 @@ the system prompt or answer logic, and test them (Section 6).
 9. **Privacy.** Don't ask for or store names, Social Security numbers, income, or
    disability details. If a user shares them, don't repeat them back. Don't display owner
    names even though the roll has them.
-10. **Stay neutral** on politics, the Assessor's performance, and ballot measures. Present
+10. **Hand off with a note.** Every answer that shows contacts offers "Prepare a note to hand this to a person": the
+   right office for the question, plus a copyable note (question, property, what the Navigator said, date). Nothing
+   is sent automatically; the note tells the owner not to add private details. Never promise a response time.
+11. **Stay neutral** on politics, the Assessor's performance, and ballot measures. Present
    documented views with sources.
-11. **AI-written text is checked, labeled and optional.** An AI explanation may only restate the knowledge base and
+12. **AI-written text is checked, labeled and optional.** An AI explanation may only restate the knowledge base and
    the selected record. Before it's shown, code checks that every number in it appears in that material, every
    [S#] it cites was given to it (at least one, unless it says "I don't know"), and it has no advice wording. It is
    labeled "AI explanation · Claude", and the deterministic answer with its recorded / calculated / explanation
@@ -567,16 +585,19 @@ nola-assessment-navigator/
   lookup.js          ← loads data/web/2026 files, finds parcels by address or parcel ID
   property.js        ← Layers 2–3: answers about the selected parcel (recorded / calculated / explanation)
   ai.js              ← optional AI explanation (Claude via the claude.ai runtime) + its validator
+  tester.html        ← 15-minute test script and feedback form for outside testers
   style.css
   pipeline/          ← eda.py, data_dictionary.py, ltc_roll.py, compare_rolls.py, export_web.py, shard.js,
-                       area_stats.py, census_bg.py, compare_years.py, fetch_acs.py, geocode_sample.py,
+                       area_stats.py, census_bg.py, zillow_zip.py, compare_years.py, fetch_acs.py, geocode_sample.py,
                        build_report.py, report_pdf.js, build_standalone.py
   tests/             ← address.test.js, address_eval.js (19 addresses), chatbot_eval.js (10 Part 2 questions),
                        property_sweep.js (all parcels), final_eval.js (29 end-to-end checks), test_log.js (writes
-                       docs/chatbot-test-log.md with every complete answer), expected_from_raw.py
+                       docs/chatbot-test-log.md with every complete answer), owner_questions.js + owner_report.py
+                       (the 25-question final test set → docs/test-set-25.md), expected_from_raw.py
   data/              ← raw/ (ignored: owner names), processed/ (ignored), web/2026/ (committed: public fields,
                        served to the browser), outside/, README.md
-  docs/              ← final-draft-summary.md (1-page summary), chatbot-test-log.md (complete answers and
+  docs/              ← test-set-25.md, human-backup-and-user-testing.md, reflection-paper.md, oral-exam-prep.md
+                       (final submission); final-draft-summary.md (1-page summary), chatbot-test-log.md (complete answers and
                        screenshots), week2-report.md (+ PDF), data-dictionary.md,
                        address-matching-results.md, year-comparison.md, outside-data.md, outside-data-matching.md,
                        eda/, sample-questions.md, verification-checklist.md, screenshots/
@@ -606,6 +627,8 @@ list at least one source ID. A check in `app.js` refuses to render an entry with
      roll-forward as a calculated range), homestead, freeze, veteran, all exemptions
    - 2026 → 2027 change, naming every cause the record shows (homestead removed, exempt status, value, millage)
    - Layer 3 "area" (distribution of similar parcels in the roll's Subdivision; ward or city when too few)
+   - Layer 3 "market": Zillow's typical home value for the parcel's ZIP, Jan. 2023 vs. now, with the caution that
+     roll values stay at Jan. 1, 2023 and that it describes the ZIP, not the home
    - "place": roll location, a map link, and the census block group profile (ACS), with the neighborhood caution
    - building size (not in the roll), year built, last transfer (incl. a newer 2027 one), owner (not shown),
      property type, parcel number, special districts (not in the roll), "my value is wrong" (with appeal status)
@@ -629,7 +652,8 @@ exactly as before.
 - `node tests/chatbot_eval.js`: the 10 Part 2 property questions, checked against the raw files (10/10)
 - `node tests/property_sweep.js`: 21 question types × 305 sampled parcels, plus 5 data-heavy questions × **every**
   parcel (about 822,000 answers); must report 0 problems
-- `node tests/final_eval.js`: 29 end-to-end browser checks (demo trio, combined flows, guardrails, AI mock, phone)
+- `node tests/final_eval.js`: 32 end-to-end browser checks (demo trio, combined flows, guardrails, AI mock, phone)
+- `node tests/owner_questions.js`: the 25 real-world owner questions (25/25); then `python3 tests/owner_report.py`
 
 **Rules for changing code**
 - Match the parent site's style: plain HTML, CSS, and vanilla JS, no frameworks or build
@@ -719,3 +743,25 @@ Feedback on Parts 1 and 2 is kept here so the agent doesn't reintroduce a correc
 - A claim that rests on a page nobody could re-read gets its source's date in the answer and a "please confirm."
 - Test evidence means the complete answer. Regenerate `docs/chatbot-test-log.md` after any change to `kb.js`,
   `property.js` or `app.js`.
+
+---
+
+## 10. Final submission (Dec. 1, 2026): what was added and where
+
+| Requirement | Where | Status |
+|---|---|---|
+| 1. Layer 3 from outside data + final CLAUDE.md | Zillow ZIP trends (`pipeline/zillow_zip.py`, `property.js` "market", `kb.js` `market-trend`), citywide sales-ratio answer (`kb.js` `sales-ratio`), census neighborhood and area comparison (already live); this file | Done |
+| 2. Test set: 25 real-world owner questions | `tests/owner_questions.js`, `docs/test-set-25.md`: expected answers written first; first run 19/25 fully correct, 25/25 after six fixes | Done |
+| 3. Human backup plan and user testing (2 pages) | `docs/human-backup-and-user-testing.md`; hand-off note in the app (`app.js` `handoffHtml`); `tester.html` | Plan and tools done. **The five outside testers' results must be filled in by the owner: never invent them** |
+| 4. Reflection paper | `docs/reflection-paper.md` | Draft from the project record. The owner edits it into their own words and adds the demo feedback and tester findings |
+| 5. OralExam.ai interview | `docs/oral-exam-prep.md` | The owner does the interview |
+
+**Added from instructor comments in class (Nov. 4 and 9 recordings):** address suggestions while typing; a
+downloadable property summary; the census and Zillow data from the course folder; plain-language cautions on every
+market answer.
+
+**Rules that follow:**
+- Tester results, demo feedback and anything else that only the owner experienced are never written by the agent.
+- After changing `kb.js` or `property.js`, re-run `tests/owner_questions.js` and regenerate `docs/test-set-25.md`.
+- Market figures (Zillow, census, area) are shown with their source and date and never used to say a value is
+  right or wrong.

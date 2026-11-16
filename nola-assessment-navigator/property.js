@@ -113,6 +113,9 @@ ${sourceLine(meta, r.has27)}
     if (near(r.tav, 0.1 * r.tmv)) return "10";
     if (near(r.tav, 0.1 * r.lmv + 0.15 * r.imv)) return "10/15";
     if (r.fz !== "0") return "freeze";
+    // Land at 10% and the building somewhere between 10% and 15%: part residential, part commercial.
+    const b = r.imv ? r.iav / r.imv : 0;
+    if (r.lmv && near(r.lav, 0.1 * r.lmv) && b > 0.1005 && b < 0.1495) return "mixed";
     return null;
   }
 
@@ -191,6 +194,38 @@ ${g.dt != null && dt != null ? row("Tax change, 2026 → 2027", `middle ${sgn(g.
     ];
   }
 
+  /* ---------- Layer 3, outside data: Zillow home-value trend for the parcel's ZIP (pipeline/zillow_zip.py) ---------- */
+  const month = m => { const [y, mo] = m.split("-"); return ["Jan.", "Feb.", "March", "April", "May", "June", "July", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."][+mo - 1] + " " + y; };
+  const spct = v => (v > 0 ? "+" : v < 0 ? "−" : "") + (Math.abs(v) * 100).toFixed(1) + "%";
+
+  function zipOf(r, meta) {
+    const z = meta.zhvi && r.bg ? meta.zhvi.tract[r.bg.slice(0, 11)] : null;
+    return z ? { zip: z[0], share: z[1], z: meta.zhvi.zips[z[0]] } : null;
+  }
+
+  function marketAnswer(r, meta) {
+    const Z = meta.zhvi, hit = zipOf(r, meta);
+    const caution = block("explanation", `<p><strong>What this does and doesn't mean.</strong> Roll values are set as of <strong>Jan. 1, 2023</strong> and stay at that level through tax year 2027, whatever the market does afterward <cite>S15</cite>. So a change in prices since then doesn't change this year's value, and it isn't a reason by itself to expect a different one. The next reappraisal is the point where values catch up with the market. Zillow's index describes the <strong>typical home in a ZIP code</strong>, not this property, and it's a private company's estimate, not an official figure <cite>S40</cite>. I can't tell you what your home is worth or whether your value is right.</p>`);
+    if (!Z) return [block("missing", `<p><strong>I don't know.</strong> I couldn't load the market data.</p>`)];
+    const city = `<p>Across New Orleans' ${Object.keys(Z.zips).length} ZIP codes, the change since ${month(Z.base)} ranges from <strong>${spct(Z.range[0])}</strong> to <strong>${spct(Z.range[2])}</strong> (middle ZIP ${spct(Z.range[1])}).</p>`;
+    if (!hit || !hit.z) {
+      return [block("missing", `<p><strong>I don't know</strong> which ZIP code this parcel is in: the roll has no ZIP for the property, and this address couldn't be matched to a census area.</p>`),
+        block("recorded", city, "From Zillow (outside data)"), caution];
+    }
+    const z = hit.z;
+    return [
+      block("recorded", `<p>ZIP code area: <strong>${esc(hit.zip)}</strong>. The roll has no ZIP for the property, so I use its census tract: ${Math.round(hit.share * 100)}% of that tract's land is in ${esc(hit.zip)} <cite>S38</cite><cite>S41</cite>.${hit.share < 0.6 ? " The tract is split between ZIP codes, so check that this is yours." : ""}</p>
+<table class="ptable">
+${row("Typical home value, " + month(Z.base), usd(z.base), "Zillow Home Value Index")}
+${row("Typical home value, " + month(Z.latest), `<strong>${usd(z.now)}</strong>`, "Zillow Home Value Index")}
+${row("Change over the last 12 months", spct(z.yr), `${month(Z.yearAgo)} to ${month(Z.latest)}`)}
+${row("Highest point on record", `${usd(z.peak)} in ${month(z.peakMonth)}`, "Zillow Home Value Index")}
+</table>`, "From Zillow (outside data)"),
+      block("calculated", `<p>Typical home value in ${esc(hit.zip)} since the roll's valuation date: ${usd(z.base)} → ${usd(z.now)} = <strong>${spct(z.chg)}</strong>.</p>${city}`),
+      caution
+    ];
+  }
+
   /* ---------- Where it is: census block group (ACS), CLAUDE.md §3 data rule 7 ---------- */
   const money = v => (typeof v === "number" ? usd(v) : "not reported");
   const share = v => (typeof v === "number" ? v.toFixed(1).replace(/\.0$/, "") + "%" : "not reported");
@@ -232,6 +267,8 @@ ${row("Race and ethnicity", `${share(B.bl)} Black, ${share(B.wh)} white, ${share
     // "I think my value is wrong" is about disputing the value, not looking it up.
     { id: "right", re: /\b(wrong|incorrect|mistake|error|too high|not right|isn'?t right|unfair|overvalued|over-?assessed)\b/i },
     // Layer 3: how this parcel sits among similar parcels in its area.
+    // Layer 3, outside data: how home values in the parcel's ZIP have moved since the roll's valuation date (Zillow).
+    { id: "market", re: /\b(zillow|zestimate|home prices?|house prices?|housing market|real estate market|market (trend|trends|is doing|changed|dropped|went|has)|prices? (have |has )?(dropp|fall|fell|going|gone|risen|rose)|values? (have |has )?(dropp|fall|fell|risen|rose) (in|around|since)|since 2023|zip ?code|my zip)\b/i },
     { id: "area", re: /\b(neighbou?rs'?|my area|the area|this area|nearby (homes|houses|properties|values)|other (homes|houses|properties|parcels)|similar (homes|houses|properties|parcels)|(homes|houses|properties) like mine|compared? (to|with) (others|other|my neighbou?rhood|the neighbou?rhood|similar)|market context|typical)\b/i },
     // Where the parcel is and what its census block group looks like, never who owns it.
     { id: "place", re: /\b(neighbou?rhood|census|demographics?|block group|who lives|population|median income|household income|poverty|renters?|race|racial|ethnic(ity)?|community|where is (it|this|my (house|home|property))|map|located|location|tract)\b/i },
@@ -294,7 +331,8 @@ ${row("Race and ethnicity", `${share(B.bl)} Black, ${share(B.wh)} white, ${share
         const text = {
           "10": "Your assessed value is exactly 10% of market value, which is the rule for land and homes.",
           "10/15": "Your assessed value is 10% of the land value plus 15% of the building value, the rule for commercial and other non-residential buildings.",
-          freeze: "Your record shows an assessment freeze, which is why the ratio can be below the usual 10% <cite>S7</cite>."
+          freeze: "Your record shows an assessment freeze, which is why the ratio can be below the usual 10% <cite>S7</cite>.",
+          mixed: `Here the land is assessed at 10% and the buildings at ${pct(r.imv ? r.iav / r.imv : 0)} (${usd(r.iav)} ÷ ${usd(r.imv)}), between the 10% residential rate and the 15% rate for other buildings. That pattern fits a building that is partly residential and partly commercial, but the roll doesn't show the split, so <strong>I don't know</strong> exactly how it was divided. The Assessor's Office can tell you.`
         }[rule] || "Your ratio doesn't match either usual rule, and <strong>I don't know why</strong>. Ask the Assessor's Office.";
         return out([
           block("recorded", `<p>Assessed value: <strong>${usd(r.tav)}</strong> (land ${usd(r.lav)} + buildings ${usd(r.iav)}). Field: Total Assessed Value.</p>`),
@@ -391,6 +429,8 @@ ${row("Computed tax", `${usd(r.t26 || 0)} → ${usd(r.t27)}`, "LTC millage files
           block("explanation", `<p>Compared by parcel ID ${esc(r.id)}. Values from the last reappraisal (market as of Jan. 1, 2023) are used for tax years 2024 through 2027 <cite>S15</cite><cite>S32</cite>, so 98% of parcels keep the same value on the 2027 roll <cite>S31</cite>. Between reappraisals a value can still change for a sale, construction, demolition, damage or remodeling <cite>S15</cite>. On the East Bank the total millage rises because the levee district's rate goes from 10.79 to 12.28 mills. The four-year pattern points to tax year 2028 for the next reappraisal (my inference; confirm with the Assessor). I can't compare with 2025: that roll isn't available to me.</p>`)
         ]);
       }
+      case "market":
+        return out(marketAnswer(r, meta));
       case "area":
         return out(areaAnswer(r, meta));
       case "place":
@@ -445,7 +485,7 @@ ${row("Computed tax", `${usd(r.t26 || 0)} → ${usd(r.t27)}`, "LTC millage files
       "how-value-set": [values], "value-up-no-change": [values, change], "assessed-vs-market": [values], audit: [values],
       "bill-calc": [values, tax], mill: [tax], rollback: [change], "bill-due": [tax], "payment-plan": [tax], "special-districts": [tax],
       commercial: [`Occupancy type: ${title(r.occ)}.`, values],
-      "homestead-apply": [hsLine], "homestead-renew": [hsLine], "sold-moved": [hsLine], heirs: [hsLine],
+      "homestead-apply": [hsLine], "homestead-renew": [hsLine], "homestead-lost": [hsLine], double: [hsLine], "sold-moved": [hsLine], heirs: [hsLine],
       sal: [hsLine, fzLine], veteran: [hsLine, exLine], "first-responder": [hsLine, exLine], "amendments-2026": [hsLine, fzLine],
       "reassess-taxes": [change], "why-2027": [change], cap: [change, fzLine], "roll-years": [change],
       "appeal-how": [values], "appeal-where": [values], "appeal-evidence": [values], "appeal-missed": [values], ltc: [values]
@@ -479,6 +519,8 @@ ${row("Computed tax", `${usd(r.t26 || 0)} → ${usd(r.t27)}`, "LTC millage files
     L.push(`Year built: ${r.yb || "not recorded"}. Last transfer date: ${r.td27 || r.td || "not recorded"}. Not in this roll: square footage, bedrooms, bathrooms, condition, special districts. Not shown: sale price, owner name. [S30]`);
     const B = meta.bg && r.bg ? meta.bg.bg[r.bg] : null;
     if (B) L.push(`Census neighborhood (describes the area's residents, never the owner): ${B.name}, block group ${r.bg} [S38]. ACS 2020–2024: median household income ${money(B.inc)}; median home value (owners' estimate) ${money(B.hv)}; median rent ${money(B.rent)}; owner-occupied ${share(B.own)}; vacant units ${share(B.vac)}; poverty ${share(B.pov)}. [S39]`);
+    const hz = zipOf(r, meta);
+    if (hz && hz.z) L.push(`Outside market data (describes the ZIP's typical home, never this property's value): ZIP ${hz.zip}; Zillow typical home value ${usd(hz.z.base)} in ${month(meta.zhvi.base)} and ${usd(hz.z.now)} in ${month(meta.zhvi.latest)}, a change of ${spct(hz.z.chg)}. Roll values stay at their Jan. 1, 2023 level through tax year 2027 regardless [S15]. [S40]`);
     const a = areaGroup(r, meta.areas);
     if (a && !noValue(r)) L.push(`Calculated area context (a distribution only, never a judgment of this parcel's value): ${a.g.n} ${a.kind} in ${plain(a.label)}; middle half of market values ${usd(a.g.mv[1])} to ${usd(a.g.mv[3])}, middle value ${usd(a.g.mv[2])}; this parcel is ${position(r.tmv, a.g.mv)}. [S30]`);
     return L;

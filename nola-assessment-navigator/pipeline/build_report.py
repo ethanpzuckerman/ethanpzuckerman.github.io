@@ -82,6 +82,13 @@ def main():
         ("Attachment 3 - Address-Match Results", (DOCS / "address-matching-results.md").read_text(), by),
         ("Attachment 4 - Chatbot Test Log", test_log(), by),
     ]
+    quoted = lambda md: re.sub(r"^(> .+)$", r"\1  ", md, flags=re.M)
+    # Final submission documents.
+    for name, f in (("Final 2 - Test Set of 25 Owner Questions", "test-set-25.md"),
+                    ("Final 3 - Human Backup Plan and User Testing", "human-backup-and-user-testing.md"),
+                    ("Final 4 - Reflection Paper (draft)", "reflection-paper.md")):
+        if (DOCS / f).exists():
+            docs.append((name, quoted((DOCS / f).read_text()), by + ("<style>body{font-size:9.6pt;line-height:1.36} table{font-size:8.6pt} h2{margin-top:14px}</style>" if "Human Backup" in name else "")))
     css = """
 @page { size: Letter; margin: 0.6in 0.6in 0.7in; }
 body { font-family: Inter, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 10.5pt; line-height: 1.45; color: #1e1c1a; }

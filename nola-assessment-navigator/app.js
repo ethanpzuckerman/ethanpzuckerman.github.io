@@ -17,7 +17,8 @@
 <ul><li>Orleans Parish Assessor's Office, City Hall, 1300 Perdido St., Room 4E01. Appraiser appointments: <a class="tel" href="tel:+15047548811">(504) 754-8811</a>. <a href="https://www.nolaassessor.com/" target="_blank" rel="noopener">nolaassessor.com</a></li>
 <li>Board of Review (City Council): <a href="https://council.nola.gov/resources/property-tax-assessments-and-appeals/" target="_blank" rel="noopener">council.nola.gov</a></li>
 <li>Tax bills and payments: <a href="https://nola.gov/property-tax/" target="_blank" rel="noopener">nola.gov/property-tax</a></li>
-<li>Free legal help: Southeast Louisiana Legal Services, <a href="https://slls.org/" target="_blank" rel="noopener">slls.org</a></li></ul></div>`;
+<li>Free legal help: Southeast Louisiana Legal Services, <a href="https://slls.org/" target="_blank" rel="noopener">slls.org</a></li></ul>
+<button type="button" class="handoff-btn" data-handoff>Prepare a note to hand this to a person</button></div>`;
 
   const STOP = new Set(("a an the is are was were be been i my me we our you your it its of to in on for and or with do does did can could would should will how what when where why who which this that there their about am if at by from as so just get " +
     "please hi hey hello thanks thank ok okay know tell want like much many also any still really need new orleans nola property house home tax taxes have has had im i'm").split(" "));
@@ -273,6 +274,7 @@
     "How do I apply for the homestead exemption?",
     "How does my property compare to others in my area?",
     "What neighborhood is it in?",
+    "How have home prices changed in my ZIP code?",
     "How did my value change on the 2027 roll?",
     "Do I have an assessment freeze?",
     "I think my value is wrong"
@@ -291,11 +293,14 @@
     });
   }
 
+  let lastQuestion = "";
   function addMsg(role, html) {
     const log = document.getElementById("log");
     const div = document.createElement("div");
     div.className = "msg " + role;
     div.innerHTML = html;
+    if (role === "user") lastQuestion = div.textContent;
+    else div.dataset.q = lastQuestion;
     log.appendChild(div);
     div.scrollIntoView({ behavior: "smooth", block: "start" });
     return div;
@@ -327,6 +332,10 @@
     if (metaInfo.areas === undefined) {
       metaInfo.areas = null;
       try { metaInfo.areas = await loadData("areas.json"); } catch (e) { /* Layer 3 just says it doesn't know */ }
+    }
+    if (metaInfo.zhvi === undefined) {
+      metaInfo.zhvi = null;
+      try { metaInfo.zhvi = await loadData("zhvi.json"); } catch (e) { /* the market answer says it doesn't know */ }
     }
     if (metaInfo.bg === undefined) {
       metaInfo.bg = null;
@@ -440,6 +449,64 @@
   // Answer a question with what we have: the selected property, the knowledge base, or both.
   const NON_ENGLISH = /[áéíóúñ¿¡]|[ăâđêôơưạảấầẩẫậắằẳẵặẹẻẽếềểễệỉịọỏốồổỗộớờởỡợụủứừửữựỳỵỷỹ]|\b(cómo|como|cuándo|cuando|qué|impuesto|propiedad|exención|tôi|thuế|nhà)\b/i;
   const CHANGE_PROPERTY = /\b(change|switch|another|different|other|new) (the )?(selected )?(property|address|house|home|parcel)\b|\bclear (the )?(property|selection)\b/i;
+
+  /* ---------- Human backup: hand a question to the right person (CLAUDE.md §4 rule 4, §10) ---------- */
+  const OFFICES = [
+    { re: /\b(bill|pay|paid|payment|due|late|interest|installment|refund|tax sale|penalt)/i, who: "City of New Orleans, Bureau of the Treasury", why: "it sends the bills and takes payments", how: `<a href="https://nola.gov/property-tax/" target="_blank" rel="noopener">nola.gov/property-tax</a>, or in person at City Hall, 1300 Perdido St.` },
+    { re: /\b(heir|inherit|succession|died|passed away|usufruct|title|deed|lawyer|attorney|court|sue|lawsuit|evict)/i, who: "Southeast Louisiana Legal Services (free legal aid), or a licensed attorney", why: "this turns on legal questions I can't answer", how: `<a href="https://slls.org/" target="_blank" rel="noopener">slls.org</a>` },
+    { re: /\b(appeal|board of review|dispute|contest|challenge|hearing|tax commission)/i, who: "Orleans Parish Assessor's Office first (informal review), then the Board of Review", why: "appeals start with the Assessor and go to the Board only if you still disagree", how: `Appraiser appointments: <a class="tel" href="tel:+15047548811">(504) 754-8811</a>; Board of Review: <a href="https://council.nola.gov/resources/property-tax-assessments-and-appeals/" target="_blank" rel="noopener">council.nola.gov</a>` }
+  ];
+  const DEFAULT_OFFICE = { who: "Orleans Parish Assessor's Office", why: "it sets values and grants exemptions", how: `City Hall, 1300 Perdido St., Room 4E01; appraiser appointments <a class="tel" href="tel:+15047548811">(504) 754-8811</a>; <a href="https://www.nolaassessor.com/" target="_blank" rel="noopener">nolaassessor.com</a>` };
+
+  function handoffHtml(q, answerText) {
+    const o = OFFICES.find(x => x.re.test(q)) || DEFAULT_OFFICE;
+    const today = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+    const note = [
+      `Question for: ${o.who}`,
+      `Date: ${today}`,
+      selected ? `Property: ${String(selected.a).replace(/\s+/g, " ")} (parcel ${selected.id}), 2026 roll` : "Property: (not selected)",
+      `My question: ${q || "(type your question here)"}`,
+      `What the NOLA Assessment Navigator (a student prototype, not an official tool) told me: ${answerText.slice(0, 500)}${answerText.length > 500 ? "…" : ""}`,
+      "What I still need to know: "
+    ].join("\n");
+    return `<div class="handoff"><span class="prov-tag">Hand-off note</span>
+<p><strong>Best person for this question:</strong> ${o.who}, because ${o.why}. ${o.how}</p>
+<p>Copy this note and bring it, read it over the phone, or paste it into an email, so you don't have to explain from the start. <strong>Don't add</strong> your Social Security number or other private details.</p>
+<textarea class="handoff-note" rows="8" readonly>${escapeHtml(note)}</textarea>
+<p><button type="button" data-copy>Copy the note</button> <span class="hint" role="status"></span></p>
+<p class="hint">I'm a prototype, so nobody at these offices sees this chat, and I don't know how quickly each office answers. For anything with a deadline, call or go in person rather than waiting on an email.</p></div>`;
+  }
+
+  // One-page summary of the selected property that the owner can keep or bring to an office.
+  function downloadSummary() {
+    if (!selected || !metaInfo) return;
+    const qs = ["How much tax will I pay?", "How did my value change on the 2027 roll?", "What exemptions do I have?", "How does my property compare to others in my area?", "How have home prices changed in my ZIP code?", "What neighborhood is it in?"];
+    const parts = qs.map(q => { const a = NolaProperty.answer(selected, q, metaInfo); return a ? `<h2>${escapeHtml(q)}</h2>` + renderCites(a.html) : ""; });
+    const srcIds = [...new Set(parts.join("").match(/\[S\d+\]/g) || [])].map(x => x.slice(1, -1));
+    const css = "body{font-family:system-ui,sans-serif;max-width:760px;margin:24px auto;padding:0 16px;line-height:1.5;color:#1e1c1a}h1{font-size:22px}h2{font-size:16px;margin-top:22px;border-top:1px solid #ccc;padding-top:12px}h3{font-size:14px;margin:6px 0}table{border-collapse:collapse;width:100%;font-size:13px}th,td{border-bottom:1px solid #ddd;padding:4px 6px;text-align:left;vertical-align:top}.prov{border-left:3px solid #ccc;padding-left:10px;margin:8px 0}.prov-tag{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#555;display:block}.field,.srcline,.note{font-size:11px;color:#555}a.cite{font-size:11px}";
+    const doc = `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Property summary: ${escapeHtml(selected.a)}</title><style>${css}</style></head><body>
+<h1>Property summary: ${escapeHtml(selected.a)}</h1>
+<p class="note">Made ${new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })} by the NOLA Assessment Navigator, a <strong>student prototype</strong>. Not an official document and not legal or tax advice. Confirm everything with the Orleans Parish Assessor's Office. Owner names are not shown.</p>
+${NolaProperty.card(selected, metaInfo)}${parts.join("")}
+<h2>Sources</h2><ol>${srcIds.map(id => SOURCES[id] ? `<li>[${id}] <a href="${SOURCES[id].url}">${SOURCES[id].label}</a></li>` : "").join("")}</ol></body></html>`;
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([doc], { type: "text/html" }));
+    a.download = `property-summary-${selected.id}.html`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    addMsg("bot", `<p>I made a summary of <strong>${escapeHtml(selected.a)}</strong> (its record, tax, changes, exemptions, area and ZIP figures, with sources). Check your downloads for <em>property-summary-${escapeHtml(selected.id)}.html</em>; open it in a browser to read or print it.</p>`);
+  }
+
+  // Street-name suggestions while typing in the Find box ("1332 mag" → "1332 MAGAZINE").
+  function suggestStreets() {
+    const input = document.getElementById("addr"), list = document.getElementById("streets");
+    if (!input || !list || !metaInfo || !metaInfo.streets) return;
+    const m = input.value.toUpperCase().match(/^\s*(\d+[A-Z]?(?:\s+1\/2)?)\s+(?:[NSEW]\.?\s+)?([A-Z0-9 .']{2,})$/);
+    if (!m) { list.innerHTML = ""; return; }
+    const typed = m[2].replace(/[.']/g, "").replace(/^(SAINT|ST)\s+/, "ST ").trim();
+    const names = Object.keys(metaInfo.streets).filter(n => n.startsWith(typed)).sort((a, b) => metaInfo.streets[b] - metaInfo.streets[a]).slice(0, 8);
+    list.innerHTML = names.map(n => `<option value="${m[1]} ${escapeHtml(n)}"></option>`).join("");
+  }
 
   /* ---------- Optional AI explanation (ai.js; only where the claude.ai runtime offers it) ---------- */
   const history = []; // last few exchanges, so follow-ups like "what about veterans?" make sense to the AI
@@ -560,6 +627,31 @@
     });
     const clr = document.getElementById("clear-prop");
     if (clr) clr.addEventListener("click", clearProperty);
+    const dl = document.getElementById("download-prop");
+    if (dl) { dl.addEventListener("click", downloadSummary); if (window.claude) dl.hidden = true; }
+    const addr = document.getElementById("addr");
+    if (addr && lookup) {
+      addr.addEventListener("focus", () => { ensureMeta().catch(() => {}); }, { once: true });
+      addr.addEventListener("input", suggestStreets);
+    }
+    document.getElementById("log").addEventListener("click", e => {
+      const h = e.target.closest("[data-handoff]");
+      if (h) {
+        const msg = h.closest(".msg");
+        const text = [...msg.children].filter(el => !el.matches(".contacts, .sources, .handoff, .ai, .det")).map(el => el.innerText).join(" ").replace(/\s+/g, " ").trim();
+        h.hidden = true;
+        h.closest(".contacts").insertAdjacentHTML("afterend", handoffHtml(msg.dataset.q || "", text));
+        msg.querySelector(".handoff").scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+      const c = e.target.closest("[data-copy]");
+      if (c) {
+        const box = c.closest(".handoff").querySelector("textarea"), status = c.parentElement.querySelector("[role=status]");
+        box.select();
+        const done = ok => { status.textContent = ok ? "Copied." : "Select the text and copy it."; };
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(box.value).then(() => done(true), () => done(false));
+        else done(document.execCommand && document.execCommand("copy"));
+      }
+    });
     document.getElementById("ask").addEventListener("submit", e => {
       e.preventDefault();
       const input = document.getElementById("q");
