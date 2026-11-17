@@ -1,60 +1,30 @@
 # NOLA Assessment Navigator: Final Draft Summary
 
-Ethan Zuckerman · AI and Real Estate · Nov. 16, 2026 · Live prototype (public, no sign-in): https://ethanpzuckerman.github.io/nola-assessment-navigator/
+Ethan Zuckerman · AI and Real Estate · Nov. 17, 2026 · **Live prototype (public, no sign-in): https://ethanpzuckerman.github.io/nola-assessment-navigator/**
 
-**What it does.** A chatbot for New Orleans property owners, in one conversation:
-- **Layer 1, general guidance:** how assessments, millage, exemptions, appeals and tax bills work.
-- **Layer 2, my property:** find your property by address or parcel ID, confirm it, then ask about it. Answers cover its values, exemptions and freeze, its recorded 2026 tax and next (2027) bill, what changed and why, and its census neighborhood.
-- **Layer 3, market context (first version):** how the property compares with similar parcels in its area.
+**What it does.** A chatbot for New Orleans property owners. In one conversation, an owner can:
+- **Layer 1, general guidance:** ask how assessments, millage, exemptions, appeals and tax bills work.
+- **Layer 2, my property:** find their property by address or parcel ID, confirm it, and ask about it: values, exemptions and freeze, the recorded 2026 tax and the next (2027) bill, what changed and why.
+- **Layer 3, market context:** see how the property compares with similar parcels in its area, its census neighborhood, and how Zillow's typical home value in its ZIP has moved since the roll's Jan. 1, 2023 valuation date.
 
-Every answer:
-- cites its sources
-- labels what is *recorded* in the roll, *calculated* by the tool, or *explained*
-- refuses legal and tax advice
-- offers a human contact
+Every answer cites its sources, labels what is *recorded* in the roll, *calculated* by the tool, or *explained*, refuses legal and tax advice, and offers a person, with a button that writes a hand-off note for the right office.
 
-A second copy on claude.ai (sign-in needed) adds a short **AI explanation by Claude**, shown only if code confirms it uses no numbers or sources beyond the checked material.
-
-**What works (tested Nov. 13)**
-- **Knowledge base:** 30 entries and 39 sources. It covers all 15 owner questions in the education outline and tolerates typos.
-- **Facts re-verified this week:**
-  - Tax years 2024–27 all use market values as of Jan. 1, 2023 (Legislative Auditor; City Council). So the 2027 roll is not a reappraisal; the next one is expected for 2028.
-  - The tax example: 121.20 mills citywide plus the levee district (10.79 East Bank), 131.99 in all.
-  - The Nov. 3 amendment results.
-  - The Council's 4.039-mill roll-forward, approved Nov. 5.
-  - The Feb. 28 due date for 2026 bills.
-  - The City offers no installment plan.
-- **Lookup:** all 163,135 parcels; 19 of 19 test addresses behave as expected. It handles:
-  - abbreviations, unit numbers and ½ addresses
-  - renamed streets and typos
-  - N/S streets
-  - parcel IDs with letters
-- **Property answers:** 20 question types. Every number comes from the state's 2026 and 2027 roll files, and the recorded tax matches the formula to the cent. An automated sweep checked about 822,000 generated answers, covering every parcel, with 0 problems.
-- **Layers together:**
-  - A general answer also shows the selected property's record.
-  - A property question asked before a lookup is answered right after the owner picks the property.
-  - An address typed into the chat is looked up.
-- **Census neighborhood:** uses the course's parcel-to-block-group crosswalk (86% of parcels) and ACS data. The figures describe the area, never the owner.
-- **Guardrails:** privacy, advice requests, out-of-scope topics and other parishes are handled, and deadlines are checked against today's date.
-- **Tests:** 29/29 end-to-end checks and 10/10 Part 2 questions pass. An outside QA pass of 695 interactions found 23 defects, all fixed. Every test answer is in the test log, word for word.
-- **Instructor feedback on Parts 1 and 2:** resolved point by point (CLAUDE.md §9), including the tax example ($2,813.33 citywide, $3,056.10 with the levee millage) and a "half of a double" answer.
+**What works (tested Nov. 16)**
+- **Knowledge base:** 33 entries and 41 sources, covering every owner question in the education outline, including living in half of a double. Facts were re-read from official sources: the 121.20-mill citywide rate plus the levee district (131.99 total), the 2024–27 valuation cycle (so the 2027 roll is not a reappraisal), the Nov. 5 roll-forward, the Nov. 3 amendments, bill dates, and payment plans.
+- **Lookup:** all 163,135 parcels. It handles abbreviations, units, ½ addresses, renamed streets, typos, N/S streets and parcel IDs with letters, and suggests street names as you type. 19 of 19 test addresses behave as expected.
+- **Property answers:** 21 question types. Every number comes from the state's 2026 and 2027 roll files; the recorded tax matches the formula to the cent. An automated sweep of about 822,000 answers, covering every parcel, found 0 problems.
+- **Layers together:** a general answer also shows the selected property's record; a property question asked before a lookup is answered right after the pick; an address typed in the chat is looked up. Owners can download a one-page summary of their property.
+- **Tests:** 25 real-world owner questions (19 right on the first run, 25 after six fixes); 32/32 end-to-end checks; 10/10 Part 2 questions. Every answer is in the test log, word for word.
 
 **What doesn't work yet**
-- **Next bill:** the 2027 state file was filed before the Nov. 5 roll-forward, and the final rates aren't published. The tool shows the 2027 bill as recorded, plus a calculated range for the increase.
-- **Not in the roll data:**
-  - building size, condition and features
-  - special-district fees
-  - the 2025 roll, so changes are compared 2026 vs. 2027 instead
-- **Census:** 14% of parcels have no census match.
-- **Matching limits:** keyword matching misses some phrasings (the AI layer helps, but only on claude.ai), and answers are in English only.
-- **Still to confirm:** the 2027 due date, the 2026 appeal deadline (Aug. 18 vs. 20), how homestead applies to the rented half of a double, and the current homestead application steps. The Assessor's website blocks automated checking, so those answers say "please confirm."
+- **Next bill:** the 2027 state file predates the Council's Nov. 5 roll-forward, and final rates aren't published, so the increase is shown as a calculated range.
+- **Not in the data:** building size, condition and features; special-district fees; the 2025 roll (changes are compared 2026 vs. 2027 instead). 14% of parcels have no census or ZIP match.
+- **Wording:** keyword matching still misses some everyday phrasings, and answers are in English only. The AI explanation that helps with this runs only on the claude.ai copy.
+- **Still to confirm:** the 2027 due date, the homestead application steps, and how homestead applies to the rented half of a double. The Assessor's website blocks automated checking, so those answers say "please confirm."
 
 **Plan for the final (Dec. 1)**
-- **Feedback:** apply the feedback from Monday's demo, and test with 3–5 real owners.
+- **User testing:** five testers outside the class, using the test page on the live site; fix what they find.
+- **Demo feedback:** apply the comments from the Nov. 16 demo.
 - **Facts:** update with the final 2027 millages, bill dates and certified amendment results.
-- **Layer 3:**
-  - a map of the parcel and its neighbors (coordinates are already loaded)
-  - the course's Zillow data for ZIP-level price trends
-  - the citywide sales-ratio pattern, with its caveats
-- **Owner tools:** address autocomplete and a downloadable one-page summary of a property's answers.
-- **Public hosting:** GitHub Pages, with a small server-side Claude endpoint so anyone can use the AI explanation.
+- **Layer 3:** a map of the parcel and its neighbors (coordinates are already loaded).
+- **Public AI:** a small server-side Claude endpoint, so everyone on the public link gets the checked AI explanation.

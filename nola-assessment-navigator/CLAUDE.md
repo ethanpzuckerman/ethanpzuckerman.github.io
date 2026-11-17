@@ -35,7 +35,7 @@ before it works.
 | Layer | Name | What it answers | Data | Status |
 |---|---|---|---|---|
 | 1 | **General guidance** | "How does this work?": FMV vs. assessed value, millage, exemptions, appeals, deadlines, payment, the 2027 reassessment | Curated knowledge base (`kb.js`, 33 entries) built from the sources in Section 2 | **Live** |
-| 2 | **My property** | "What does this mean for *my* parcel?": find and confirm a parcel, then show its values, exemptions, freeze, recorded 2026/2027 tax, the next bill, the 2026 → 2027 change, and its census neighborhood | 2026 and 2027 LTC rolls (Section 3); the course's parcel → census block group crosswalk and ACS block-group data; the 2025 roll isn't available | **Live**: lookup + 20 question types, and general answers show the selected record |
+| 2 | **My property** | "What does this mean for *my* parcel?": find and confirm a parcel, then show its values, exemptions, freeze, recorded 2026/2027 tax, the next bill, the 2026 → 2027 change, and its census neighborhood | 2026 and 2027 LTC rolls (Section 3); the course's parcel → census block group crosswalk and ACS block-group data; the 2025 roll isn't available | **Live**: lookup + 21 question types, and general answers show the selected record |
 | 3 | **Market context** | "How does my parcel compare, and what has the market done?": (a) its value and 2026 → 2027 change vs. similar parcels in its area; (b) its census neighborhood; (c) Zillow's typical home value for its ZIP since the Jan. 1, 2023 valuation date; (d) the citywide sales-ratio pattern | Rolls aggregated by Subdivision × property type (`areas.json`); **outside data:** Census ACS block groups (`bg.json`) and Zillow ZHVI by ZIP (`zhvi.json`) | **Live (final)**: distributions and area figures only, never a judgment of one parcel (data rule 6) |
 
 **How the layers come together (final draft, Nov. 15):** one chat. The owner can ask a general question, look up
@@ -579,7 +579,7 @@ nola-assessment-navigator/
   CLAUDE.md          ← this file
   README.md          ← project overview, live link
   index.html         ← one chat: property search + questions
-  kb.js              ← Layer 1 knowledge base: SOURCES (S1–S39) + ENTRIES (answers, keywords, source IDs)
+  kb.js              ← Layer 1 knowledge base: SOURCES (S1–S41) + ENTRIES (answers, keywords, source IDs)
   app.js             ← retrieval, guardrails, lookup flow, combining the layers, rendering
   address.js         ← address normalizer + matcher (browser and Node)
   lookup.js          ← loads data/web/2026 files, finds parcels by address or parcel ID
@@ -591,7 +591,7 @@ nola-assessment-navigator/
                        area_stats.py, census_bg.py, zillow_zip.py, compare_years.py, fetch_acs.py, geocode_sample.py,
                        build_report.py, report_pdf.js, build_standalone.py
   tests/             ← address.test.js, address_eval.js (19 addresses), chatbot_eval.js (10 Part 2 questions),
-                       property_sweep.js (all parcels), final_eval.js (29 end-to-end checks), test_log.js (writes
+                       property_sweep.js (all parcels), final_eval.js (32 end-to-end checks), test_log.js (writes
                        docs/chatbot-test-log.md with every complete answer), owner_questions.js + owner_report.py
                        (the 25-question final test set → docs/test-set-25.md), expected_from_raw.py
   data/              ← raw/ (ignored: owner names), processed/ (ignored), web/2026/ (committed: public fields,
@@ -621,7 +621,7 @@ list at least one source ID. A check in `app.js` refuses to render an entry with
    spellings if the street isn't found), and returns one of four results: exact, multiple, close (typo, missing unit,
    ½ address), or not found with a reason. Parcel IDs, including those with letters, are checked against `ids.json`.
 2. **Confirm.** The owner picks the record ("Is this your property?"). Each candidate list remembers its own records.
-3. **Answer.** `property.js` matches the question to one of 20 intents and builds a recorded / calculated /
+3. **Answer.** `property.js` matches the question to one of 21 intents and builds a recorded / calculated /
    explanation answer from that record:
    - value, assessed (10% and 15% rules), taxable, tax (leads with the next bill: the 2027 roll, plus the Nov. 5
      roll-forward as a calculated range), homestead, freeze, veteran, all exemptions
