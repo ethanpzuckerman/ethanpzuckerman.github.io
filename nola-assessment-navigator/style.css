@@ -580,3 +580,35 @@ h1, h2, .section-title, .panel-head h2, .dash-head h2 { font-optical-sizing: aut
 .map.dark .leaflet-tile { filter: invert(1) hue-rotate(180deg) brightness(.9) contrast(.88) saturate(.6); }
 .map.dark .leaflet-container { background: #0c131c; }
 .chart-wide { height: 240px; }
+
+/* Feature strip under the hero: what every property gets */
+.features { padding-block: 28px 4px; }
+.features-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+.features-head h2 { margin: 0; font-family: var(--font-display); font-size: clamp(22px, 2.4vw, 28px); letter-spacing: -.01em; }
+.feature-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+.feature-list button { width: 100%; height: 100%; text-align: left; font: inherit; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 14px 16px; cursor: pointer; display: flex; flex-direction: column; gap: 4px; box-shadow: var(--shadow); transition: border-color .15s, transform .15s; }
+.feature-list button:hover, .feature-list button:focus-visible { border-color: var(--gold); transform: translateY(-2px); }
+.feature-list .fi { font-size: 22px; line-height: 1; margin-bottom: 4px; }
+.feature-list strong { font-size: 14.5px; }
+.feature-list span:not(.fi) { font-size: 13px; color: var(--muted); line-height: 1.4; }
+.sel-dash { border-color: var(--gold) !important; }
+.flash { animation: flash 1.6s ease-out; }
+@keyframes flash { 0% { box-shadow: 0 0 0 0 rgba(228, 185, 106, .9); } 100% { box-shadow: 0 0 0 14px rgba(228, 185, 106, 0); } }
+@media (prefers-reduced-motion: reduce) { .flash { animation: none; } .feature-list button { transition: none; } }
+@media (max-width: 1024px) {
+  .feature-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .preview { display: flex !important; max-width: 520px; transform: none; }
+}
+@media (max-width: 760px) { .feature-list { grid-template-columns: 1fr 1fr; } .preview { display: none !important; } }
+
+/* Mini map and mini tax chart in the Your property panel */
+.mini-viz { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 12px; }
+.mini-map-wrap { position: relative; display: block; width: 100%; padding: 0; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--surface-2); cursor: pointer; font: inherit; }
+.mini-map { height: 150px; pointer-events: none; }
+.mini-map.dark .leaflet-tile { filter: invert(1) hue-rotate(180deg) brightness(.9) contrast(.88) saturate(.6); }
+.mini-map .leaflet-control-attribution { font-size: 9px; }
+.mini-note { position: absolute; left: 8px; top: 8px; z-index: 500; font-size: 11.5px; font-weight: 600; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 2px 9px; }
+.mini-hist { border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px 4px; background: var(--surface-2); }
+.mini-title { margin: 0; font-size: 11.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.mini-hist .chart { max-height: 150px; }
+.mini-hist .chart-note { display: none; }

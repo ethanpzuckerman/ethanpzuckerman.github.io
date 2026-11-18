@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=optional" onload="this.onload=null;this.rel='stylesheet'" />
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=optional" /></noscript>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=20261118e" />
 </head>
 <body>
   <a class="skip" href="#q">Skip to the question box</a>
@@ -98,6 +98,25 @@
     </div>
   </section>
 
+  <section class="features" aria-label="What you can see for any property">
+    <div class="wrap">
+      <div class="features-head">
+        <div>
+          <p class="eyebrow">For every property</p>
+          <h2>Look up any address and get a full property dashboard</h2>
+        </div>
+        <button type="button" class="btn" id="sample-dash">See a sample dashboard →</button>
+      </div>
+      <ul class="feature-list">
+        <li><button type="button" data-sample="map"><span class="fi" aria-hidden="true">📍</span><strong>Map and neighbors</strong><span>The parcel, similar homes and nearby parcels</span></button></li>
+        <li><button type="button" data-sample="hist"><span class="fi" aria-hidden="true">📊</span><strong>Tax history and breakdown</strong><span>2026 vs. 2027, and where each dollar goes</span></button></li>
+        <li><button type="button" data-sample="hood"><span class="fi" aria-hidden="true">🏘️</span><strong>Neighborhood taxes</strong><span>Your property vs. your area vs. the city</span></button></li>
+        <li><button type="button" data-sample="sim"><span class="fi" aria-hidden="true">⚖️</span><strong>Similar homes and compare</strong><span>Recommended matches, side by side</span></button></li>
+        <li><button type="button" data-sample="bill"><span class="fi" aria-hidden="true">🧾</span><strong>Official tax bill</strong><span>Open the City's own PDF in one click</span></button></li>
+      </ul>
+    </div>
+  </section>
+
   <div class="wrap app" id="app">
     <section class="panel chat" aria-label="Conversation">
       <div class="panel-head">
@@ -117,7 +136,7 @@
       </div>
       <div id="selected" class="selected" hidden>
         <span class="sel-text"></span>
-        <span class="sel-actions"><button type="button" id="download-prop">Download summary</button>
+        <span class="sel-actions"><button type="button" class="sel-dash" data-act="dash">Open dashboard ↓</button><button type="button" id="download-prop">Download summary</button>
         <button type="button" id="clear-prop">Change property</button></span>
       </div>
       <div class="chat-scroll" id="chat-scroll">
@@ -316,13 +335,13 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
-  <script src="kb.js"></script>
-  <script src="address.js"></script>
-  <script src="lookup.js"></script>
-  <script src="property.js"></script>
-  <script src="ai.js"></script>
-  <script src="app.js"></script>
-  <script src="ui.js"></script>
-  <script src="dash.js"></script>
+  <script src="kb.js?v=20261118e"></script>
+  <script src="address.js?v=20261118e"></script>
+  <script src="lookup.js?v=20261118e"></script>
+  <script src="property.js?v=20261118e"></script>
+  <script src="ai.js?v=20261118e"></script>
+  <script src="app.js?v=20261118e"></script>
+  <script src="ui.js?v=20261118e"></script>
+  <script src="dash.js?v=20261118e"></script>
 </body>
 </html>

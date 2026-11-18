@@ -69,7 +69,7 @@
     const CELL = 0.02, cells = new Map();
     const cellFile = (i, j) => {
       const k = i + "_" + j;
-      if (!cells.has(k)) cells.set(k, loadJSON(`n_${k}.json`).catch(() => []));
+      if (!cells.has(k)) cells.set(k, Promise.resolve().then(() => loadJSON(`n_${k}.json`)).catch(() => []));
       return cells.get(k);
     };
     const metres = (lat1, lon1, lat2, lon2) => {
@@ -91,7 +91,37 @@
       return out.sort((p, q) => p.dist - q.dist);
     }
 
-    return { find, byId, meta, near, metres };
+    /* Approximate location for a parcel the crosswalk didn't place (about 15% of parcels): the parcel on the same
+       street (same direction, name and suffix) with the closest house number that has coordinates, if it is
+       within 200 numbers. Returns { lat, lon, bg, from, gap } or null. The dashboard labels it "approximate". */
+    async function approx(rec) {
+      if (!rec || typeof rec.lat === "number") return null;
+      const p = A.parse(String(rec.a || "").split("|")[0]);
+      const n = parseInt(p.number, 10);
+      const rows = p.name && n ? await shard(shardKey(p.name)) : [];
+      let best = null;
+      for (const x of rows) {
+        if (typeof x.lat !== "number" || x.id === rec.id) continue;
+        const q = A.parse(String(x.a || "").split("|")[0]);
+        if (q.name !== p.name || q.dir !== p.dir || q.suffix !== p.suffix) continue;
+        const gap = Math.abs(parseInt(q.number, 10) - n);
+        if (isNaN(gap) || gap > 200) continue;
+        const sameSide = (parseInt(q.number, 10) - n) % 2 === 0;
+        const score = gap + (sameSide ? 0 : 0.5);
+        if (!best || score < best.score) best = { score, lat: x.lat, lon: x.lon, bg: x.bg || null, from: String(x.a).replace(/\s+/g, " ").trim(), gap };
+      }
+      if (best) return { lat: best.lat, lon: best.lon, bg: best.bg, from: best.from, gap: best.gap, kind: "street" };
+      // Otherwise the center of its roll subdivision, then its ward (pipeline/near_index.py arealoc.json).
+      let centers = null;
+      try { centers = await (arealocP || (arealocP = Promise.resolve().then(() => loadJSON("arealoc.json")))); } catch (e) { arealocP = null; }
+      if (!centers) return null;
+      const sub = rec.sub && centers[`s|${rec.d}|${rec.sub}`], ward = centers[`w|${rec.d}|${rec.w}`];
+      const c = sub || ward;
+      return c ? { lat: c[0], lon: c[1], bg: c[2], kind: sub ? "subdivision" : "ward", n: c[3] } : null;
+    }
+    let arealocP = null;
+
+    return { find, byId, meta, near, metres, approx };
   }
 
   const api = { create, shardKey };

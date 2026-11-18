@@ -16,7 +16,7 @@ SCRIPTS = ["kb.js", "address.js", "lookup.js", "property.js", "ai.js", "app.js",
 
 def main(out):
     html = (ROOT / "index.html").read_text()
-    body = re.search(r"<body>(.*?)\s*<script src=\"kb.js\">", html, re.S).group(1)
+    body = re.search(r"<body>(.*?)\s*<script src=\"kb\.js[^\"]*\">", html, re.S).group(1)
     title = re.search(r"<title>(.*?)</title>", html).group(1)
     # The page preloads its font stylesheet; the artifact links the same URL as a plain stylesheet.
     font_url = re.search(r'href="(https://fonts.googleapis.com/css2[^"]+)"', html).group(1)

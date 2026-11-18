@@ -40,9 +40,9 @@
   document.addEventListener("focusout", hideTip);
 
   /* ---------- Tax history (bars, with the possible roll-forward as a dashed range) ---------- */
-  function taxHistoryChart(r) {
+  function taxHistoryChart(r, box) {
     const h = P().taxHistory(r);
-    const box = $("#chart-history");
+    box = box || $("#chart-history");
     if (!h) { box.innerHTML = `<p class="muted">No recorded tax for this parcel.</p>`; return; }
     const W = 320, H = 190, padL = 8, padB = 26, padT = 34, bw = 64;
     const top = Math.max(...h.rows.map(x => x.tax + (x.hi || 0))) || 1;
@@ -138,7 +138,7 @@
     const fmtM = d => d.toLocaleDateString("en-US", { month: "short", year: "numeric" });
     box.innerHTML = `<div class="zip-stats"><div><span>Since Jan. 2023</span><strong>${spct(hit.z.chg)}</strong></div><div><span>${fmtM(last.d)}</span><strong>${usd(last.v)}</strong></div><div><span>Past year</span><strong>${spct(hit.z.yr)}</strong></div></div>
       <svg viewBox="0 0 ${W} ${H}" class="chart chart-wide" role="img" aria-label="Zillow typical home value in ZIP ${hit.zip}, monthly from ${fmtM(pts[0].d)} (${usd(pts[0].v)}) to ${fmtM(last.d)} (${usd(last.v)}); ${spct(hit.z.chg)} since January 2023.">${g}</svg>
-      <p class="chart-note">Zillow Home Value Index for the ZIP's typical home ${cite("S40")}. It describes the area, never this property's value; roll values stay at their Jan. 1, 2023 level through tax year 2027 ${cite("S15")}.${hit.share < 0.6 ? " This census tract is split between ZIP codes, so check that this is yours." : ""}</p>`;
+      <p class="chart-note">Zillow Home Value Index for the ZIP's typical home ${cite("S40")}. It describes the area, never this property's value; roll values stay at their Jan. 1, 2023 level through tax year 2027 ${cite("S15")}.${hit.share < 0.6 ? " This census tract is split between ZIP codes, so check that this is yours." : ""}${r.approx ? " The ZIP comes from this parcel's approximate location." : ""}</p>`;
     const svg = box.querySelector("svg"), cross = svg.querySelector(".cross"), hitR = svg.querySelector(".zip-hit");
     const move = (clientX) => {
       const b = svg.getBoundingClientRect(), sx = (clientX - b.left) / b.width * W;
@@ -191,11 +191,20 @@
   const tileUrl = () => "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
   function mapFallback(r, why) {
     const q = encodeURIComponent(`${r.lat},${r.lon}`);
+    const mini = $("#mini-map"); if (mini) mini.innerHTML = `<div class="map-fallback"><p>Map unavailable here</p></div>`;
     $("#map").innerHTML = `<div class="map-fallback"><p><strong>The map couldn't load here</strong>${why ? ` (${esc(why)})` : ""}.</p><p><a href="https://www.google.com/maps/search/?api=1&query=${q}" target="_blank" rel="noopener">Open this parcel in Google Maps</a> · <a href="https://www.openstreetmap.org/?mlat=${r.lat}&mlon=${r.lon}#map=18/${r.lat}/${r.lon}" target="_blank" rel="noopener">OpenStreetMap</a></p></div>`;
   }
+  const approxNote = r => {
+    const a = r.approx;
+    if (!a) return "";
+    return a.kind === "street"
+      ? `Approximate location: the data doesn't place this parcel, so the marker is at ${esc(title(a.from))}, the nearest house number on the same street (${a.gap} numbers away).`
+      : `Approximate location: the data doesn't place this parcel, so the marker is at the center of its ${a.kind === "subdivision" ? "roll subdivision" : "ward"} (${a.n.toLocaleString("en-US")} located parcels).`;
+  };
   async function drawMap(r, token) {
     const el = $("#map");
-    if (typeof r.lat !== "number") { el.innerHTML = `<div class="map-fallback"><p>This parcel has no map location in the data (about 14% don't).</p></div>`; $("#map-legend").hidden = true; return; }
+    $("#map-note").textContent = r.approx ? approxNote(r).replace(/<[^>]+>/g, "") : "Parcel positions from the roll's census match. Click a marker to compare it.";
+    if (typeof r.lat !== "number") { el.innerHTML = `<div class="map-fallback"><p>This parcel has no map location in the data.</p></div>`; $("#map-legend").hidden = true; return; }
     $("#map-legend").hidden = false;
     syncMapTheme();
     let L;
@@ -215,12 +224,26 @@
     S.nearby.filter(x => x.dist <= 350 && !simIds.has(x.id) && x.id !== r.id).slice(0, 350).forEach(x =>
       L.circleMarker([x.lat, x.lon], { radius: 3.5, weight: 1, color: "#ffffff", fillColor: "#8a8f98", fillOpacity: .75 }).bindPopup(popup(x)).addTo(S.layer));
     S.similar.forEach(x => L.circleMarker([x.lat, x.lon], { radius: 7, weight: 2, color: "#ffffff", fillColor: "#c0841a", fillOpacity: 1 }).bindPopup(popup(x)).addTo(S.layer));
-    L.circleMarker([r.lat, r.lon], { radius: 10, weight: 3, color: "#ffffff", fillColor: "#2f6db3", fillOpacity: 1 }).bindPopup(`<strong>${esc(addr(r.a))}</strong><br>This property`).addTo(S.layer);
+    L.circleMarker([r.lat, r.lon], { radius: r.approx ? 14 : 10, weight: 3, color: r.approx ? "#2f6db3" : "#ffffff", dashArray: r.approx ? "4 4" : null, fillColor: "#2f6db3", fillOpacity: r.approx ? .35 : 1 }).bindPopup(`<strong>${esc(addr(r.a))}</strong><br>This property${r.approx ? " (approximate location)" : ""}`).addTo(S.layer);
+    drawMini(r, L);
     const pts = [[r.lat, r.lon]].concat(S.similar.map(x => [x.lat, x.lon]));
     S.map.invalidateSize();
     if (pts.length > 1) S.map.fitBounds(pts, { padding: [36, 36], maxZoom: 17 }); else S.map.setView([r.lat, r.lon], 17);
   }
-  const syncMapTheme = () => { const m = $("#map"); if (m) m.classList.toggle("dark", dark()); };
+  const syncMapTheme = () => { ["#map", "#mini-map"].forEach(s => { const m = $(s); if (m) m.classList.toggle("dark", dark()); }); };
+  function drawMini(r, L) {
+    const el = $("#mini-map");
+    if (!el || typeof r.lat !== "number") return;
+    if (S.mini) { try { S.mini.remove(); } catch (e) { /* old panel */ } S.mini = null; }
+    el.innerHTML = "";
+    el.classList.toggle("dark", dark());
+    S.mini = L.map(el, { zoomControl: false, dragging: false, scrollWheelZoom: false, doubleClickZoom: false, boxZoom: false, keyboard: false, touchZoom: false, attributionControl: true });
+    L.tileLayer(tileUrl(), { maxZoom: 19, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OSM</a>' }).addTo(S.mini);
+    L.circleMarker([r.lat, r.lon], { radius: r.approx ? 12 : 8, weight: 3, color: r.approx ? "#2f6db3" : "#ffffff", dashArray: r.approx ? "4 4" : null, fillColor: "#2f6db3", fillOpacity: r.approx ? .35 : 1 }).addTo(S.mini);
+    S.similar.forEach(x => L.circleMarker([x.lat, x.lon], { radius: 5, weight: 2, color: "#ffffff", fillColor: "#c0841a", fillOpacity: 1 }).addTo(S.mini));
+    S.mini.setView([r.lat, r.lon], r.approx && r.approx.kind !== "street" ? 15 : 16);
+    if (r.approx) { const n = $("#mini-note"); if (n) n.textContent = "Approximate location"; }
+  }
   new MutationObserver(syncMapTheme).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 
   /* ---------- Similar properties (recommended) ---------- */
@@ -234,7 +257,7 @@
         <div class="sim-num"><span>2026 tax</span><strong>${usd(x.t26)}</strong></div>
         <div class="sim-act"><button type="button" class="btn ${S.compare.includes(x.id) ? "ghost added" : ""}" data-dash="compare" data-id="${esc(x.id)}" aria-pressed="${S.compare.includes(x.id)}">${S.compare.includes(x.id) ? "✓ Comparing" : "Compare"}</button>
         <button type="button" class="link-plain" data-dash="open" data-id="${esc(x.id)}">Open</button></div></li>`).join("")}</ul>
-      <p class="chart-note">Recommended by the Navigator: same property type, market value within ${P().SIMILAR.valueBand * 100}%, within ${P().SIMILAR.radius / 1000} km, closest match first, from the 2026 roll ${cite("S30")}. Not an appraisal; the roll doesn't record size or condition.</p>`;
+      ${r.approx ? `<p class="chart-note"><strong>Distances are from this parcel's approximate location.</strong></p>` : ""}<p class="chart-note">Recommended by the Navigator: same property type, market value within ${P().SIMILAR.valueBand * 100}%, within ${P().SIMILAR.radius / 1000} km, closest match first, from the 2026 roll ${cite("S30")}. Not an appraisal; the roll doesn't record size or condition.</p>`;
   }
 
   /* ---------- Compare (this property + up to three) ---------- */
@@ -291,7 +314,7 @@
   }
   function refreshCompareUI() {
     if (!S.base) return;
-    similarList(S.base);
+    similarList(S.loc || S.base);
     compareTable();
     const pin = $("#pin-compare");
     if (pin) { const on = S.compare.includes(S.base.id); pin.textContent = on ? "✓ Kept for comparison" : "Add to comparison"; pin.setAttribute("aria-pressed", String(on)); }
@@ -311,20 +334,46 @@
     $("#dash-meta").textContent = `Parcel ${r.id} · ${title(String(r.occ || "").split("|")[0])}${r.sub ? " · " + title(r.sub) : ""}`;
     const bill = $("#dash-bill"); if (bill && window.NavigatorUI) bill.href = NavigatorUI.billUrl(r.id, 2026);
     taxHistoryChart(r);
+    const mh = $("#mini-hist"); if (mh) taxHistoryChart(r, mh);
     breakdownChart(r, S.meta);
-    zipChart(r, S.meta);
     hoodTile(r, S.meta);
+    let loc = r;
+    if (typeof r.lat !== "number" && bot() && bot().lookup && bot().lookup.approx) {
+      try { const ap = await bot().lookup.approx(r); if (ap) loc = Object.assign({}, r, { lat: ap.lat, lon: ap.lon, bg: r.bg || ap.bg, approx: ap }); } catch (e) { /* no estimate */ }
+      if (token !== S.token) return;
+    }
+    S.loc = loc;
+    zipChart(loc, S.meta);
     $("#similar").innerHTML = `<p class="muted">Finding similar properties nearby…</p>`;
     const pin = $("#pin-compare"); if (pin) { const on = S.compare.includes(r.id); pin.textContent = on ? "✓ Kept for comparison" : "Add to comparison"; pin.setAttribute("aria-pressed", String(on)); }
     compareTable();
     S.nearby = []; S.similar = [];
-    if (typeof r.lat === "number" && bot() && bot().lookup) {
-      try { S.nearby = await bot().lookup.near(r.lat, r.lon, P().SIMILAR.radius); } catch (e) { S.nearby = []; }
+    if (typeof loc.lat === "number" && bot() && bot().lookup) {
+      try { S.nearby = await bot().lookup.near(loc.lat, loc.lon, P().SIMILAR.radius); } catch (e) { S.nearby = []; }
       if (token !== S.token) return;
       S.similar = P().similar(r, S.nearby, 5);
     }
-    similarList(r);
-    drawMap(r, token);
+    similarList(loc);
+    drawMap(loc, token);
+    if (S.pending) { const t = S.pending; S.pending = null; setTimeout(() => goTile(t), 150); }
+    else if (window.NavigatorUI && !S.toldOnce) { S.toldOnce = true; NavigatorUI.toast("Property dashboard ready below: map, charts, similar homes ↓"); }
+  }
+
+  // Sample dashboard: open the example property and bring the asked-for tile into view.
+  const TILE = { top: "#dash", map: ".tile-map", hist: "#hist-title", hood: "#hood-title", sim: "#sim-title", bill: "#dash" };
+  function goTile(t) {
+    const el = $(TILE[t] || "#dash");
+    if (!el) return;
+    (el.closest(".tile") || el).scrollIntoView({ behavior: "smooth", block: "start" });
+    const tile = el.closest(".tile");
+    if (tile) { tile.classList.add("flash"); setTimeout(() => tile.classList.remove("flash"), 1600); }
+    if (t === "bill") { const b = $("#dash-bill"); if (b) { b.classList.add("flash"); setTimeout(() => b.classList.remove("flash"), 1600); } }
+  }
+  function openSample(t) {
+    const id = "102000079";
+    if (S.base && S.base.id === id && !$("#dash").hidden) { goTile(t); return; }
+    S.pending = t || "top";
+    if (window.NavigatorUI) NavigatorUI.findProperty(id, true);
   }
   function clear() {
     S.token++; S.base = null;
@@ -351,7 +400,10 @@
       }
       if (act === "clear-compare") { S.compare = []; saveCompare(); refreshCompareUI(); }
     });
+    const sample = $("#sample-dash");
+    if (sample) sample.addEventListener("click", () => openSample("top"));
+    document.querySelectorAll("[data-sample]").forEach(b => b.addEventListener("click", () => openSample(b.dataset.sample)));
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
-  window.NavigatorDash = { render, clear, state: S };
+  window.NavigatorDash = { render, clear, state: S, openSample };
 })();

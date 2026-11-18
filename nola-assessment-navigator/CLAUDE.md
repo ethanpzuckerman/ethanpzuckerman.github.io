@@ -677,7 +677,12 @@ Webby winners) are listed in `docs/design-references.md`. One page, top to botto
   "My property" nav link. Tiles:
   - **Location and neighbors:** Leaflet 1.9.4 (cdnjs, loaded on first use) on OpenStreetMap tiles; this parcel,
     the recommended similar parcels, and other parcels within 350 m. Falls back to Google Maps / OSM links when
-    the library or tiles are blocked (offline file, some embeds). About 14% of parcels have no coordinates.
+    the library or tiles are blocked (offline file, some embeds).
+  - **Parcels the data doesn't place (22,420, about 14%)** still get every tile, at an **approximate location**
+    (`lookup.approx`): the nearest house number on the same street with coordinates (within 200 numbers),
+    else the center of the parcel's roll subdivision, else its ward (`arealoc.json`). The map shows a dashed ring
+    and a note naming the method; the ZIP chart and similar-property distances say they use it. In a 600-parcel
+    sample: 23% street, 69% subdivision, 8% ward, 0% none.
   - **Tax history:** recorded 2026 and 2027 tax, plus the Nov. 5 roll-forward as a dashed, calculated range
     (`NolaProperty.taxHistory`).
   - **Where your 2026 tax goes:** tax by levy from the City's 2026 table (§2.4), shown only when the parts add up
@@ -694,6 +699,12 @@ Webby winners) are listed in `docs/design-references.md`. One page, top to botto
   - **View official 2026 bill:** links to the City's own PDF (see "Official bills" below).
   Chart colors were validated for color-vision deficiency, contrast and lightness in both themes; identity is
   never color alone (labels on every bar, a stripe texture for police/fire).
+- **On lookup, visuals beside the chat:** the Your property panel shows a mini map (click → full map) and the
+  2026 → 2027 tax chart as soon as a property is picked; a notice says the full dashboard is ready below, and the
+  Selected bar has "Open dashboard ↓". Under the hero, a five-card feature strip and "See a sample dashboard"
+  open the example property's dashboard at the chosen tile.
+- **Cache:** `index.html` loads its CSS and scripts with `?v=<date+letter>`; bump it on every release so browsers
+  don't keep the old files (GitHub Pages caches for 10 minutes). The build scripts accept the suffix.
 - **Long answers:** property answers taller than about 620px are collapsed to 420px with "Show full answer". The
   text stays in the page, so copy, search, screen readers and the tests still read all of it.
 - **How the scripts talk:** `app.js` fires `nav:select` (with the record and meta) and `nav:clear`; `ui.js` and
@@ -728,7 +739,7 @@ exactly as before.
 - `node tests/final_eval.js`: 32 end-to-end browser checks (demo trio, combined flows, guardrails, AI mock, phone with
   no sideways scrolling); pass a URL to test the public site
 - `node tests/owner_questions.js`: the 25 real-world owner questions (25/25); then `python3 tests/owner_report.py`
-- `node tests/dashboard_eval.js`: 16 dashboard checks (map, three charts, neighborhood, similar, compare, bills,
+- `node tests/dashboard_eval.js`: 20 dashboard checks (incl. the panel's mini map / chart and an unlocated parcel) (map, three charts, neighborhood, similar, compare, bills,
   collapsed answers, the neighborhood and official-bill answers)
 - `node tests/example_card.js`: the home page's example card matches the data (its numbers are written in the page)
 - Audit (`docs/audit.md`): Lighthouse 12.6 and axe-core 4.10; keep accessibility at 100 and axe at 0 violations

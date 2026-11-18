@@ -49,6 +49,16 @@ const URL = process.argv[2] || "http://localhost:8765/";
   t = await ask("How much tax will I pay?");
   const clamped = await p.locator(".msg.bot").last().evaluate(m => m.classList.contains("clamped"));
   check("Long property answer is collapsed with 'Show full answer' (text still present)", clamped && /\$1,019/.test(t), t);
+  check("Your property panel shows a mini map and the mini tax chart on lookup", await p.locator("#mini-map.leaflet-container, #mini-map .map-fallback").count() === 1 && await p.locator("#mini-hist svg").count() === 1, await p.locator("#prop-body").innerHTML());
+  check("Feature strip and 'See a sample dashboard' are on the home page", await p.locator("#sample-dash").count() === 1 && await p.locator(".feature-list li").count() === 5, "");
+
+  // A parcel the data doesn't place still gets a full dashboard, at an approximate location.
+  await p.goto(URL + "#p=513012603", { waitUntil: "load" });
+  await p.waitForSelector("#dash:not([hidden])", { timeout: 30000 });
+  await p.waitForTimeout(4500);
+  const note = await p.textContent("#map-note");
+  check("Unlocated parcel: approximate location from the same street, labeled", /Approximate location/.test(note) && /same street/.test(note), note);
+  check("Unlocated parcel: ZIP chart and similar properties still shown", await p.locator("#chart-zip svg").count() === 1 && await p.locator(".sim-list li").count() >= 1, await p.locator("#similar").innerText());
   check("No page errors", errors.length === 0, errors.join(" | "));
   console.log(`\n${pass}/${pass + fail} passed`);
   await b.close();
