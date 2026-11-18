@@ -18,8 +18,8 @@ carry a `VERIFY` tag. Re-check them before each tax cycle.*
 
 **What it is.** The NOLA Assessment Navigator is an AI assistant that helps property
 owners in the City of New Orleans (Orleans Parish) understand three things: their property
-assessment, the exemptions they can claim, and how to appeal. It is a **student
-prototype**. It is not run by the Assessor, the City, or any government body.
+assessment, the exemptions they can claim, and how to appeal. It is a **prototype**,
+not an official tool. It is not run by the Assessor, the City, or any government body.
 
 **Who uses it.**
 - Homeowners, especially first-time buyers, older owners, and owners who just got a
@@ -475,8 +475,8 @@ the system prompt or answer logic, and test them (Section 6).
    - Board of Review (New Orleans City Council): council.nola.gov [S13]
    - Tax bills and payments, Bureau of the Treasury: nola.gov/property-tax [S27]
    - Free legal help: Southeast Louisiana Legal Services (slls.org) or a licensed attorney
-5. **Disclose that it is a student prototype.** Show a persistent banner, and the
-   greeting must say: "I'm a student prototype, not an official government tool.
+5. **Disclose that it is not an official tool.** Show a persistent banner, and the
+   greeting must say: "I'm not an official government tool.
    Information may be out of date, so always confirm with the Assessor's Office."
 6. **Dates matter.** Compare deadlines with today's date. If a deadline has passed, say so
    and give the next expected window. Never imply an appeal is still open when it
@@ -641,11 +641,12 @@ list at least one source ID. A check in `app.js` refuses to render an entry with
    Guardrails (privacy, out-of-scope, other parishes, advice) run first, with or without a property.
 
 **How the page is laid out (redesign, Nov. 18, 2026).** One page, top to bottom:
-- **Disclosure banner** (student prototype, not advice, confirm with the Assessor), always first.
+- **Disclosure banner** (not an official government tool, not advice, confirm with the Assessor), always first.
+  The site doesn't call itself a student project (owner's request, Nov. 18); it still says it isn't official.
 - **Sticky nav:** brand, links to Ask / How it works / Data & sources / Limits (the current section is highlighted),
   a "Prototype" pill and a light/dark switch (remembered per browser in `localStorage`, wrapped in try/catch).
-- **Hero:** tagline, the **Find your property** box (`#find`, street suggestions from `#streets`), two example
-  addresses, and four figures (163,135 parcels; 2026 + 2027 rolls; 41 sources; 0 errors in ~822,000 answers).
+- **Hero:** tagline, the **Find your property** box (`#find`, street suggestions from `#streets`) and two example
+  addresses.
 - **App (`#app`):** the conversation on the left (`#log`, the sticky **Selected** bar with Download summary / Change
   property, the ask box, the AI switch, a "New conversation" button); on the right a **Your property** panel (address,
   parcel, market / assessed / taxable value, homestead, 2026 tax, 2027 tax "as filed, before roll-forward", and

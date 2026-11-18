@@ -93,7 +93,7 @@ const CASES = [
 ];
 
 (async () => {
-  const exe = process.env.CHROME || "/opt/pw-browsers/chromium-1194/chrome-linux/chrome";
+  const exe = process.env.CHROME || "";
   const b = await chromium.launch(fs.existsSync(exe) ? { executablePath: exe } : {});
   const rows = [];
   for (const [i, c] of CASES.entries()) {

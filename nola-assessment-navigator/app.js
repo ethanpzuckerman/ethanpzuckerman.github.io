@@ -478,7 +478,7 @@
       `Date: ${today}`,
       selected ? `Property: ${String(selected.a).replace(/\s+/g, " ")} (parcel ${selected.id}), 2026 roll` : "Property: (not selected)",
       `My question: ${q || "(type your question here)"}`,
-      `What the NOLA Assessment Navigator (a student prototype, not an official tool) told me: ${answerText.slice(0, 500)}${answerText.length > 500 ? "…" : ""}`,
+      `What the NOLA Assessment Navigator (not an official tool) told me: ${answerText.slice(0, 500)}${answerText.length > 500 ? "…" : ""}`,
       "What I still need to know: "
     ].join("\n");
     return `<div class="handoff"><span class="prov-tag">Hand-off note</span>
@@ -498,7 +498,7 @@
     const css = "body{font-family:system-ui,sans-serif;max-width:760px;margin:24px auto;padding:0 16px;line-height:1.5;color:#1e1c1a}h1{font-size:22px}h2{font-size:16px;margin-top:22px;border-top:1px solid #ccc;padding-top:12px}h3{font-size:14px;margin:6px 0}table{border-collapse:collapse;width:100%;font-size:13px}th,td{border-bottom:1px solid #ddd;padding:4px 6px;text-align:left;vertical-align:top}.prov{border-left:3px solid #ccc;padding-left:10px;margin:8px 0}.prov-tag{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#555;display:block}.field,.srcline,.note{font-size:11px;color:#555}a.cite{font-size:11px}";
     const doc = `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Property summary: ${escapeHtml(selected.a)}</title><style>${css}</style></head><body>
 <h1>Property summary: ${escapeHtml(selected.a)}</h1>
-<p class="note">Made ${new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })} by the NOLA Assessment Navigator, a <strong>student prototype</strong>. Not an official document and not legal or tax advice. Confirm everything with the Orleans Parish Assessor's Office. Owner names are not shown.</p>
+<p class="note">Made ${new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })} by the NOLA Assessment Navigator. <strong>Not an official document</strong> and not legal or tax advice. Confirm everything with the Orleans Parish Assessor's Office. Owner names are not shown.</p>
 ${NolaProperty.card(selected, metaInfo)}${parts.join("")}
 <h2>Sources</h2><ol>${srcIds.map(id => SOURCES[id] ? `<li>[${id}] <a href="${SOURCES[id].url}">${SOURCES[id].label}</a></li>` : "").join("")}</ol></body></html>`;
     const a = document.createElement("a");
@@ -673,7 +673,7 @@ ${NolaProperty.card(selected, metaInfo)}${parts.join("")}
     });
     addMsg("bot", `<p>Hi! I answer general questions about property assessments in the <strong>City of New Orleans</strong>: how values are set, how your tax bill is calculated, exemptions like homestead, the 2027 reassessment, and how to appeal.</p>
 <p>To ask about <strong>your</strong> property, type its address or parcel ID in the search box (or right here), then confirm the record. Property answers use the <strong>2026 and 2027 rolls</strong> from the Louisiana Tax Commission, plus Census data about the neighborhood.</p>
-<p class="disclose"><strong>I'm a student prototype, not an official government tool.</strong> Information may be out of date, so always confirm with the Assessor's Office. I can't give legal or tax advice.</p>`);
+<p class="disclose"><strong>I'm not an official government tool.</strong> Information may be out of date, so always confirm with the Assessor's Office. I can't give legal or tax advice.</p>`);
     if (window.NolaAI) {
       NolaAI.init().then(ok => {
         setAIUI();

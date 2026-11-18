@@ -98,7 +98,8 @@ kbd { font: 600 11px/1 var(--font-body); padding: 3px 6px; border: 1px solid var
 
 /* ---------- Hero ---------- */
 .hero { background: radial-gradient(1200px 400px at 85% -10%, rgba(228, 185, 106, .22), transparent 60%), linear-gradient(180deg, var(--navy) 0%, var(--navy-2) 100%); color: var(--on-navy); padding-block: 56px 64px; }
-.hero-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 48px; align-items: center; }
+.hero-grid { display: grid; grid-template-columns: minmax(0, 1fr); }
+.hero-grid > div { max-width: 760px; }
 .eyebrow { margin: 0 0 10px; font-size: 12px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--gold); }
 .hero .eyebrow { color: var(--gold-bright); }
 .hero h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(32px, 4.6vw, 52px); letter-spacing: -.015em; margin: 0 0 14px; text-wrap: balance; }

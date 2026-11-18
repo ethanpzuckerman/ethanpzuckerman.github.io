@@ -41,7 +41,7 @@ const CASES = [
 ];
 
 (async () => {
-  const b = await chromium.launch({ executablePath: process.env.CHROME || "/opt/pw-browsers/chromium-1194/chrome-linux/chrome" });
+  const b = await chromium.launch(process.env.CHROME && require("fs").existsSync(process.env.CHROME) ? { executablePath: process.env.CHROME } : {});
   const p = await b.newPage({ viewport: { width: 820, height: 1000 }, deviceScaleFactor: 2 });
   await p.route(/fonts\.(googleapis|gstatic)\.com/, r => r.abort());
   const rows = [];

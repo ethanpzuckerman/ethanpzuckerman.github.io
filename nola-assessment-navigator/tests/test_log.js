@@ -30,7 +30,7 @@ const DEMO = [
 const WITHHELD = { 4: "a home with an assessment freeze", 5: "a home with a full disabled-veteran exemption", 7: "the frozen home from test 4" };
 
 (async () => {
-  const exe = process.env.CHROME || "/opt/pw-browsers/chromium-1194/chrome-linux/chrome";
+  const exe = process.env.CHROME || "";
   const b = await chromium.launch(fs.existsSync(exe) ? { executablePath: exe } : {});
   fs.mkdirSync(path.join(ROOT, SHOTS), { recursive: true });
   const newPage = async () => {

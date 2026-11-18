@@ -104,7 +104,7 @@
 
   function answerText(m) {
     return [...m.children].filter(el => !el.matches(".msg-actions, .handoff")).map(el => el.innerText).join("\n\n").trim()
-      + "\n\n(From the NOLA Assessment Navigator, a student prototype. Confirm with the Orleans Parish Assessor's Office.)";
+      + "\n\n(From the NOLA Assessment Navigator, not an official tool. Confirm with the Orleans Parish Assessor's Office.)";
   }
 
   /* ---------- Jump to latest ---------- */

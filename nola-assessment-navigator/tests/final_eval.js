@@ -9,7 +9,7 @@ const URL = process.argv[2] || "http://localhost:8765/index.html";
 const SHOTS = path.join(__dirname, "../docs/screenshots/final");
 
 (async () => {
-  const exe = process.env.CHROME || "/opt/pw-browsers/chromium-1194/chrome-linux/chrome";
+  const exe = process.env.CHROME || "";
   const browser = await chromium.launch(require("fs").existsSync(exe) ? { executablePath: exe } : {});
   const results = [];
   const errors = [];
