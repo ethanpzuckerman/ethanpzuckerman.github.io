@@ -11,7 +11,8 @@ Inputs (data/raw/box/, git-ignored because they're large):
 Outputs:
   data/outside/zillow_zhvi_orleans_zips.csv   the 17 Orleans Parish ZIP rows, every month (saved copy of the source)
   data/outside/zcta_tract_orleans.csv         each Orleans census tract's ZIP areas and land-area shares
-  data/web/2026/zhvi.json                     what the chatbot loads
+  data/web/2026/zhvi.json                     what the chatbot loads (incl. monthly values since 2020 for the chart)
+With --series-only, only the monthly series is (re)added from data/outside/, so the raw files aren't needed.
 
 How a parcel gets a ZIP: parcel ID → census block group (course crosswalk, export_web.py) → its census tract → the
 ZIP area that covers the most of that tract's land. That's approximate, so the app says "most of this census tract
@@ -78,9 +79,32 @@ def main():
         "range": [chg[0], chg[len(chg) // 2], chg[-1]],   # lowest, middle, highest change since the base month, across Orleans ZIPs
         "zips": zips, "tract": tract,
     }
+    add_series(doc)
     OUT.write_text(json.dumps(doc, separators=(",", ":")))
     print(f"wrote {OUT}: {len(zips)} ZIPs, {len(tract)} tracts mapped; change since {BASE}: {chg[0]:+.1%} to {chg[-1]:+.1%} (middle {chg[len(chg)//2]:+.1%}); latest {latest}")
 
 
+SERIES_FROM = "2020-01"   # monthly values from here on feed the ZIP trend chart
+
+
+def add_series(doc):
+    """Monthly typical home value per ZIP since SERIES_FROM, read from the saved Orleans copy of the Zillow file.
+    Stored as doc["months"] (first month, count) and zips[zip]["m"] (whole dollars; null where Zillow has no value)."""
+    rows = list(csv.DictReader((ROOT / "data/outside/zillow_zhvi_orleans_zips.csv").open(encoding="utf-8-sig")))
+    months = [c for c in rows[0] if c[:2] == "20" and c[:7] >= SERIES_FROM]
+    doc["months"] = {"from": months[0][:7], "n": len(months)}
+    for r in rows:
+        z = doc["zips"].get(r["RegionName"])
+        if z is not None:
+            z["m"] = [round(float(r[m])) if r[m] else None for m in months]
+
+
 if __name__ == "__main__":
-    main()
+    import sys
+    if "--series-only" in sys.argv:   # raw inputs not needed: update the existing zhvi.json from data/outside/
+        doc = json.loads(OUT.read_text())
+        add_series(doc)
+        OUT.write_text(json.dumps(doc, separators=(",", ":")))
+        print(f"added {doc['months']['n']} months from {doc['months']['from']} to {OUT}")
+    else:
+        main()

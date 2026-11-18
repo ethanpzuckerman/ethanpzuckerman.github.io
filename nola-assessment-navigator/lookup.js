@@ -64,7 +64,34 @@
       return res;
     }
 
-    return { find, byId, meta };
+    /* Nearby parcels from the location index (pipeline/near_index.py): every parcel within radius metres,
+       nearest first, as { id, a, occ, tmv, t26, lat, lon, dist }. Loads only the grid cells the circle touches. */
+    const CELL = 0.02, cells = new Map();
+    const cellFile = (i, j) => {
+      const k = i + "_" + j;
+      if (!cells.has(k)) cells.set(k, loadJSON(`n_${k}.json`).catch(() => []));
+      return cells.get(k);
+    };
+    const metres = (lat1, lon1, lat2, lon2) => {
+      const R = 6371000, toR = Math.PI / 180, dLat = (lat2 - lat1) * toR, dLon = (lon2 - lon1) * toR;
+      const h = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * toR) * Math.cos(lat2 * toR) * Math.sin(dLon / 2) ** 2;
+      return 2 * R * Math.asin(Math.sqrt(h));
+    };
+    async function near(lat, lon, radius) {
+      if (typeof lat !== "number" || typeof lon !== "number") return [];
+      const dLat = radius / 111000, dLon = radius / (111000 * Math.cos(lat * Math.PI / 180));
+      const jobs = [];
+      for (let i = Math.floor((lat - dLat) / CELL); i <= Math.floor((lat + dLat) / CELL); i++)
+        for (let j = Math.floor(-(lon + dLon) / CELL); j <= Math.floor(-(lon - dLon) / CELL); j++) jobs.push(cellFile(i, j));
+      const out = [];
+      for (const rows of await Promise.all(jobs)) for (const x of rows) {
+        const dist = metres(lat, lon, x[5], x[6]);
+        if (dist <= radius) out.push({ id: x[0], a: x[1], occ: x[2], tmv: x[3], t26: x[4], lat: x[5], lon: x[6], dist });
+      }
+      return out.sort((p, q) => p.dist - q.dist);
+    }
+
+    return { find, byId, meta, near, metres };
   }
 
   const api = { create, shardKey };

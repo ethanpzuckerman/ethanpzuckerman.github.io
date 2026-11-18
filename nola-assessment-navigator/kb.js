@@ -43,7 +43,8 @@ const SOURCES = {
   S38: { label: "U.S. Census Bureau Geocoder — roll addresses matched to 2020 block groups (course crosswalk, 140,850 parcels)", url: "https://geocoding.geo.census.gov/geocoder/", official: true },
   S39: { label: "U.S. Census Bureau — American Community Survey 2020–2024 5-year estimates, block groups (course data)", url: "https://www.census.gov/programs-surveys/acs", official: true },
   S40: { label: "Zillow Research — Zillow Home Value Index by ZIP code, through Sept. 2026 (course data; a private company's estimate)", url: "https://www.zillow.com/research/data/", official: false },
-  S41: { label: "U.S. Census Bureau — 2020 ZIP Code Tabulation Area to census tract relationship file", url: "https://www.census.gov/geographies/reference-files/time-series/geo/relationship-files.2020.html", official: true }
+  S41: { label: "U.S. Census Bureau — 2020 ZIP Code Tabulation Area to census tract relationship file", url: "https://www.census.gov/geographies/reference-files/time-series/geo/relationship-files.2020.html", official: true },
+  S42: { label: "City of New Orleans — Tax Bill Search: official property tax bills by year, 2008 on (checked Nov. 18, 2026)", url: "https://taxbills.nola.gov/", official: true }
 };
 
 /* keywords: single words (weight 1). core: the entry's main subject words (weight 2 more).
@@ -125,6 +126,18 @@ const ENTRIES = [
     sources: ["S11", "S1", "S2", "S30"]
   },
   {
+    id: "neighborhood-taxes", topic: "From value to tax bill",
+    title: "Do property taxes differ by neighborhood?",
+    core: ["neighborhood", "neighborhoods", "area", "areas"],
+    keywords: ["neighborhood", "neighborhoods", "area", "areas", "differ", "different", "difference", "compare", "higher", "lower", "uptown", "algiers", "taxes", "rates", "where"],
+    phrases: ["differ by neighborhood", "by neighborhood", "different neighborhoods", "neighborhood taxes", "taxes in my neighborhood", "which neighborhood", "higher taxes in", "lower taxes in", "tax rates by area", "same tax rate", "east bank and algiers", "neighborhoods pay"],
+    answer: `<p><strong>The rate is almost the same everywhere; the bills are not.</strong> Every parcel in the City pays the same 121.20 citywide mills plus a levee district: 2026 totals are <strong>131.99 mills on the East Bank and 132.01 in Algiers</strong> <cite>S11</cite><cite>S30</cite>. On the 2027 roll the East Bank levee rate rises, so the totals are 133.48 and 132.01 <cite>S31</cite>.</p>
+<p><strong>What does differ by neighborhood:</strong> (1) <strong>property values</strong>, which drive most of the difference; (2) <strong>homestead</strong>, which is on about 54% of residential parcels citywide but from about 7% to 88% depending on the area; and (3) <strong>special districts</strong> billed on top in some neighborhoods, such as the Downtown Development District (13.73 mills), the Garden District Security District (7.13 mills) and flat security fees like Lakeview's $150 or Upper Audubon's $700 a year <cite>S11</cite>. The state roll doesn't include those special charges.</p>
+<p><strong>How big the gap is (calculated by the Navigator from the 2026 roll):</strong> across the 264 roll subdivisions with at least 100 residential parcels, the middle (median) computed 2026 tax ranges from about <strong>$495</strong> (Parc Fontaine, Algiers) to about <strong>$12,559</strong> (Rickerville, Uptown). The citywide residential median is <strong>$2,453</strong> <cite>S30</cite>. Those medians follow the medians of market value, about $42,500 and $1,058,700 in those two areas.</p>
+<p>To see your own area, find your property and open its dashboard, or ask "How does my property compare to others in my area?"</p>`,
+    sources: ["S11", "S30", "S31"]
+  },
+  {
     id: "mill", topic: "From value to tax bill",
     title: "What a mill (millage rate) is",
     core: ["mill","millage"],
@@ -146,6 +159,17 @@ const ENTRIES = [
 <p><strong>For 2027:</strong> the City proposed rolling forward a list of city millages by about 7.44 mills in total, for example General Alimony from 12.23 to 13.91 <cite>S11</cite>. Fox 8 estimated that at about $178 a year on a $300,000 homesteaded home <cite>S19</cite>. On <strong>Nov. 5, 2026</strong> the City Council unanimously approved a smaller, partial roll-forward totaling <strong>4.039 mills</strong> <cite>S33</cite>. I don't know the final rate for each millage yet.</p>
 <p>The 2027 roll the Assessor filed with the state on Sept. 4, 2026 came before that vote: it still lists General Alimony at 12.23 mills <cite>S31</cite>. So the 2027 tax figures in that file are probably <strong>lower than the bills will be</strong>.</p>`,
     sources: ["S15", "S11", "S19", "S33", "S31"]
+  },
+  {
+    id: "official-bill", topic: "From value to tax bill",
+    title: "Where to see your official tax bill",
+    core: ["bill", "bills", "copy"],
+    keywords: ["official", "bill", "bills", "copy", "see", "view", "find", "download", "pdf", "print", "my", "tax", "statement", "where", "online", "old", "past", "previous"],
+    phrases: ["official bill", "see my bill", "view my bill", "copy of my bill", "find my tax bill", "my tax bill", "download my bill", "pdf of my bill", "print my bill", "past bills", "previous bill", "tax bill online", "tax statement"],
+    answer: `<p><strong>The City of New Orleans posts every property tax bill online.</strong> Use its Tax Bill Search at <a href="https://taxbills.nola.gov/" target="_blank" rel="noopener">taxbills.nola.gov</a>, which covers bills from 2008 on and searches by property location or tax bill number <cite>S42</cite>, or the City's page for finding and paying your bill <cite>S27</cite>. 2026 bills were due Feb. 28, 2026 <cite>S35</cite>.</p>
+<p><strong>Faster:</strong> find your property here and press <strong>2026 bill (PDF)</strong> in the Your property panel. It opens the City's own copy for that parcel in a new tab. The Navigator only links to it; the bill shows the owner's name, so the Navigator never reads or stores it.</p>
+<p>The official bill is the amount you owe. It can differ from the tax computed on the state roll, which the Navigator shows, because of adjustments, special-district fees or installments. If they differ, the bill wins; questions about it go to the Bureau of the Treasury.</p>`,
+    sources: ["S42", "S27", "S35"], contact: true
   },
   {
     id: "bill-due", topic: "From value to tax bill",

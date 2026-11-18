@@ -8,16 +8,17 @@
   <meta name="theme-color" content="#0d1b2a" />
   <meta property="og:title" content="NOLA Assessment Navigator" />
   <meta property="og:description" content="Look up any New Orleans property, see its assessment and tax, and get plain-language answers with sources." />
-  <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=optional" onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=optional" /></noscript>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <a class="skip" href="#q">Skip to the question box</a>
 
-  <div class="banner" role="note">
+  <section class="banner" aria-label="Disclaimer">
     <div class="wrap banner-row">
       <p><strong>Not an official government tool</strong>, and not legal or tax advice. Confirm everything with the
       <a href="https://www.nolaassessor.com/" target="_blank" rel="noopener">Orleans Parish Assessor's Office</a>.</p>
@@ -30,25 +31,25 @@
       </div>
       <div>
         <strong>Every number shows where it came from</strong>
-        <p>Each answer cites its source (S1–S41) and labels figures as recorded in the roll, calculated, or explained. Check any of them with one click.</p>
+        <p>Each answer cites its source (S1–S42) and labels figures as recorded in the roll, calculated, or explained. Check any of them with one click.</p>
       </div>
     </div>
-  </div>
+  </section>
 
   <header class="nav" id="top">
     <div class="wrap nav-row">
       <a class="brand" href="#top" aria-label="NOLA Assessment Navigator, home">
-        <svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#0d1b2a"/><path d="M8 16.5 16 9l8 7.5V24a1 1 0 0 1-1 1h-4.5v-5.5h-5V25H9a1 1 0 0 1-1-1z" fill="#e4b96a"/></svg>
+        <svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#0d1b2a"/><path d="M7.5 13.2 13.5 7l6 6.2V25h-12z" fill="none" stroke="#e4b96a" stroke-width="1.9" stroke-linejoin="round"/><path d="M5.8 15.3h15.4" stroke="#e4b96a" stroke-width="1.9" stroke-linecap="round"/><path d="M9.6 25v-6.2M17.4 25v-6.2" stroke="#e4b96a" stroke-width="1.5"/><path d="M12 25v-4.4h3V25" fill="#e4b96a"/><circle cx="23.3" cy="22.3" r="5.2" fill="#e4b96a"/><path d="m20.9 22.4 1.7 1.7 3.2-3.4" fill="none" stroke="#0d1b2a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <span><strong>NOLA</strong> Assessment Navigator</span>
       </a>
       <nav class="nav-links" aria-label="Sections">
         <a href="#app">Ask</a>
+        <a href="#dash" data-dash-link hidden>My property</a>
         <a href="#how">How it works</a>
         <a href="#data">Data &amp; sources</a>
         <a href="#limits">Limits</a>
       </nav>
       <div class="nav-actions">
-        <span class="pill">Prototype</span>
         <button type="button" class="icon-btn" id="theme" aria-label="Switch between light and dark mode" title="Light / dark">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z" fill="currentColor"/></svg>
         </button>
@@ -56,6 +57,7 @@
     </div>
   </header>
 
+  <main id="main">
   <section class="hero">
     <div class="wrap hero-grid">
       <div>
@@ -80,23 +82,23 @@
         </ol>
         <p class="built-from">Built from public records: Louisiana Tax Commission · City of New Orleans · U.S. Census Bureau · Zillow Research</p>
       </div>
-      <button type="button" class="preview" data-try="1205 St. Charles Ave, Apt 607" aria-label="Open the example property, 1205 St. Charles Ave, Apt 607">
+      <button type="button" class="preview" data-id="102000079" data-try="1205 St. Charles Ave, Apt 607">
         <span class="preview-tag">Example property</span>
         <span class="preview-addr">1205 St. Charles Ave, Apt 607</span>
         <span class="preview-meta">Residential · Values as of Jan. 1, 2023</span>
         <span class="preview-grid">
-          <span><em>Market value</em><strong>$145,700</strong></span>
-          <span><em>Homestead</em><strong>$7,500</strong></span>
-          <span><em>2026 tax</em><strong>$1,019</strong></span>
-          <span><em>2027 tax</em><strong>$1,030</strong></span>
+          <span><em>Market value</em><strong data-k="tmv">$145,700</strong></span>
+          <span><em>Homestead</em><strong data-k="hs">$7,500</strong></span>
+          <span><em>2026 tax</em><strong data-k="t26">$1,019</strong></span>
+          <span><em>2027 tax</em><strong data-k="t27">$1,030</strong></span>
         </span>
-        <span class="preview-check">✓ Matches the roll to the cent: $14,570 × 131.99 mills ÷ 1,000 − $904 homestead = $1,019</span>
+        <span class="preview-check">✓ Matches the roll to the cent: <b data-k="tav">$14,570</b> × <b data-k="mills">131.99</b> mills ÷ 1,000 − <b data-k="th26">$904</b> homestead = <b data-k="t26">$1,019</b></span>
         <span class="preview-cta">Open this property →</span>
       </button>
     </div>
   </section>
 
-  <main class="wrap app" id="app">
+  <div class="wrap app" id="app">
     <section class="panel chat" aria-label="Conversation">
       <div class="panel-head">
         <div>
@@ -166,7 +168,64 @@
         </ul>
       </section>
     </aside>
-  </main>
+  </div>
+
+  <section class="dash" id="dash" aria-labelledby="dash-addr" hidden>
+    <div class="wrap">
+      <div class="dash-head">
+        <div>
+          <p class="eyebrow">Property dashboard</p>
+          <h2 id="dash-addr">Your property</h2>
+          <p class="dash-meta" id="dash-meta"></p>
+        </div>
+        <div class="dash-actions">
+          <a class="btn" id="dash-bill" href="https://taxbills.nola.gov/" target="_blank" rel="noopener">View official 2026 bill</a>
+          <button type="button" class="btn ghost" id="pin-compare" data-dash="pin" aria-pressed="false">Add to comparison</button>
+          <a class="btn ghost" href="#app">Back to the conversation</a>
+        </div>
+      </div>
+
+      <div class="dash-grid">
+        <section class="tile tile-map" aria-labelledby="map-title">
+          <div class="tile-head"><h3 id="map-title">Location and neighbors</h3>
+            <ul class="map-legend" id="map-legend"><li><span class="lg lg-this"></span>This property</li><li><span class="lg lg-sim"></span>Similar</li><li><span class="lg lg-other"></span>Other parcels nearby</li></ul></div>
+          <div id="map" class="map" role="region" aria-label="Map of the parcel and nearby parcels"></div>
+          <p class="chart-note" id="map-note">Parcel positions from the roll's census match. Click a marker to compare it.</p>
+        </section>
+
+        <section class="tile" aria-labelledby="hist-title">
+          <div class="tile-head"><h3 id="hist-title">Tax history</h3></div>
+          <div id="chart-history"></div>
+        </section>
+
+        <section class="tile" aria-labelledby="levy-title">
+          <div class="tile-head"><h3 id="levy-title">Where your 2026 tax goes</h3></div>
+          <div id="chart-breakdown"></div>
+        </section>
+
+        <section class="tile tile-2" aria-labelledby="hood-title">
+          <div class="tile-head"><h3 id="hood-title">Taxes in this neighborhood</h3></div>
+          <div id="chart-hood"></div>
+        </section>
+
+        <section class="tile tile-wide" aria-labelledby="zip-title">
+          <div class="tile-head"><h3 id="zip-title">Home values in this ZIP</h3></div>
+          <div id="chart-zip"></div>
+        </section>
+
+        <section class="tile tile-wide" aria-labelledby="sim-title">
+          <div class="tile-head"><h3 id="sim-title">Similar properties nearby</h3><span class="tile-sub">Recommended for comparison</span></div>
+          <div id="similar"></div>
+        </section>
+
+        <section class="tile tile-wide" id="compare" aria-labelledby="cmp-title">
+          <div class="tile-head"><h3 id="cmp-title">Compare side by side</h3><span class="tile-sub" id="compare-count"></span>
+            <button type="button" class="link-plain" data-dash="clear-compare">Clear comparison</button></div>
+          <div id="compare-table"></div>
+        </section>
+      </div>
+    </div>
+  </section>
 
   <section class="section" id="how">
     <div class="wrap">
@@ -227,6 +286,8 @@
     </div>
   </section>
 
+  </main>
+
   <footer class="foot">
     <div class="wrap foot-grid foot-grid-4">
       <div>
@@ -262,5 +323,6 @@
   <script src="ai.js"></script>
   <script src="app.js"></script>
   <script src="ui.js"></script>
+  <script src="dash.js"></script>
 </body>
 </html>

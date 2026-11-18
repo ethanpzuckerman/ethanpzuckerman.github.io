@@ -526,7 +526,89 @@ ${row("Computed tax", `${usd(r.t26 || 0)} → ${usd(r.t27)}`, "LTC millage files
     return L;
   }
 
-  const api = { card, candidateLine, answer, intentOf, context, facts, nextRoll };
+  /* ---------- Where the 2026 tax goes (dashboard chart) ----------
+     The City's 2026 millage table [S11]: 121.20 citywide mills, of which these are named; the levee district is
+     the rest of the parcel's total on the roll (10.79 East Bank, 10.81 Algiers) [S30]. Homestead reduces every
+     levy except police and fire "without homestead exemption" (11.51) [S11][S30]. Returned only when the parts
+     add up to the recorded 2026 tax within $1, so the chart never shows a split that disagrees with the roll. */
+  const LEVIES_2026 = [
+    ["School Board", 45.31], ["Board of Liquidation (city debt)", 14.50], ["Sewerage & Water Board drainage", 14.26],
+    ["City general fund (alimony)", 12.23], ["Libraries, parks, early childhood and other City levies", 20.93],
+    ["Law Enforcement District", 2.46]
+  ];
+  function taxBreakdown(raw, meta) {
+    const r = rec(raw);
+    const total = meta && meta.mills && meta.mills["2026"] ? meta.mills["2026"][r.d] : null;
+    if (!total || typeof r.t26 !== "number" || r.t26 <= 0 || isExempt(r) || r.oe || r.ve || r.fr) return null;
+    const levee = Math.round((total - 121.20) * 100) / 100;
+    const onTaxable = m => r.tx * m / 1000;
+    const rows = LEVIES_2026.map(([label, mills]) => ({ label, mills, amount: onTaxable(mills) }));
+    rows.push({ label: (r.d === "5" ? "Algiers" : "Orleans (East Bank)") + " Levee District", mills: levee, amount: onTaxable(levee) });
+    rows.push({ label: "Police and fire (homestead doesn't reduce)", mills: NO_HS_MILLS, amount: r.tav * NO_HS_MILLS / 1000, noHs: true });
+    const sum = rows.reduce((t, x) => t + x.amount, 0);
+    if (Math.abs(sum - r.t26) > 1) return null;
+    rows.sort((x, y) => y.amount - x.amount);
+    return { rows, sum, recorded: r.t26, mills: total, sources: ["S11", "S30"] };
+  }
+
+  // Normalized record for side-by-side comparison (defaults filled in, 2027 values resolved).
+  function compareRecord(raw, meta) {
+    const r = rec(raw);
+    const hz = meta ? zipOf(r, meta) : null;
+    return { id: r.id, a: r.a, occ: occKey(r), sub: r.sub || "", yb: r.yb || "", d: r.d, w: r.w,
+      tmv: r.tmv, tav: r.tav, hs: r.hs, tx: r.tx, t26: r.t26, t27: r.has27 ? r.t27 : null, a27: r.a27, h27: r.h27,
+      fz: r.fz !== "0", exempt: isExempt(r), zip: hz ? hz.zip : null, zipChg: hz && hz.z ? hz.z.chg : null,
+      per1k: r.tmv > 0 && typeof r.t26 === "number" ? r.t26 / r.tmv * 1000 : null, lat: r.lat, lon: r.lon };
+  }
+
+  /* Similar properties for "Compare": same property type, market value within 30%, within 1.5 km, each with a
+     2026 tax. Ranked by closeness in value and distance. At most two from one building (same coordinates), so a
+     condo tower doesn't fill the list. Returns up to `max`, nearest match first. Not an appraisal. */
+  const SIMILAR = { valueBand: 0.30, radius: 1500 };
+  function similar(raw, nearby, max = 5) {
+    const r = rec(raw), type = occKey(r);
+    if (!(r.tmv > 0)) return [];
+    const perSpot = new Map(), out = [];
+    const scored = nearby.filter(x => x.id !== r.id && x.occ === type && x.tmv > 0 && typeof x.t26 === "number" &&
+        Math.abs(x.tmv / r.tmv - 1) <= SIMILAR.valueBand && x.dist <= SIMILAR.radius)
+      .map(x => Object.assign({ score: Math.abs(Math.log(x.tmv / r.tmv)) * 3 + x.dist / SIMILAR.radius }, x))
+      .sort((p, q) => p.score - q.score);
+    for (const x of scored) {
+      const spot = x.lat + "," + x.lon, k = perSpot.get(spot) || 0;
+      if (k >= 2) continue;
+      perSpot.set(spot, k + 1);
+      out.push(x);
+      if (out.length >= max) break;
+    }
+    return out;
+  }
+
+  // Tax history for the chart: recorded 2026 and 2027 tax, plus the calculated range the Nov. 5 roll-forward
+  // could add to 2027 (same formula as the tax answer: mills × taxable to mills × assessed, ÷ 1,000) [S30][S31][S33].
+  function taxHistory(raw) {
+    const r = rec(raw);
+    if (typeof r.t26 !== "number") return null;
+    const rows = [{ year: "2026", tax: r.t26 }];
+    if (r.has27) rows.push({ year: "2027", tax: r.t27, lo: ROLL_FORWARD_2027 * r.x27 / 1000, hi: ROLL_FORWARD_2027 * r.a27 / 1000 });
+    return { rows, rollForward: ROLL_FORWARD_2027, sources: r.has27 ? ["S30", "S31", "S33"] : ["S30"] };
+  }
+
+  /* Neighborhood comparison for the dashboard: the parcel's area group (roll subdivision → ward → city, same
+     property type) against the whole city, plus where the area's median tax ranks among comparable areas.
+     Distributions only (CLAUDE.md §3 rule 6): nothing here says what a parcel should be worth. */
+  function neighborhood(raw, meta) {
+    const r = rec(raw), areas = meta && meta.areas, a = areaGroup(r, areas);
+    if (!a) return null;
+    const occ = occKey(r), city = (areas.city || {})[occ] || null;
+    const peers = Object.entries(areas.sub || {}).filter(([k, g]) => k.endsWith("|" + occ) && g.n >= 50 && typeof g.t26 === "number");
+    let rank = null;
+    if (a.level === "sub" && typeof a.g.t26 === "number" && peers.length > 10)
+      rank = { below: peers.filter(([, g]) => g.t26 < a.g.t26).length / peers.length, n: peers.length };
+    const range = peers.length ? { lo: Math.min(...peers.map(([, g]) => g.t26)), hi: Math.max(...peers.map(([, g]) => g.t26)) } : null;
+    return { level: a.level, label: plain(a.label), kind: a.kind, area: a.g, city, rank, range, mine: { t26: r.t26, tmv: r.tmv, hs: r.hs > 0 }, mills: meta.mills && meta.mills["2026"] ? meta.mills["2026"][r.d] : null };
+  }
+
+  const api = { card, candidateLine, answer, intentOf, context, facts, nextRoll, taxBreakdown, compareRecord, similar, SIMILAR, taxHistory, neighborhood, zipOf: (r, m) => zipOf(rec(r), m) };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.NolaProperty = api;
 })(typeof window !== "undefined" ? window : this);

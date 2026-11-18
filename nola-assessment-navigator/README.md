@@ -21,13 +21,14 @@ tool and doesn't give legal or tax advice.
 
 | File | What it is |
 |---|---|
-| `index.html`, `style.css` | Chat page |
-| `kb.js` | Knowledge base: sources (S1–S41) and 33 answer entries |
+| `index.html`, `style.css` | The site: search, chat, property panel, dashboard, sections |
+| `kb.js` | Knowledge base: sources (S1–S42) and 35 answer entries |
 | `app.js` | Matching, guardrails, date logic, lookup flow and rendering |
 | `address.js`, `lookup.js` | Address normalizing/matching and the property search |
-| `property.js` | Answers about the selected property |
+| `property.js` | Answers about the selected property, plus the dashboard's figures (tax by levy, neighborhood, similar properties) |
+| `ui.js`, `dash.js` | Page behavior and the property dashboard (map, charts, compare); they draw, never compute |
 | `pipeline/` | Data pipeline (below) |
-| `tests/` | Address unit tests, 19-address evaluation, 10-question chatbot evaluation, property-answer sweep |
+| `tests/` | Address tests, chatbot and owner-question evaluations, property sweep, end-to-end and dashboard checks |
 
 ## Rebuild the data
 

@@ -85,15 +85,32 @@
         <div><dt>Valuation date</dt><dd>Jan. 1, 2023</dd></div>
       </dl>
       <div class="prop-actions">
-        <button type="button" class="btn" data-act="ask-tax">Explain my tax</button>
+        <button type="button" class="btn" data-act="dash">Open dashboard</button>
+        <button type="button" class="btn ghost" data-act="ask-tax">Explain my tax</button>
         <button type="button" class="btn ghost" data-act="download">Download summary</button>
         <button type="button" class="btn ghost" data-act="share">Copy link</button>
         <button type="button" class="btn ghost" data-act="clear">Change</button>
       </div>
+      ${billLinks(r.id)}
       <p class="fine">Values as of Jan. 1, 2023. Source: Louisiana Tax Commission. Special-district fees not included.</p>`;
     empty.hidden = true;
     body.hidden = false;
     body.dataset.id = r.id;
+  }
+
+  // Official bills: the City posts each year's bill as a PDF named by parcel ID (checked Nov. 18, 2026) [S42].
+  // We only link to them: the bill names the owner, so the Navigator never reads, shows or stores it.
+  const billUrl = (id, year) => `https://taxbills.nola.gov/pdfs/${year}/${encodeURIComponent(id)}.pdf`;
+  function billLinks(id) {
+    return `<div class="bills">
+        <p class="bills-title">Official tax bill <span class="ext-note">City of New Orleans</span></p>
+        <div class="bills-row">
+          <a class="btn" href="${billUrl(id, 2026)}" target="_blank" rel="noopener">2026 bill (PDF)</a>
+          <a class="btn ghost" href="${billUrl(id, 2025)}" target="_blank" rel="noopener">2025 bill</a>
+          <a class="btn ghost" href="https://taxbills.nola.gov/" target="_blank" rel="noopener">Other years</a>
+        </div>
+        <p class="fine">Opens the City's own copy in a new tab. The bill is the official amount and can differ from the roll's computed tax (adjustments, special-district fees, installments). It shows the owner's name; the Navigator doesn't read or keep it. If the link doesn't open your bill, search by address at taxbills.nola.gov or nola.gov/find-tax-bill.</p>
+      </div>`;
   }
 
   // Tax history, the way property sites show it: one row per roll, with the change between them.
@@ -116,6 +133,7 @@
       if (m.querySelector(".picks") || /^Searching/.test(m.textContent.trim())) return; // lookup lists stay plain
       if (!m.querySelector(".sources, .prov, .contacts, .pcard")) return;
       m.dataset.decorated = "1";
+      clampLong(m);
       const bar = document.createElement("div");
       bar.className = "msg-actions";
       bar.innerHTML = `<button type="button" data-act="copy-answer" title="Copy this answer">Copy answer</button>`;
@@ -123,8 +141,27 @@
     });
   }
 
+  // Long property answers repeat the panel's numbers; show the first part with a "Show full answer" toggle.
+  // The text stays in the page (only its height is limited), so copy, search and screen readers still get all of it.
+  const CLAMP_PX = 460;
+  function clampLong(m) {
+    if (!m.querySelector(".ptable, .prov") || m.querySelector(".msg-body")) return;
+    requestAnimationFrame(() => {
+      if (m.scrollHeight < CLAMP_PX + 160) return;
+      const body = document.createElement("div");
+      body.className = "msg-body";
+      [...m.children].filter(el => !el.matches(".sources, .contacts, .handoff-btn, .handoff, .msg-actions, .ai, .msg-more")).forEach(el => body.appendChild(el));
+      m.insertBefore(body, m.firstChild);
+      m.classList.add("clamped");
+      const more = document.createElement("button");
+      more.type = "button"; more.className = "msg-more"; more.dataset.act = "more";
+      more.setAttribute("aria-expanded", "false"); more.textContent = "Show full answer";
+      body.after(more);
+    });
+  }
+
   function answerText(m) {
-    return [...m.children].filter(el => !el.matches(".msg-actions, .handoff")).map(el => el.innerText).join("\n\n").trim()
+    return [...m.children].filter(el => !el.matches(".msg-actions, .handoff, .msg-more")).map(el => el.textContent.replace(/[ \t]+/g, " ").replace(/\n\s*\n+/g, "\n").trim()).join("\n\n").trim()
       + "\n\n(From the NOLA Assessment Navigator, not an official tool. Confirm with the Orleans Parish Assessor's Office.)";
   }
 
@@ -194,6 +231,13 @@
       if (!b) return;
       const act = b.dataset.act;
       if (act === "copy-answer") copy(answerText(b.closest(".msg")), "Answer copied");
+      if (act === "dash") { const d = $("#dash"); if (d && !d.hidden) d.scrollIntoView({ behavior: "smooth", block: "start" }); }
+      if (act === "more") {
+        const m = b.closest(".msg"), open = m.classList.toggle("expanded");
+        b.textContent = open ? "Show less" : "Show full answer";
+        b.setAttribute("aria-expanded", String(open));
+        if (!open) m.scrollIntoView({ block: "nearest" });
+      }
       if (act === "ask-tax") { window.NavigatorBot && NavigatorBot.ask("How much tax will I pay?"); $("#app").scrollIntoView({ behavior: "smooth", block: "start" }); }
       if (act === "download" && window.NavigatorBot) NavigatorBot.downloadSummary();
       if (act === "clear" && window.NavigatorBot) NavigatorBot.clearProperty();
@@ -221,11 +265,15 @@
     fillSources();
     setupNav();
 
+    // The example card's numbers are written in the page and checked against the data by tests/example_card.js,
+    // so loading the page doesn't download the parcel index.
+
     // Deep link: #p=<parcel id> opens that property.
     const h = decodeURIComponent((location.hash || "").slice(1));
     if (h.startsWith("p=") && h.length > 2) setTimeout(() => findProperty(h.slice(2), true), 50);
   }
 
+  window.NavigatorUI = { findProperty, toast, billUrl };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
   else init();
 })();

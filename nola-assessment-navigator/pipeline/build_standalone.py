@@ -30,10 +30,10 @@ def main(out):
     html = (ROOT / "index.html").read_text()
     html = html.replace('<link rel="stylesheet" href="style.css" />', "<style>\n" + (ROOT / "style.css").read_text() + "\n</style>")
     html = re.sub(r'<link rel="icon"[^>]*>\n?', "", html)
-    scripts = "".join(f"<script>\n{(ROOT / js).read_text()}\n</script>\n" for js in ["kb.js", "address.js", "lookup.js", "property.js", "ai.js", "app.js", "ui.js"])
+    scripts = "".join(f"<script>\n{(ROOT / js).read_text()}\n</script>\n" for js in ["kb.js", "address.js", "lookup.js", "property.js", "ai.js", "app.js", "ui.js", "dash.js"])
     blob = "<script>window.NOLA_DATA = " + json.dumps(data, separators=(",", ":")) + ";</script>\n"
     # A function replacement, so backslashes in the JavaScript aren't read as regex escapes.
-    html = re.sub(r'\s*<script src="kb.js"></script>.*<script src="ui.js"></script>',
+    html = re.sub(r'\s*<script src="kb.js"></script>.*<script src="dash.js"></script>',
                   lambda m: "\n" + blob + LOADER + "\n" + scripts, html, flags=re.S)
     out.write_text(html)
     print(f"wrote {out} ({out.stat().st_size / 1e6:.1f} MB, {len(data)} data files embedded)")

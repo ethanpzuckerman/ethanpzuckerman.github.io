@@ -686,7 +686,7 @@ ${NolaProperty.card(selected, metaInfo)}${parts.join("")}
     if (hash.startsWith("q=")) ask(hash.slice(2));
   }
 
-  window.NavigatorBot = { answer, score, ask, propertyAnswerHtml, GENERAL_FIRST, kbText, downloadSummary, clearProperty, entryCount: ENTRIES.length };
+  window.NavigatorBot = { answer, score, ask, propertyAnswerHtml, GENERAL_FIRST, kbText, downloadSummary, clearProperty, entryCount: ENTRIES.length, lookup, ensureMeta, meta: () => metaInfo };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
   else init();
 })();

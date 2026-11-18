@@ -35,7 +35,7 @@ before it works.
 
 | Layer | Name | What it answers | Data | Status |
 |---|---|---|---|---|
-| 1 | **General guidance** | "How does this work?": FMV vs. assessed value, millage, exemptions, appeals, deadlines, payment, the 2027 reassessment | Curated knowledge base (`kb.js`, 33 entries) built from the sources in Section 2 | **Live** |
+| 1 | **General guidance** | "How does this work?": FMV vs. assessed value, millage, exemptions, appeals, deadlines, payment, the 2027 reassessment | Curated knowledge base (`kb.js`, 35 entries) built from the sources in Section 2 | **Live** |
 | 2 | **My property** | "What does this mean for *my* parcel?": find and confirm a parcel, then show its values, exemptions, freeze, recorded 2026/2027 tax, the next bill, the 2026 → 2027 change, and its census neighborhood | 2026 and 2027 LTC rolls (Section 3); the course's parcel → census block group crosswalk and ACS block-group data; the 2025 roll isn't available | **Live**: lookup + 21 question types, and general answers show the selected record |
 | 3 | **Market context** | "How does my parcel compare, and what has the market done?": (a) its value and 2026 → 2027 change vs. similar parcels in its area; (b) its census neighborhood; (c) Zillow's typical home value for its ZIP since the Jan. 1, 2023 valuation date; (d) the citywide sales-ratio pattern | Rolls aggregated by Subdivision × property type (`areas.json`); **outside data:** Census ACS block groups (`bg.json`) and Zillow ZHVI by ZIP (`zhvi.json`) | **Live (final)**: distributions and area figures only, never a judgment of one parcel (data rule 6) |
 
@@ -124,6 +124,12 @@ Assessed value is a fixed percentage of FMV, set by property class:
     Security District 7.13; Touro Bouligny 7.10; and neighborhood districts billed as flat fees (e.g. Broadmoor $100,
     Lakeview $150, Mid-City $195 per home, Upper Audubon $700) [S11]. The roll doesn't record which parcels are in
     them, so the chatbot says the recorded tax can be lower than the real bill.
+- **Do taxes differ by neighborhood? (calculated Nov. 18 from the 2026 roll [S30], `kb.js` `neighborhood-taxes`)**
+  The rate is the same citywide except the levee district (above), so differences come from values, homestead and
+  special districts. Across the 264 roll subdivisions with ≥100 residential parcels, the median computed 2026 tax
+  ranges from about **$495** (Parc Fontaine, Algiers; median market value $42,500) to about **$12,559**
+  (Rickerville; $1,058,700). Citywide residential median: **$2,453**; homestead on **54%** of residential parcels
+  (7%–88% by area).
 - **Homestead doesn't reduce two kinds of levy, 11.51 mills together:** the City's table labels them "Police –
   WITHOUT applying homestead exemption" (4.67) and "Fire – WITHOUT applying homestead exemption" (4.62 and 2.22)
   [S11]. The 2026 state file names them "POLICE W/O H.E." (9.29) and "FIRE W/O H.E." (2.22) [S30]; the 2027 file
@@ -421,8 +427,11 @@ Column positions are documented in `pipeline/ltc_roll.py`.
 2. `python3 pipeline/data_dictionary.py`: the data dictionary.
 3. `python3 pipeline/export_web.py && node pipeline/shard.js && python3 pipeline/area_stats.py && python3 pipeline/census_bg.py`:
    public fields → `data/web/2026/` (241 street files + `meta.json` + `ids.json` + `areas.json` + `bg.json`, ~64 MB).
-   Then `python3 pipeline/zillow_zip.py` (Zillow ZIP trends → `zhvi.json`). `shard.js` clears the folder, so the
-   steps after it must be re-run.
+   Then `python3 pipeline/zillow_zip.py` (Zillow ZIP trends → `zhvi.json`, including monthly values since 2020;
+   `--series-only` re-adds just the monthly series from `data/outside/` when the raw file isn't present) and
+   `python3 pipeline/near_index.py` (location index for the map and similar properties: 103 files `n_<row>_<col>.json`,
+   ~2 km cells, 140,936 parcels with coordinates; id, address, type, market value, 2026 tax, lat, lon only).
+   `shard.js` clears the folder, so the steps after it must be re-run.
    - Each parcel also gets its census block group and coordinates from the course crosswalk, when matched.
    - Owner names, mailing addresses and purchase prices are dropped.
    - Placeholders (1994 year built on non-residential parcels, 12/31/1994 transfer dates) are removed.
@@ -580,23 +589,26 @@ nola-assessment-navigator/
   CLAUDE.md          ← this file
   README.md          ← project overview, live link
   index.html         ← the site: nav, search-first hero, the chat + side panels, How it works / Data / Limits, footer
-  kb.js              ← Layer 1 knowledge base: SOURCES (S1–S41) + ENTRIES (answers, keywords, source IDs)
+  kb.js              ← Layer 1 knowledge base: SOURCES (S1–S42) + ENTRIES (answers, keywords, source IDs)
   app.js             ← retrieval, guardrails, lookup flow, combining the layers, rendering
   address.js         ← address normalizer + matcher (browser and Node)
   lookup.js          ← loads data/web/2026 files, finds parcels by address or parcel ID
   property.js        ← Layers 2–3: answers about the selected parcel (recorded / calculated / explanation)
   ai.js              ← optional AI explanation (Claude via the claude.ai runtime) + its validator
   ui.js              ← page behavior around the chat: "Your property" panel, theme, copy / share, deep links,
-                       shortcuts, toasts, source list (holds no answers)
+                       shortcuts, toasts, source list, official-bill links (holds no answers)
+  dash.js            ← property dashboard: map, tax history, tax by levy, neighborhood, ZIP trend, similar, compare
+  favicon.svg        ← the Navigator's mark (shotgun house + check)
   tester.html        ← 15-minute test script and feedback form for outside testers
   style.css          ← design tokens (light + dark), layout, components, phone and print rules
   pipeline/          ← eda.py, data_dictionary.py, ltc_roll.py, compare_rolls.py, export_web.py, shard.js,
                        area_stats.py, census_bg.py, zillow_zip.py, compare_years.py, fetch_acs.py, geocode_sample.py,
-                       build_report.py, report_pdf.js, build_standalone.py
+                       build_report.py, report_pdf.js, build_standalone.py, build_artifact.py, near_index.py
   tests/             ← address.test.js, address_eval.js (19 addresses), chatbot_eval.js (10 Part 2 questions),
                        property_sweep.js (all parcels), final_eval.js (32 end-to-end checks), test_log.js (writes
                        docs/chatbot-test-log.md with every complete answer), owner_questions.js + owner_report.py
-                       (the 25-question final test set → docs/test-set-25.md), expected_from_raw.py
+                       (the 25-question final test set → docs/test-set-25.md), expected_from_raw.py, dashboard_eval.js,
+                       example_card.js
   data/              ← raw/ (ignored: owner names), processed/ (ignored), web/2026/ (committed: public fields,
                        served to the browser), outside/, README.md
   docs/              ← test-set-25.md, human-backup-and-user-testing.md, reflection-paper.md, oral-exam-prep.md
@@ -657,13 +669,46 @@ Webby winners) are listed in `docs/design-references.md`. One page, top to botto
   table with the change between rolls, a summary list (parcel ID, type, district, valuation date), and buttons: Explain my tax, Download summary, Copy link, Change), **Common questions** chips, **Key dates** and
   **Talk to a person**. On screens 1025px and wider the chat scrolls inside its panel; narrower, it's one column.
 - **How it works** (the three layers and the Recorded / Calculated / Explanation labels), **Data & sources** (with
-  the full S1–S41 list built from `SOURCES`), **Limits**, and a footer with the data note and official offices.
+  the full S1–S42 list built from `SOURCES`), **Limits**, and a footer with the data note and official offices.
 - **Extras in `ui.js`:** a "Copy answer" button on every sourced answer, links that open a property
   (`#p=<parcel id>`), `/` to ask and Ctrl/Cmd+K to search, short confirmations ("toasts") and a "Latest answer"
   button.
-- **How the two scripts talk:** `app.js` fires `nav:select` (with the record) and `nav:clear`; `ui.js` listens
-  and never computes an answer. `window.NavigatorBot` exposes `ask`, `downloadSummary` and `clearProperty` for the
-  panel buttons. Everything the earlier one-column page did still works the same way (same IDs, same answers).
+- **Property dashboard (`#dash`, `dash.js`, Nov. 18):** appears below the chat once a property is selected, with a
+  "My property" nav link. Tiles:
+  - **Location and neighbors:** Leaflet 1.9.4 (cdnjs, loaded on first use) on OpenStreetMap tiles; this parcel,
+    the recommended similar parcels, and other parcels within 350 m. Falls back to Google Maps / OSM links when
+    the library or tiles are blocked (offline file, some embeds). About 14% of parcels have no coordinates.
+  - **Tax history:** recorded 2026 and 2027 tax, plus the Nov. 5 roll-forward as a dashed, calculated range
+    (`NolaProperty.taxHistory`).
+  - **Where your 2026 tax goes:** tax by levy from the City's 2026 table (§2.4), shown only when the parts add up
+    to the recorded tax within $1 (150,793 of 163,356 records; exempt and other-exemption parcels are skipped)
+    (`taxBreakdown`).
+  - **Taxes in this neighborhood:** this property vs. its area median vs. the city median, for 2026 tax, market
+    value and homestead share, plus where the area ranks (`neighborhood`, from `areas.json`).
+  - **ZIP home-value trend:** monthly Zillow values since Jan. 2020 with the Jan. 2023 valuation date marked;
+    crosshair tooltip and arrow keys (`zhvi.json` `m` series).
+  - **Similar properties nearby (recommended):** same property type, market value within 30%, within 1.5 km, at
+    most two per building, ranked by value closeness then distance (`similar`; location index `n_*.json`).
+  - **Compare side by side:** this property plus up to three more (from the recommendations, the map, or any
+    property via "Add to comparison"), kept per browser in `localStorage`; lowest tax figures marked.
+  - **View official 2026 bill:** links to the City's own PDF (see "Official bills" below).
+  Chart colors were validated for color-vision deficiency, contrast and lightness in both themes; identity is
+  never color alone (labels on every bar, a stripe texture for police/fire).
+- **Long answers:** property answers taller than about 620px are collapsed to 420px with "Show full answer". The
+  text stays in the page, so copy, search, screen readers and the tests still read all of it.
+- **How the scripts talk:** `app.js` fires `nav:select` (with the record and meta) and `nav:clear`; `ui.js` and
+  `dash.js` listen and **never compute an answer**: every figure they draw comes from `property.js` or
+  `lookup.js`. `window.NavigatorBot` exposes `ask`, `downloadSummary`, `clearProperty`, `lookup` and `meta`;
+  `window.NavigatorUI` exposes `findProperty`, `toast` and `billUrl`. Everything the earlier one-column page did
+  still works the same way (same IDs, same answers).
+
+**Official bills (checked Nov. 18, 2026) [S42].** The City posts each bill as
+`https://taxbills.nola.gov/pdfs/<year>/<parcel id>.pdf`; checked for two parcels in 2025 and 2026 (address on the
+bill matched the parcel). The Navigator only **links** to it: the bill shows the owner's name, so the page never
+fetches, reads or stores it. **Known difference:** the official bill can differ from the roll's computed tax. For
+1332 Magazine St the roll computes $5,021.42 for 2026, and the bill's amounts differ; the reason (adjustments,
+installments, special charges) isn't known. The UI says "the bill wins" and sends questions to the Treasury. If a
+parcel ID with letters doesn't open a bill, the link text says to search by address.
 
 **How the AI explanation works (`ai.js`):** on claude.ai, the page asks Claude through the artifact runtime's
 `sample` capability; the API key never touches the page. The prompt holds §4's rules, today's date, the appeal
@@ -683,13 +728,17 @@ exactly as before.
 - `node tests/final_eval.js`: 32 end-to-end browser checks (demo trio, combined flows, guardrails, AI mock, phone with
   no sideways scrolling); pass a URL to test the public site
 - `node tests/owner_questions.js`: the 25 real-world owner questions (25/25); then `python3 tests/owner_report.py`
+- `node tests/dashboard_eval.js`: 16 dashboard checks (map, three charts, neighborhood, similar, compare, bills,
+  collapsed answers, the neighborhood and official-bill answers)
+- `node tests/example_card.js`: the home page's example card matches the data (its numbers are written in the page)
+- Audit (`docs/audit.md`): Lighthouse 12.6 and axe-core 4.10; keep accessibility at 100 and axe at 0 violations
 
 **Rules for changing code**
 - Match the parent site's style: plain HTML, CSS, and vanilla JS, no frameworks or build
   tools.
 - Keep every existing element ID (`#find`, `#addr`, `#selected`, `#log`, `#ask`, `#q`, `#ai-bar`, `#chips`, …):
   the tests and both build scripts depend on them. A redesign adds features; it never drops one.
-- Answers live in `kb.js`, `property.js` and `app.js` only. `ui.js` is layout behavior and must not compute facts.
+- Answers live in `kb.js`, `property.js` and `app.js` only. `ui.js` and `dash.js` draw and must not compute facts.
 - When you add or change a fact, update **both** this file (§2) and `kb.js`, using the same
   source ID.
 - Before you commit, run the sample questions in `docs/sample-questions.md` in a browser.
@@ -709,7 +758,7 @@ exactly as before.
 - **Claude artifact (adds the optional AI explanation):** https://claude.ai/artifact/PMnTiHc5EGih7pzGky6bWB
   Viewers must be signed in to claude.ai, and the owner has to share it from the page's Share menu. Part 1's grader
   couldn't open it for that reason, so it is no longer the link of record. Published with the `sample` capability.
-- **Offline copy:** `python3 pipeline/build_standalone.py <out.html>` inlines the CSS, the seven scripts (including `ui.js`) and every
+- **Offline copy:** `python3 pipeline/build_standalone.py <out.html>` inlines the CSS, the eight scripts (including `ui.js` and `dash.js`) and every
   `data/web/2026` file (gzip + base64), so the page opens by double-click with no server. `app.js` uses
   `window.NOLA_LOAD` when it exists and `fetch` otherwise. The output is generated: don't commit it.
 - **Complete test evidence:** `docs/chatbot-test-log.md` holds every test question with the chatbot's full answer,
