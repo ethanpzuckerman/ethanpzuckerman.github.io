@@ -98,7 +98,7 @@ kbd { font: 600 11px/1 var(--font-body); padding: 3px 6px; border: 1px solid var
 
 /* ---------- Hero ---------- */
 .hero { background: radial-gradient(1200px 400px at 85% -10%, rgba(228, 185, 106, .22), transparent 60%), linear-gradient(180deg, var(--navy) 0%, var(--navy-2) 100%); color: var(--on-navy); padding-block: 56px 64px; }
-.hero-grid { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); gap: 56px; align-items: center; }
+.hero-grid { display: grid; grid-template-columns: minmax(0, 1fr); }
 .hero-grid > div { max-width: 760px; }
 .eyebrow { margin: 0 0 10px; font-size: 12px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--gold); }
 .hero .eyebrow { color: var(--gold-bright); }
@@ -414,21 +414,6 @@ a.ghost-btn { text-decoration: none; display: inline-block; }
 }
 @media print { .banner-toggle, .banner-more, .steps, .built-from, .scope, .head-actions { display: none !important; } }
 
-/* Hero preview card: a real example from the roll, the way product sites show the product */
-.preview { display: flex; flex-direction: column; gap: 4px; text-align: left; font: inherit; color: var(--ink); background: var(--surface); border: 1px solid rgba(255, 255, 255, .2); border-radius: 18px; padding: 22px; box-shadow: 0 30px 60px rgba(0, 0, 0, .35); cursor: pointer; transform: rotate(-1deg); transition: transform .2s, box-shadow .2s; }
-.preview:hover, .preview:focus-visible { transform: rotate(0) translateY(-3px); box-shadow: 0 36px 70px rgba(0, 0, 0, .4); }
-.preview-tag { align-self: flex-start; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--gold); background: var(--gold-soft); border-radius: 999px; padding: 3px 9px; margin-bottom: 6px; }
-.preview-addr { font-size: 18px; font-weight: 700; }
-.preview-meta { font-size: 12.5px; color: var(--muted); }
-.preview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 12px 0 4px; }
-.preview-grid > span { background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 9px 11px; }
-.preview-grid em { display: block; font-style: normal; font-size: 11.5px; color: var(--muted); }
-.preview-grid strong { font-size: 19px; font-variant-numeric: tabular-nums; }
-.preview-check { margin-top: 6px; font-size: 12px; color: var(--ok); line-height: 1.4; }
-.preview-cta { margin-top: 10px; font-size: 13.5px; font-weight: 600; color: var(--link); }
-.head-actions { flex: none; flex-wrap: nowrap; align-items: flex-start; }
-@media (max-width: 1024px) { .preview { display: none; } }
-@media (prefers-reduced-motion: reduce) { .preview { transform: none; transition: none; } }
 .foot a { text-decoration: none; line-height: 1.9; }
 .foot a:hover { text-decoration: underline; }
 
@@ -597,9 +582,8 @@ h1, h2, .section-title, .panel-head h2, .dash-head h2 { font-optical-sizing: aut
 @media (prefers-reduced-motion: reduce) { .flash { animation: none; } .feature-list button { transition: none; } }
 @media (max-width: 1024px) {
   .feature-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .preview { display: flex !important; max-width: 520px; transform: none; }
 }
-@media (max-width: 760px) { .feature-list { grid-template-columns: 1fr 1fr; } .preview { display: none !important; } }
+@media (max-width: 760px) { .feature-list { grid-template-columns: 1fr 1fr; } }
 
 /* Mini map and mini tax chart in the Your property panel */
 .mini-viz { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 12px; }
@@ -612,3 +596,25 @@ h1, h2, .section-title, .panel-head h2, .dash-head h2 { font-optical-sizing: aut
 .mini-title { margin: 0; font-size: 11.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
 .mini-hist .chart { max-height: 150px; }
 .mini-hist .chart-note { display: none; }
+.features[hidden] { display: none; }
+.dash { padding-block: 0 24px; }
+.dash .dash-head { border-top: 0; padding-top: 32px; }
+
+/* Easier navigation: dashboard section bar (sticky under the main nav) and back-to-top */
+.dash-tabs { position: sticky; top: 60px; z-index: 15; display: flex; gap: 4px; align-items: center; overflow-x: auto; scrollbar-width: none; margin: 0 0 18px; padding: 8px; background: color-mix(in srgb, var(--surface) 92%, transparent); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); }
+.dash-tabs::-webkit-scrollbar { display: none; }
+.dash-tabs a { flex: none; font-size: 13.5px; font-weight: 600; color: var(--muted); text-decoration: none; padding: 7px 12px; border-radius: 8px; white-space: nowrap; }
+.dash-tabs a:hover { color: var(--ink); background: var(--surface-2); }
+.dash-tabs a.active { color: var(--ink); background: var(--gold-soft); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--gold) 40%, transparent); }
+.dash-tabs .dash-tabs-ask { margin-left: auto; color: var(--link); }
+.tile { scroll-margin-top: 58px; }
+.to-top { position: fixed; right: 20px; bottom: 20px; z-index: 40; font-size: 13px; font-weight: 700; text-decoration: none; color: var(--ink); background: var(--surface); border: 1px solid var(--line-strong); border-radius: 999px; padding: 8px 14px; box-shadow: var(--shadow-lg); }
+.to-top[hidden] { display: none; }
+.to-top:hover { border-color: var(--gold); }
+@media print { .dash-tabs, .to-top { display: none !important; } }
+.mini-map-wrap { cursor: default; }
+button.mini-note { font: inherit; font-size: 11.5px; font-weight: 600; cursor: pointer; }
+button.mini-note:hover { border-color: var(--gold); }
+/* Keep Leaflet's layers inside the map so sticky bars stay on top */
+.map, .mini-map, .mini-map-wrap { position: relative; z-index: 0; isolation: isolate; }
+.mini-note { z-index: 2; }

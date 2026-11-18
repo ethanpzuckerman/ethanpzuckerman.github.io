@@ -78,7 +78,7 @@
         ${metric("2027 tax", has27 ? usd(r.t27) : "—", has27 ? "as filed, before roll-forward" : "")}
       </div>
       <div class="mini-viz">
-        <button type="button" class="mini-map-wrap" data-act="dash-map" aria-label="Open the full map in the dashboard"><div id="mini-map" class="mini-map"></div><span class="mini-note" id="mini-note">Open full map ↓</span></button>
+        <div class="mini-map-wrap"><div id="mini-map" class="mini-map"></div><button type="button" class="mini-note" id="mini-note" data-act="dash-map">Open full map ↑</button></div>
         <div class="mini-hist"><p class="mini-title">Tax, 2026 → 2027</p><div id="mini-hist"></div></div>
       </div>
       ${history(r, has27, hs27)}
@@ -191,6 +191,36 @@
   }
 
   /* ---------- Active section in the nav ---------- */
+  // Dashboard section bar: highlight the tile in view. Back-to-top button after the first screen.
+  function setupDashTabs() {
+    const tabs = [...document.querySelectorAll(".dash-tabs a[href^='#t-'], .dash-tabs a[href='#compare']")];
+    // Active tab = the last section whose top has passed just below the sticky bars (row-mates share a top, so
+    // the first of them in page order wins).
+    let raf = 0;
+    const mark = () => {
+      raf = 0;
+      const dash = $("#dash");
+      if (!dash || dash.hidden) return;
+      let cur = null;
+      for (const a of tabs) {
+        const t = document.querySelector(a.getAttribute("href"));
+        if (t && t.getBoundingClientRect().top <= 170 && (!cur || t.getBoundingClientRect().top > cur.top + 1)) cur = { a, top: t.getBoundingClientRect().top };
+      }
+      tabs.forEach(a => a.classList.toggle("active", !!cur && a === cur.a));
+    };
+    let pinnedUntil = 0;
+    tabs.forEach(a => a.addEventListener("click", () => {
+      pinnedUntil = Date.now() + 1200;   // a clicked tab stays highlighted while the page scrolls to it
+      tabs.forEach(x => x.classList.toggle("active", x === a));
+    }));
+    if (tabs.length) window.addEventListener("scroll", () => { if (!raf && Date.now() > pinnedUntil) raf = requestAnimationFrame(mark); }, { passive: true });
+    const top = $("#to-top");
+    if (top) {
+      const f = () => { top.hidden = window.scrollY < 900; };
+      window.addEventListener("scroll", f, { passive: true }); f();
+    }
+  }
+
   function setupNav() {
     const links = [...document.querySelectorAll(".nav-links a")];
     const nav = $(".nav");
@@ -216,12 +246,13 @@
     });
     const theme = $("#theme");
     if (theme) theme.addEventListener("click", toggleTheme);
-    document.querySelectorAll("[data-try]").forEach(b => b.addEventListener("click", () => {
-      if (b.classList.contains("preview") && window.NavigatorDash) NavigatorDash.openSample("top");
-      else findProperty(b.dataset.try, false);
-    }));
+    document.querySelectorAll("[data-try]").forEach(b => b.addEventListener("click", () => findProperty(b.dataset.try, false)));
     const find = $("#find");
-    if (find) find.addEventListener("submit", () => { setTimeout(() => $("#app").scrollIntoView({ behavior: "smooth", block: "start" }), 0); });
+    if (find) find.addEventListener("submit", () => {
+      // A search from the top box goes to the dashboard once a record is picked; first show the matches in the chat.
+      window.NavigatorUI.fromFind = Date.now();
+      setTimeout(() => $("#app").scrollIntoView({ behavior: "smooth", block: "start" }), 0);
+    });
 
     document.addEventListener("nav:select", e => {
       const r = e.detail && e.detail.record;
@@ -272,9 +303,7 @@
     setupJump();
     fillSources();
     setupNav();
-
-    // The example card's numbers are written in the page and checked against the data by tests/example_card.js,
-    // so loading the page doesn't download the parcel index.
+    setupDashTabs();
 
     // Deep link: #p=<parcel id> opens that property.
     const openFromHash = () => {

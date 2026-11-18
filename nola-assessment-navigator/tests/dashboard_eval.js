@@ -22,7 +22,7 @@ const URL = process.argv[2] || "http://localhost:8765/";
   t = await ask("Where can I see my official tax bill?");
   check("Official bill question: City Tax Bill Search, cited S42", /taxbills\.nola\.gov/.test(t) && /S42/.test(t), t);
 
-  await p.click(".preview");
+  await p.click("#sample-dash");
   await p.waitForSelector("#dash:not([hidden])", { timeout: 20000 });
   await p.waitForTimeout(3500);
   check("Dashboard opens for the example property", (await p.textContent("#dash-addr")).includes("1205 ST CHARLES"), await p.textContent("#dash-addr"));

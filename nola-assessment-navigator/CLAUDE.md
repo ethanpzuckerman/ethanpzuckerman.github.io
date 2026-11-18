@@ -607,8 +607,7 @@ nola-assessment-navigator/
   tests/             ← address.test.js, address_eval.js (19 addresses), chatbot_eval.js (10 Part 2 questions),
                        property_sweep.js (all parcels), final_eval.js (32 end-to-end checks), test_log.js (writes
                        docs/chatbot-test-log.md with every complete answer), owner_questions.js + owner_report.py
-                       (the 25-question final test set → docs/test-set-25.md), expected_from_raw.py, dashboard_eval.js,
-                       example_card.js
+                       (the 25-question final test set → docs/test-set-25.md), expected_from_raw.py, dashboard_eval.js
   data/              ← raw/ (ignored: owner names), processed/ (ignored), web/2026/ (committed: public fields,
                        served to the browser), outside/, README.md
   docs/              ← test-set-25.md, human-backup-and-user-testing.md, reflection-paper.md, oral-exam-prep.md
@@ -658,10 +657,19 @@ Webby winners) are listed in `docs/design-references.md`. One page, top to botto
   "How to tell" panel pointing to the official sites.
   The site doesn't call itself a student project (owner's request, Nov. 18); it still says it isn't official.
 - **Sticky nav:** brand, links to Ask / How it works / Data & sources / Limits (the current section is highlighted),
-  a "Prototype" pill and a light/dark switch (remembered per browser in `localStorage`, wrapped in try/catch).
+  and a light/dark switch (remembered per browser in `localStorage`, wrapped in try/catch).
 - **Hero:** tagline, the **Find your property** box (`#find`, street suggestions from `#streets`), two example
-  addresses, three steps (Search → Confirm → Ask), a "built from public records" line, and on wide screens a
-  clickable example-property card (1205 St. Charles #607; its numbers are from the roll and must stay correct).
+  addresses, three steps (Search → Confirm → Ask) and a "built from public records" line. (The example-property
+  card was removed at the owner's request, Nov. 18.)
+- **Property dashboard position:** directly under the hero, above the chat. Before a property is picked, a
+  feature strip with "See a sample dashboard" sits there; once one is picked the strip hides and the dashboard
+  shows. A search from the top box lands on the dashboard after the pick; an address typed in the chat stays in
+  the chat (the Selected bar has "Open dashboard ↑").
+- **Navigation:** the top menu follows the page order (Search · My property · Ask · How it works · Data & sources ·
+  Limits; "My property" appears once a property is picked). The dashboard has a sticky section bar (Map · Tax
+  history · Where it goes · Neighborhood · ZIP trend · Similar homes · Compare · Ask about it) that highlights the
+  section in view, and a "Top" button appears after the first screen. Leaflet's layers are contained
+  (`isolation: isolate`) so the sticky bars stay above the map.
 - **App (`#app`):** the conversation on the left (`#log`, the sticky **Selected** bar with Download summary / Change
   property, the ask box, the AI switch, a scope list (what it does / no advice), "Talk to a person" and "New
   conversation" buttons); on the right a **Your property** panel (address,
@@ -741,7 +749,6 @@ exactly as before.
 - `node tests/owner_questions.js`: the 25 real-world owner questions (25/25); then `python3 tests/owner_report.py`
 - `node tests/dashboard_eval.js`: 20 dashboard checks (incl. the panel's mini map / chart and an unlocated parcel) (map, three charts, neighborhood, similar, compare, bills,
   collapsed answers, the neighborhood and official-bill answers)
-- `node tests/example_card.js`: the home page's example card matches the data (its numbers are written in the page)
 - Audit (`docs/audit.md`): Lighthouse 12.6 and axe-core 4.10; keep accessibility at 100 and axe at 0 violations
 
 **Rules for changing code**

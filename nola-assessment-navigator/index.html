@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=optional" onload="this.onload=null;this.rel='stylesheet'" />
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=optional" /></noscript>
-  <link rel="stylesheet" href="style.css?v=20261118e" />
+  <link rel="stylesheet" href="style.css?v=20261118j" />
 </head>
 <body>
   <a class="skip" href="#q">Skip to the question box</a>
@@ -43,8 +43,9 @@
         <span><strong>NOLA</strong> Assessment Navigator</span>
       </a>
       <nav class="nav-links" aria-label="Sections">
-        <a href="#app">Ask</a>
+        <a href="#search">Search</a>
         <a href="#dash" data-dash-link hidden>My property</a>
+        <a href="#app">Ask</a>
         <a href="#how">How it works</a>
         <a href="#data">Data &amp; sources</a>
         <a href="#limits">Limits</a>
@@ -58,7 +59,7 @@
   </header>
 
   <main id="main">
-  <section class="hero">
+  <section class="hero" id="search">
     <div class="wrap hero-grid">
       <div>
         <p class="eyebrow">Orleans Parish · General guidance + your property + your area</p>
@@ -82,19 +83,68 @@
         </ol>
         <p class="built-from">Built from public records: Louisiana Tax Commission · City of New Orleans · U.S. Census Bureau · Zillow Research</p>
       </div>
-      <button type="button" class="preview" data-id="102000079" data-try="1205 St. Charles Ave, Apt 607">
-        <span class="preview-tag">Example property</span>
-        <span class="preview-addr">1205 St. Charles Ave, Apt 607</span>
-        <span class="preview-meta">Residential · Values as of Jan. 1, 2023</span>
-        <span class="preview-grid">
-          <span><em>Market value</em><strong data-k="tmv">$145,700</strong></span>
-          <span><em>Homestead</em><strong data-k="hs">$7,500</strong></span>
-          <span><em>2026 tax</em><strong data-k="t26">$1,019</strong></span>
-          <span><em>2027 tax</em><strong data-k="t27">$1,030</strong></span>
-        </span>
-        <span class="preview-check">✓ Matches the roll to the cent: <b data-k="tav">$14,570</b> × <b data-k="mills">131.99</b> mills ÷ 1,000 − <b data-k="th26">$904</b> homestead = <b data-k="t26">$1,019</b></span>
-        <span class="preview-cta">Open this property →</span>
-      </button>
+    </div>
+  </section>
+
+  <section class="dash" id="dash" aria-labelledby="dash-addr" hidden>
+    <div class="wrap">
+      <div class="dash-head">
+        <div>
+          <p class="eyebrow">Property dashboard</p>
+          <h2 id="dash-addr">Your property</h2>
+          <p class="dash-meta" id="dash-meta"></p>
+        </div>
+        <div class="dash-actions">
+          <a class="btn" id="dash-bill" href="https://taxbills.nola.gov/" target="_blank" rel="noopener">View official 2026 bill</a>
+          <button type="button" class="btn ghost" id="pin-compare" data-dash="pin" aria-pressed="false">Add to comparison</button>
+          <a class="btn ghost" href="#app">Ask about this property ↓</a>
+        </div>
+      </div>
+
+      <nav class="dash-tabs" aria-label="Dashboard sections">
+        <a href="#t-map">Map</a><a href="#t-hist">Tax history</a><a href="#t-levy">Where it goes</a><a href="#t-hood">Neighborhood</a><a href="#t-zip">ZIP trend</a><a href="#t-sim">Similar homes</a><a href="#compare">Compare</a>
+        <a class="dash-tabs-ask" href="#app">Ask about it ↓</a>
+      </nav>
+
+      <div class="dash-grid">
+        <section class="tile tile-map" id="t-map" aria-labelledby="map-title">
+          <div class="tile-head"><h3 id="map-title">Location and neighbors</h3>
+            <ul class="map-legend" id="map-legend"><li><span class="lg lg-this"></span>This property</li><li><span class="lg lg-sim"></span>Similar</li><li><span class="lg lg-other"></span>Other parcels nearby</li></ul></div>
+          <div id="map" class="map" role="region" aria-label="Map of the parcel and nearby parcels"></div>
+          <p class="chart-note" id="map-note">Parcel positions from the roll's census match. Click a marker to compare it.</p>
+        </section>
+
+        <section class="tile" id="t-hist" aria-labelledby="hist-title">
+          <div class="tile-head"><h3 id="hist-title">Tax history</h3></div>
+          <div id="chart-history"></div>
+        </section>
+
+        <section class="tile" id="t-levy" aria-labelledby="levy-title">
+          <div class="tile-head"><h3 id="levy-title">Where your 2026 tax goes</h3></div>
+          <div id="chart-breakdown"></div>
+        </section>
+
+        <section class="tile tile-2" id="t-hood" aria-labelledby="hood-title">
+          <div class="tile-head"><h3 id="hood-title">Taxes in this neighborhood</h3></div>
+          <div id="chart-hood"></div>
+        </section>
+
+        <section class="tile tile-wide" id="t-zip" aria-labelledby="zip-title">
+          <div class="tile-head"><h3 id="zip-title">Home values in this ZIP</h3></div>
+          <div id="chart-zip"></div>
+        </section>
+
+        <section class="tile tile-wide" id="t-sim" aria-labelledby="sim-title">
+          <div class="tile-head"><h3 id="sim-title">Similar properties nearby</h3><span class="tile-sub">Recommended for comparison</span></div>
+          <div id="similar"></div>
+        </section>
+
+        <section class="tile tile-wide" id="compare" aria-labelledby="cmp-title">
+          <div class="tile-head"><h3 id="cmp-title">Compare side by side</h3><span class="tile-sub" id="compare-count"></span>
+            <button type="button" class="link-plain" data-dash="clear-compare">Clear comparison</button></div>
+          <div id="compare-table"></div>
+        </section>
+      </div>
     </div>
   </section>
 
@@ -136,7 +186,7 @@
       </div>
       <div id="selected" class="selected" hidden>
         <span class="sel-text"></span>
-        <span class="sel-actions"><button type="button" class="sel-dash" data-act="dash">Open dashboard ↓</button><button type="button" id="download-prop">Download summary</button>
+        <span class="sel-actions"><button type="button" class="sel-dash" data-act="dash">Open dashboard ↑</button><button type="button" id="download-prop">Download summary</button>
         <button type="button" id="clear-prop">Change property</button></span>
       </div>
       <div class="chat-scroll" id="chat-scroll">
@@ -188,63 +238,6 @@
       </section>
     </aside>
   </div>
-
-  <section class="dash" id="dash" aria-labelledby="dash-addr" hidden>
-    <div class="wrap">
-      <div class="dash-head">
-        <div>
-          <p class="eyebrow">Property dashboard</p>
-          <h2 id="dash-addr">Your property</h2>
-          <p class="dash-meta" id="dash-meta"></p>
-        </div>
-        <div class="dash-actions">
-          <a class="btn" id="dash-bill" href="https://taxbills.nola.gov/" target="_blank" rel="noopener">View official 2026 bill</a>
-          <button type="button" class="btn ghost" id="pin-compare" data-dash="pin" aria-pressed="false">Add to comparison</button>
-          <a class="btn ghost" href="#app">Back to the conversation</a>
-        </div>
-      </div>
-
-      <div class="dash-grid">
-        <section class="tile tile-map" aria-labelledby="map-title">
-          <div class="tile-head"><h3 id="map-title">Location and neighbors</h3>
-            <ul class="map-legend" id="map-legend"><li><span class="lg lg-this"></span>This property</li><li><span class="lg lg-sim"></span>Similar</li><li><span class="lg lg-other"></span>Other parcels nearby</li></ul></div>
-          <div id="map" class="map" role="region" aria-label="Map of the parcel and nearby parcels"></div>
-          <p class="chart-note" id="map-note">Parcel positions from the roll's census match. Click a marker to compare it.</p>
-        </section>
-
-        <section class="tile" aria-labelledby="hist-title">
-          <div class="tile-head"><h3 id="hist-title">Tax history</h3></div>
-          <div id="chart-history"></div>
-        </section>
-
-        <section class="tile" aria-labelledby="levy-title">
-          <div class="tile-head"><h3 id="levy-title">Where your 2026 tax goes</h3></div>
-          <div id="chart-breakdown"></div>
-        </section>
-
-        <section class="tile tile-2" aria-labelledby="hood-title">
-          <div class="tile-head"><h3 id="hood-title">Taxes in this neighborhood</h3></div>
-          <div id="chart-hood"></div>
-        </section>
-
-        <section class="tile tile-wide" aria-labelledby="zip-title">
-          <div class="tile-head"><h3 id="zip-title">Home values in this ZIP</h3></div>
-          <div id="chart-zip"></div>
-        </section>
-
-        <section class="tile tile-wide" aria-labelledby="sim-title">
-          <div class="tile-head"><h3 id="sim-title">Similar properties nearby</h3><span class="tile-sub">Recommended for comparison</span></div>
-          <div id="similar"></div>
-        </section>
-
-        <section class="tile tile-wide" id="compare" aria-labelledby="cmp-title">
-          <div class="tile-head"><h3 id="cmp-title">Compare side by side</h3><span class="tile-sub" id="compare-count"></span>
-            <button type="button" class="link-plain" data-dash="clear-compare">Clear comparison</button></div>
-          <div id="compare-table"></div>
-        </section>
-      </div>
-    </div>
-  </section>
 
   <section class="section" id="how">
     <div class="wrap">
@@ -333,15 +326,17 @@
     </div>
   </footer>
 
+  <a class="to-top" id="to-top" href="#top" hidden aria-label="Back to top">↑ Top</a>
+
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
-  <script src="kb.js?v=20261118e"></script>
-  <script src="address.js?v=20261118e"></script>
-  <script src="lookup.js?v=20261118e"></script>
-  <script src="property.js?v=20261118e"></script>
-  <script src="ai.js?v=20261118e"></script>
-  <script src="app.js?v=20261118e"></script>
-  <script src="ui.js?v=20261118e"></script>
-  <script src="dash.js?v=20261118e"></script>
+  <script src="kb.js?v=20261118j"></script>
+  <script src="address.js?v=20261118j"></script>
+  <script src="lookup.js?v=20261118j"></script>
+  <script src="property.js?v=20261118j"></script>
+  <script src="ai.js?v=20261118j"></script>
+  <script src="app.js?v=20261118j"></script>
+  <script src="ui.js?v=20261118j"></script>
+  <script src="dash.js?v=20261118j"></script>
 </body>
 </html>

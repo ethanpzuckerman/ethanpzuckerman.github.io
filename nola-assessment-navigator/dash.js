@@ -242,7 +242,7 @@
     L.circleMarker([r.lat, r.lon], { radius: r.approx ? 12 : 8, weight: 3, color: r.approx ? "#2f6db3" : "#ffffff", dashArray: r.approx ? "4 4" : null, fillColor: "#2f6db3", fillOpacity: r.approx ? .35 : 1 }).addTo(S.mini);
     S.similar.forEach(x => L.circleMarker([x.lat, x.lon], { radius: 5, weight: 2, color: "#ffffff", fillColor: "#c0841a", fillOpacity: 1 }).addTo(S.mini));
     S.mini.setView([r.lat, r.lon], r.approx && r.approx.kind !== "street" ? 15 : 16);
-    if (r.approx) { const n = $("#mini-note"); if (n) n.textContent = "Approximate location"; }
+    if (r.approx) { const n = $("#mini-note"); if (n) n.textContent = "Approximate location · open map ↑"; }
   }
   new MutationObserver(syncMapTheme).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 
@@ -329,6 +329,7 @@
     // A property you compare *with* shouldn't also sit in its own comparison.
     const dash = $("#dash");
     dash.hidden = false;
+    const feat = $(".features"); if (feat) feat.hidden = true;
     document.querySelectorAll("[data-dash-link]").forEach(a => { a.hidden = false; });
     $("#dash-addr").textContent = addr(r.a);
     $("#dash-meta").textContent = `Parcel ${r.id} · ${title(String(r.occ || "").split("|")[0])}${r.sub ? " · " + title(r.sub) : ""}`;
@@ -356,7 +357,8 @@
     similarList(loc);
     drawMap(loc, token);
     if (S.pending) { const t = S.pending; S.pending = null; setTimeout(() => goTile(t), 150); }
-    else if (window.NavigatorUI && !S.toldOnce) { S.toldOnce = true; NavigatorUI.toast("Property dashboard ready below: map, charts, similar homes ↓"); }
+    else if (window.NavigatorUI && NavigatorUI.fromFind && Date.now() - NavigatorUI.fromFind < 120000) { NavigatorUI.fromFind = 0; setTimeout(() => goTile("top"), 150); }
+    else if (window.NavigatorUI && !S.toldOnce) { S.toldOnce = true; NavigatorUI.toast("Property dashboard is open at the top: map, charts, similar homes ↑"); }
   }
 
   // Sample dashboard: open the example property and bring the asked-for tile into view.
@@ -378,6 +380,7 @@
   function clear() {
     S.token++; S.base = null;
     const dash = $("#dash"); if (dash) dash.hidden = true;
+    const feat = $(".features"); if (feat) feat.hidden = false;
     document.querySelectorAll("[data-dash-link]").forEach(a => { a.hidden = true; });
   }
 
