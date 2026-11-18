@@ -18,8 +18,21 @@
   <a class="skip" href="#q">Skip to the question box</a>
 
   <div class="banner" role="note">
-    <strong>Not an official government tool</strong>, and not legal or tax advice. Confirm everything with the
-    <a href="https://www.nolaassessor.com/" target="_blank" rel="noopener">Orleans Parish Assessor's Office</a>.
+    <div class="wrap banner-row">
+      <p><strong>Not an official government tool</strong>, and not legal or tax advice. Confirm everything with the
+      <a href="https://www.nolaassessor.com/" target="_blank" rel="noopener">Orleans Parish Assessor's Office</a>.</p>
+      <button type="button" class="banner-toggle" aria-expanded="false" aria-controls="banner-more">How to tell <span aria-hidden="true">▾</span></button>
+    </div>
+    <div class="wrap banner-more" id="banner-more" hidden>
+      <div>
+        <strong>Official records live on official sites</strong>
+        <p>Your official assessment is on the Assessor's site (nolaassessor.com); bills and payments are on nola.gov. This site is independent and only explains them.</p>
+      </div>
+      <div>
+        <strong>Every number shows where it came from</strong>
+        <p>Each answer cites its source (S1–S41) and labels figures as recorded in the roll, calculated, or explained. Check any of them with one click.</p>
+      </div>
+    </div>
   </div>
 
   <header class="nav" id="top">
@@ -60,7 +73,26 @@
           </div>
           <p class="find-hint">Try <button type="button" class="link-btn" data-try="1205 St. Charles Ave, Apt 607">1205 St. Charles Ave, Apt 607</button> or <button type="button" class="link-btn" data-try="1332 Magazine St">1332 Magazine St</button></p>
         </form>
+        <ol class="steps" aria-label="How to use it">
+          <li><span>1</span><div><strong>Search</strong> your address or parcel ID</div></li>
+          <li><span>2</span><div><strong>Confirm</strong> it's your property</div></li>
+          <li><span>3</span><div><strong>Ask</strong> about its value, tax, exemptions or appeals</div></li>
+        </ol>
+        <p class="built-from">Built from public records: Louisiana Tax Commission · City of New Orleans · U.S. Census Bureau · Zillow Research</p>
       </div>
+      <button type="button" class="preview" data-try="1205 St. Charles Ave, Apt 607" aria-label="Open the example property, 1205 St. Charles Ave, Apt 607">
+        <span class="preview-tag">Example property</span>
+        <span class="preview-addr">1205 St. Charles Ave, Apt 607</span>
+        <span class="preview-meta">Residential · Values as of Jan. 1, 2023</span>
+        <span class="preview-grid">
+          <span><em>Market value</em><strong>$145,700</strong></span>
+          <span><em>Homestead</em><strong>$7,500</strong></span>
+          <span><em>2026 tax</em><strong>$1,019</strong></span>
+          <span><em>2027 tax</em><strong>$1,030</strong></span>
+        </span>
+        <span class="preview-check">✓ Matches the roll to the cent: $14,570 × 131.99 mills ÷ 1,000 − $904 homestead = $1,019</span>
+        <span class="preview-cta">Open this property →</span>
+      </button>
     </div>
   </section>
 
@@ -70,8 +102,16 @@
         <div>
           <h2>Ask the Navigator</h2>
           <p class="sub">General questions, your property, and your area, in one conversation.</p>
+          <ul class="scope" aria-label="What the Navigator does">
+            <li class="yes">Cites an official source for every fact</li>
+            <li class="yes">Reads your property's 2026 and 2027 record</li>
+            <li class="no">No legal or tax advice</li>
+          </ul>
         </div>
-        <button type="button" class="ghost-btn" id="new-chat" title="Start a new conversation">New conversation</button>
+        <div class="head-actions">
+          <a class="ghost-btn" href="#people">Talk to a person</a>
+          <button type="button" class="ghost-btn" id="new-chat" title="Start a new conversation">New conversation</button>
+        </div>
       </div>
       <div id="selected" class="selected" hidden>
         <span class="sel-text"></span>
@@ -117,7 +157,7 @@
         </ul>
       </section>
 
-      <section class="panel contact-card">
+      <section class="panel contact-card" id="people">
         <h2>Talk to a person</h2>
         <ul class="people">
           <li><strong>Assessor's Office</strong><span>Values, exemptions, informal review</span><a href="tel:+15047548811">(504) 754-8811</a></li>
@@ -188,7 +228,7 @@
   </section>
 
   <footer class="foot">
-    <div class="wrap foot-grid">
+    <div class="wrap foot-grid foot-grid-4">
       <div>
         <p class="brand-foot"><strong>NOLA</strong> Assessment Navigator</p>
         <p>Built by Ethan Zuckerman. Not affiliated with the Orleans Parish Assessor, the City of New Orleans or the State of Louisiana. Facts last checked Nov. 16, 2026.</p>
@@ -199,9 +239,17 @@
         <p><a href="https://www.nolaassessor.com/" target="_blank" rel="noopener">Orleans Parish Assessor</a><br /><a href="https://nola.gov/property-tax/" target="_blank" rel="noopener">Pay property tax (nola.gov)</a><br /><a href="https://council.nola.gov/resources/property-tax-assessments-and-appeals/" target="_blank" rel="noopener">Board of Review</a></p>
       </div>
       <div>
+        <p><strong>Use the Navigator</strong></p>
+        <p><a href="#app">Ask a question</a><br /><a href="#how">How it works</a><br /><a href="#data">Data &amp; sources</a><br /><a href="#limits">Limits</a></p>
+      </div>
+      <div>
         <p><strong>Help test it</strong></p>
         <p><a href="tester.html">15-minute tester page</a><br /><a href="#top">Back to top</a></p>
       </div>
+    </div>
+    <div class="wrap foot-bar">
+      <span>© 2026 NOLA Assessment Navigator · Independent, not a government website</span>
+      <span>Facts last checked Nov. 16, 2026 · Owner names are never shown</span>
     </div>
   </footer>
 

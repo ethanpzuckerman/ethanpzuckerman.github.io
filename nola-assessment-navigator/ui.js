@@ -68,7 +68,7 @@
     const metric = (label, value, note) => `<div class="metric"><span>${label}</span><strong>${value}</strong>${note ? `<em>${note}</em>` : ""}</div>`;
     body.innerHTML = `
       <p class="prop-addr">${esc(String(r.a || "").replace(/\s+/g, " "))}</p>
-      <p class="prop-meta">Parcel ${esc(r.id)} · ${esc(occ)} · District ${esc(r.d)}</p>
+      <p class="prop-meta">${esc(occ)} · Orleans Parish</p>
       <div class="metrics">
         ${metric("Market value", usd(n(r.tmv)), "2026 roll")}
         ${metric("Assessed value", usd(n(r.tav)), "")}
@@ -77,6 +77,13 @@
         ${metric("2026 tax", typeof r.t26 === "number" ? usd(r.t26) : "—", "recorded")}
         ${metric("2027 tax", has27 ? usd(r.t27) : "—", has27 ? "as filed, before roll-forward" : "")}
       </div>
+      ${history(r, has27, hs27)}
+      <dl class="summary-list">
+        <div><dt>Parcel ID</dt><dd>${esc(r.id)}</dd></div>
+        <div><dt>Property type</dt><dd>${esc(occ) || "—"}</dd></div>
+        <div><dt>Assessment district</dt><dd>${esc(r.d)}</dd></div>
+        <div><dt>Valuation date</dt><dd>Jan. 1, 2023</dd></div>
+      </dl>
       <div class="prop-actions">
         <button type="button" class="btn" data-act="ask-tax">Explain my tax</button>
         <button type="button" class="btn ghost" data-act="download">Download summary</button>
@@ -87,6 +94,20 @@
     empty.hidden = true;
     body.hidden = false;
     body.dataset.id = r.id;
+  }
+
+  // Tax history, the way property sites show it: one row per roll, with the change between them.
+  function history(r, has27, hs27) {
+    if (typeof r.t26 !== "number") return "";
+    const a27 = "a27" in r ? r.a27 : r.tav;
+    const pct = has27 && r.t26 > 0 ? (r.t27 - r.t26) / r.t26 * 100 : null;
+    const chg = pct === null ? "" : ` <span class="chg ${pct > 0.05 ? "up" : pct < -0.05 ? "down" : ""}">${pct > 0 ? "+" : ""}${pct.toFixed(1)}%</span>`;
+    return `<table class="history"><caption>Tax history</caption>
+      <thead><tr><th scope="col">Roll</th><th scope="col">Assessed</th><th scope="col">Homestead</th><th scope="col">Tax</th></tr></thead>
+      <tbody>
+        ${has27 ? `<tr><th scope="row">2027</th><td>${usd(a27)}</td><td>${hs27 ? usd(hs27) : "—"}</td><td>${usd(r.t27)}${chg}</td></tr>` : ""}
+        <tr><th scope="row">2026</th><td>${usd(r.tav)}</td><td>${r.hs ? usd(r.hs) : "—"}</td><td>${usd(r.t26)}</td></tr>
+      </tbody></table>`;
   }
 
   /* ---------- Copy and share on each answer ---------- */
@@ -146,9 +167,15 @@
   }
 
   function init() {
+    const bt = $(".banner-toggle"), bm = $("#banner-more");
+    if (bt && bm) bt.addEventListener("click", () => {
+      const open = bt.getAttribute("aria-expanded") === "true";
+      bt.setAttribute("aria-expanded", String(!open));
+      bm.hidden = open;
+    });
     const theme = $("#theme");
     if (theme) theme.addEventListener("click", toggleTheme);
-    document.querySelectorAll("[data-try]").forEach(b => b.addEventListener("click", () => findProperty(b.dataset.try, false)));
+    document.querySelectorAll("[data-try]").forEach(b => b.addEventListener("click", () => findProperty(b.dataset.try, b.classList.contains("preview"))));
     const find = $("#find");
     if (find) find.addEventListener("submit", () => { setTimeout(() => $("#app").scrollIntoView({ behavior: "smooth", block: "start" }), 0); });
 

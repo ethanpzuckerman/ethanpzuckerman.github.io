@@ -640,17 +640,21 @@ list at least one source ID. A check in `app.js` refuses to render an entry with
    (`NolaProperty.context`). A property question asked before a lookup is answered right after the pick.
    Guardrails (privacy, out-of-scope, other parishes, advice) run first, with or without a property.
 
-**How the page is laid out (redesign, Nov. 18, 2026).** One page, top to bottom:
-- **Disclosure banner** (not an official government tool, not advice, confirm with the Assessor), always first.
+**How the page is laid out (redesign, Nov. 18, 2026).** Patterns and their sources (USWDS, GOV.UK, NN/g, Redfin,
+Webby winners) are listed in `docs/design-references.md`. One page, top to bottom:
+- **Disclosure banner** (not an official government tool, not advice, confirm with the Assessor), always first, with a
+  "How to tell" panel pointing to the official sites.
   The site doesn't call itself a student project (owner's request, Nov. 18); it still says it isn't official.
 - **Sticky nav:** brand, links to Ask / How it works / Data & sources / Limits (the current section is highlighted),
   a "Prototype" pill and a light/dark switch (remembered per browser in `localStorage`, wrapped in try/catch).
-- **Hero:** tagline, the **Find your property** box (`#find`, street suggestions from `#streets`) and two example
-  addresses.
+- **Hero:** tagline, the **Find your property** box (`#find`, street suggestions from `#streets`), two example
+  addresses, three steps (Search → Confirm → Ask), a "built from public records" line, and on wide screens a
+  clickable example-property card (1205 St. Charles #607; its numbers are from the roll and must stay correct).
 - **App (`#app`):** the conversation on the left (`#log`, the sticky **Selected** bar with Download summary / Change
-  property, the ask box, the AI switch, a "New conversation" button); on the right a **Your property** panel (address,
-  parcel, market / assessed / taxable value, homestead, 2026 tax, 2027 tax "as filed, before roll-forward", and
-  buttons: Explain my tax, Download summary, Copy link, Change), **Common questions** chips, **Key dates** and
+  property, the ask box, the AI switch, a scope list (what it does / no advice), "Talk to a person" and "New
+  conversation" buttons); on the right a **Your property** panel (address,
+  market / assessed / taxable value, homestead, 2026 tax, 2027 tax "as filed, before roll-forward", a tax history
+  table with the change between rolls, a summary list (parcel ID, type, district, valuation date), and buttons: Explain my tax, Download summary, Copy link, Change), **Common questions** chips, **Key dates** and
   **Talk to a person**. On screens 1025px and wider the chat scrolls inside its panel; narrower, it's one column.
 - **How it works** (the three layers and the Recorded / Calculated / Explanation labels), **Data & sources** (with
   the full S1–S41 list built from `SOURCES`), **Limits**, and a footer with the data note and official offices.
