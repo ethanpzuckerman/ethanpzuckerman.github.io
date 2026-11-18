@@ -8,7 +8,8 @@ wins. Stop and ask instead of breaking it.
 *First researched Oct. 19, 2026. Data section added Nov. 2, 2026. **Re-verified Nov. 13 and 16, 2026** for the
 final draft and in response to instructor feedback (§9): the millage table, the reappraisal cycle, the freeze rules,
 the audit findings, the Nov. 3 election, the City's 2027 roll-forward, bill dates, payment plans and veteran tiers
-were read directly from the official sources in §2.9. Facts that change every year (dates, millage, income limits)
+were read directly from the official sources in §2.9. **Site redesigned Nov. 18, 2026** (§6, "How the page is laid out"):
+every earlier feature kept, new ones added. Facts that change every year (dates, millage, income limits)
 carry a `VERIFY` tag. Re-check them before each tax cycle.*
 
 ---
@@ -578,15 +579,17 @@ Claude artifact with the `sample` capability so it can ask Claude):
 nola-assessment-navigator/
   CLAUDE.md          ← this file
   README.md          ← project overview, live link
-  index.html         ← one chat: property search + questions
+  index.html         ← the site: nav, search-first hero, the chat + side panels, How it works / Data / Limits, footer
   kb.js              ← Layer 1 knowledge base: SOURCES (S1–S41) + ENTRIES (answers, keywords, source IDs)
   app.js             ← retrieval, guardrails, lookup flow, combining the layers, rendering
   address.js         ← address normalizer + matcher (browser and Node)
   lookup.js          ← loads data/web/2026 files, finds parcels by address or parcel ID
   property.js        ← Layers 2–3: answers about the selected parcel (recorded / calculated / explanation)
   ai.js              ← optional AI explanation (Claude via the claude.ai runtime) + its validator
+  ui.js              ← page behavior around the chat: "Your property" panel, theme, copy / share, deep links,
+                       shortcuts, toasts, source list (holds no answers)
   tester.html        ← 15-minute test script and feedback form for outside testers
-  style.css
+  style.css          ← design tokens (light + dark), layout, components, phone and print rules
   pipeline/          ← eda.py, data_dictionary.py, ltc_roll.py, compare_rolls.py, export_web.py, shard.js,
                        area_stats.py, census_bg.py, zillow_zip.py, compare_years.py, fetch_acs.py, geocode_sample.py,
                        build_report.py, report_pdf.js, build_standalone.py
@@ -637,6 +640,26 @@ list at least one source ID. A check in `app.js` refuses to render an entry with
    (`NolaProperty.context`). A property question asked before a lookup is answered right after the pick.
    Guardrails (privacy, out-of-scope, other parishes, advice) run first, with or without a property.
 
+**How the page is laid out (redesign, Nov. 18, 2026).** One page, top to bottom:
+- **Disclosure banner** (student prototype, not advice, confirm with the Assessor), always first.
+- **Sticky nav:** brand, links to Ask / How it works / Data & sources / Limits (the current section is highlighted),
+  a "Prototype" pill and a light/dark switch (remembered per browser in `localStorage`, wrapped in try/catch).
+- **Hero:** tagline, the **Find your property** box (`#find`, street suggestions from `#streets`), two example
+  addresses, and four figures (163,135 parcels; 2026 + 2027 rolls; 41 sources; 0 errors in ~822,000 answers).
+- **App (`#app`):** the conversation on the left (`#log`, the sticky **Selected** bar with Download summary / Change
+  property, the ask box, the AI switch, a "New conversation" button); on the right a **Your property** panel (address,
+  parcel, market / assessed / taxable value, homestead, 2026 tax, 2027 tax "as filed, before roll-forward", and
+  buttons: Explain my tax, Download summary, Copy link, Change), **Common questions** chips, **Key dates** and
+  **Talk to a person**. On screens 1025px and wider the chat scrolls inside its panel; narrower, it's one column.
+- **How it works** (the three layers and the Recorded / Calculated / Explanation labels), **Data & sources** (with
+  the full S1–S41 list built from `SOURCES`), **Limits**, and a footer with the data note and official offices.
+- **Extras in `ui.js`:** a "Copy answer" button on every sourced answer, links that open a property
+  (`#p=<parcel id>`), `/` to ask and Ctrl/Cmd+K to search, short confirmations ("toasts") and a "Latest answer"
+  button.
+- **How the two scripts talk:** `app.js` fires `nav:select` (with the record) and `nav:clear`; `ui.js` listens
+  and never computes an answer. `window.NavigatorBot` exposes `ask`, `downloadSummary` and `clearProperty` for the
+  panel buttons. Everything the earlier one-column page did still works the same way (same IDs, same answers).
+
 **How the AI explanation works (`ai.js`):** on claude.ai, the page asks Claude through the artifact runtime's
 `sample` capability; the API key never touches the page. The prompt holds §4's rules, today's date, the appeal
 status, the whole knowledge base as text, the selected record's facts (`NolaProperty.facts`, every line tagged with
@@ -652,12 +675,16 @@ exactly as before.
 - `node tests/chatbot_eval.js`: the 10 Part 2 property questions, checked against the raw files (10/10)
 - `node tests/property_sweep.js`: 21 question types × 305 sampled parcels, plus 5 data-heavy questions × **every**
   parcel (about 822,000 answers); must report 0 problems
-- `node tests/final_eval.js`: 32 end-to-end browser checks (demo trio, combined flows, guardrails, AI mock, phone)
+- `node tests/final_eval.js`: 32 end-to-end browser checks (demo trio, combined flows, guardrails, AI mock, phone with
+  no sideways scrolling); pass a URL to test the public site
 - `node tests/owner_questions.js`: the 25 real-world owner questions (25/25); then `python3 tests/owner_report.py`
 
 **Rules for changing code**
 - Match the parent site's style: plain HTML, CSS, and vanilla JS, no frameworks or build
   tools.
+- Keep every existing element ID (`#find`, `#addr`, `#selected`, `#log`, `#ask`, `#q`, `#ai-bar`, `#chips`, …):
+  the tests and both build scripts depend on them. A redesign adds features; it never drops one.
+- Answers live in `kb.js`, `property.js` and `app.js` only. `ui.js` is layout behavior and must not compute facts.
 - When you add or change a fact, update **both** this file (§2) and `kb.js`, using the same
   source ID.
 - Before you commit, run the sample questions in `docs/sample-questions.md` in a browser.
@@ -677,7 +704,7 @@ exactly as before.
 - **Claude artifact (adds the optional AI explanation):** https://claude.ai/artifact/PMnTiHc5EGih7pzGky6bWB
   Viewers must be signed in to claude.ai, and the owner has to share it from the page's Share menu. Part 1's grader
   couldn't open it for that reason, so it is no longer the link of record. Published with the `sample` capability.
-- **Offline copy:** `python3 pipeline/build_standalone.py <out.html>` inlines the CSS, the six scripts and every
+- **Offline copy:** `python3 pipeline/build_standalone.py <out.html>` inlines the CSS, the seven scripts (including `ui.js`) and every
   `data/web/2026` file (gzip + base64), so the page opens by double-click with no server. `app.js` uses
   `window.NOLA_LOAD` when it exists and `fetch` otherwise. The output is generated: don't commit it.
 - **Complete test evidence:** `docs/chatbot-test-log.md` holds every test question with the chatbot's full answer,

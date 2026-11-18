@@ -7,8 +7,9 @@ together the Assessor's site, the City's millage table, state law and the tax ro
 number what it is, and what can I do about it?* The Navigator answers that in one conversation, in plain language,
 from the official records, and says plainly when a person needs to take over.
 
-**Try it in 30 seconds.** Ask *"How do I apply for the homestead exemption?"* Then find *1205 St. Charles Ave, Apt 607*,
-pick it, and ask *"How much tax will I pay?"* Finally ask *"Should I appeal?"* to see it refuse advice and hand off.
+**Try it in 30 seconds.** Ask *"How do I apply for the homestead exemption?"* Then search *1205 St. Charles Ave, Apt 607*
+at the top, pick it, and ask *"How much tax will I pay?"* Finally ask *"Should I appeal?"* to see it refuse advice and
+hand off.
 
 **What it does: three layers in one chat**
 - **Layer 1, general guidance:** how values, millage, exemptions, appeals and bills work, with a source on every fact.
@@ -21,7 +22,7 @@ pick it, and ask *"How much tax will I pay?"* Finally ask *"Should I appeal?"* t
 Every answer labels what is *recorded* in the roll, *calculated* by the tool, or *explained*; refuses legal and tax
 advice; and offers a person, with a button that writes a hand-off note for the right office.
 
-**What works (tested Nov. 16)**
+**What works (tested Nov. 16; all re-run Nov. 18 after the redesign)**
 - **Accuracy:** every property number comes from the state's 2026 and 2027 roll files. An automated sweep of about
   822,000 answers, covering every parcel, found 0 errors. 25 real-world owner questions: 19 right on the first run,
   all 25 after six fixes. 32/32 end-to-end checks.
@@ -29,6 +30,9 @@ advice; and offers a person, with a button that writes a hand-off note for the r
   streets as you type. 19 of 19 test addresses behave as expected.
 - **Layers together:** a general question also shows the selected property's record; an address typed into the chat is
   looked up; owners can download a one-page summary of their property.
+- **A real website:** search-first home page; a *Your property* panel with the key numbers and one-click actions
+  (explain my tax, download, copy a link that reopens the property); copy any answer; key dates and contacts beside
+  the chat; light and dark mode; works on phones with no sideways scrolling.
 - **The data corrected the research.** Comparing the 2026 and 2027 rolls showed 98% of values unchanged, which disproved
   my earlier claim that 2027 was a reappraisal year. The Legislative Auditor's report confirmed it: values are as of
   Jan. 1, 2023 through tax year 2027. Every fact was then re-checked against official sources.
