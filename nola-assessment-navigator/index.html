@@ -4,63 +4,213 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>NOLA Assessment Navigator</title>
-  <meta name="description" content="Student prototype chatbot that explains New Orleans property assessments, exemptions, and appeals, with a source on every answer." />
+  <meta name="description" content="Understand your New Orleans property assessment: how values and tax bills work, your property's own record, and how it compares with its area. A student prototype with a source on every answer." />
+  <meta name="theme-color" content="#0d1b2a" />
+  <meta property="og:title" content="NOLA Assessment Navigator" />
+  <meta property="og:description" content="Look up any New Orleans property, see its assessment and tax, and get plain-language answers with sources." />
   <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <a class="skip" href="#q">Skip to the question box</a>
+
   <div class="banner" role="note">
     <strong>Student prototype.</strong> Not an official government tool, and not legal or tax advice. Confirm everything with the
     <a href="https://www.nolaassessor.com/" target="_blank" rel="noopener">Orleans Parish Assessor's Office</a>.
   </div>
 
-  <header class="top">
-    <div class="wrap">
-      <p class="eyebrow">Orleans Parish · General guidance + your property + your area</p>
-      <h1>NOLA Assessment Navigator</h1>
-      <p class="lede">Ask how assessments, millage, exemptions, and appeals work in the City of New Orleans, or find your property and ask about its record, its tax, and how it compares with its area. Every answer lists its sources.</p>
+  <header class="nav" id="top">
+    <div class="wrap nav-row">
+      <a class="brand" href="#top" aria-label="NOLA Assessment Navigator, home">
+        <svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#0d1b2a"/><path d="M8 16.5 16 9l8 7.5V24a1 1 0 0 1-1 1h-4.5v-5.5h-5V25H9a1 1 0 0 1-1-1z" fill="#e4b96a"/></svg>
+        <span><strong>NOLA</strong> Assessment Navigator</span>
+      </a>
+      <nav class="nav-links" aria-label="Sections">
+        <a href="#app">Ask</a>
+        <a href="#how">How it works</a>
+        <a href="#data">Data &amp; sources</a>
+        <a href="#limits">Limits</a>
+      </nav>
+      <div class="nav-actions">
+        <span class="pill">Prototype</span>
+        <button type="button" class="icon-btn" id="theme" aria-label="Switch between light and dark mode" title="Light / dark">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z" fill="currentColor"/></svg>
+        </button>
+      </div>
     </div>
   </header>
 
-  <main class="wrap chat">
-    <form id="find" class="find" autocomplete="off">
-      <label for="addr">Find your property</label>
-      <div class="find-row">
-        <input id="addr" name="addr" type="text" placeholder="Address (1234 Magazine St, Apt 2) or parcel ID" autocomplete="off" list="streets" />
-        <datalist id="streets"></datalist>
-        <button type="submit">Search</button>
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="eyebrow">City of New Orleans · Orleans Parish</p>
+        <h1>Understand your property assessment, <em>in plain language.</em></h1>
+        <p class="lede">Find any of New Orleans' 163,135 properties to see its value, exemptions and tax, straight from the state's tax roll. Or ask how assessments, millage, homestead and appeals work. Every answer shows its sources.</p>
+
+        <form id="find" class="find" autocomplete="off" role="search">
+          <label for="addr">Find your property</label>
+          <div class="find-row">
+            <svg class="find-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.5 3a7.5 7.5 0 0 1 5.9 12.1l4.2 4.2-1.4 1.4-4.2-4.2A7.5 7.5 0 1 1 10.5 3zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11z" fill="currentColor"/></svg>
+            <input id="addr" name="addr" type="text" placeholder="Address (1234 Magazine St, Apt 2) or parcel ID" autocomplete="off" list="streets" />
+            <datalist id="streets"></datalist>
+            <button type="submit">Search</button>
+          </div>
+          <p class="find-hint">Try <button type="button" class="link-btn" data-try="1205 St. Charles Ave, Apt 607">1205 St. Charles Ave, Apt 607</button> or <button type="button" class="link-btn" data-try="1332 Magazine St">1332 Magazine St</button></p>
+        </form>
       </div>
-    </form>
-    <div id="selected" class="selected" hidden>
-      <span class="sel-text"></span>
-      <span class="sel-actions"><button type="button" id="download-prop">Download summary</button>
-      <button type="button" id="clear-prop">Change property</button></span>
+      <ul class="stats" aria-label="What the Navigator covers">
+        <li><strong>163,135</strong><span>properties: every parcel in Orleans Parish</span></li>
+        <li><strong>2026 + 2027</strong><span>state tax rolls, with each parcel's computed tax</span></li>
+        <li><strong>41</strong><span>sources, cited on every answer</span></li>
+        <li><strong>0</strong><span>errors in an automated check of about 822,000 answers</span></li>
+      </ul>
     </div>
+  </section>
 
-    <section id="log" class="log" aria-live="polite"></section>
-
-    <form id="ask" class="ask" autocomplete="off">
-      <label for="q" class="sr-only">Your question</label>
-      <input id="q" name="q" type="text" placeholder="Ask a question, or type an address" />
-      <button type="submit">Ask</button>
-    </form>
-    <div id="ai-bar" class="ai-bar" hidden>
-      <label><input type="checkbox" id="ai-on" checked /> AI explanations by Claude</label>
-      <span>Checked against the sources; the full answer is always shown.</span>
-    </div>
-
-    <section class="suggest">
-      <p class="label">Common questions</p>
-      <div id="chips" class="chips"></div>
+  <main class="wrap app" id="app">
+    <section class="panel chat" aria-label="Conversation">
+      <div class="panel-head">
+        <div>
+          <h2>Ask the Navigator</h2>
+          <p class="sub">General questions, your property, and your area, in one conversation.</p>
+        </div>
+        <button type="button" class="ghost-btn" id="new-chat" title="Start a new conversation">New conversation</button>
+      </div>
+      <div id="selected" class="selected" hidden>
+        <span class="sel-text"></span>
+        <span class="sel-actions"><button type="button" id="download-prop">Download summary</button>
+        <button type="button" id="clear-prop">Change property</button></span>
+      </div>
+      <div class="chat-scroll" id="chat-scroll">
+        <section id="log" class="log" aria-live="polite"></section>
+      </div>
+      <button type="button" class="jump" id="jump" hidden>↓ Latest answer</button>
+      <form id="ask" class="ask" autocomplete="off">
+        <label for="q" class="sr-only">Your question</label>
+        <input id="q" name="q" type="text" placeholder="Ask a question, or type an address" />
+        <button type="submit" aria-label="Ask">Ask</button>
+      </form>
+      <div id="ai-bar" class="ai-bar" hidden>
+        <label><input type="checkbox" id="ai-on" checked /> AI explanations by Claude</label>
+        <span>Checked against the sources; the full answer is always shown.</span>
+      </div>
+      <p class="kbd-hint">Press <kbd>/</kbd> to ask a question, <kbd>Ctrl</kbd>+<kbd>K</kbd> to search for a property.</p>
     </section>
+
+    <aside class="side" aria-label="Your property and help">
+      <section class="panel" id="prop-panel">
+        <h2>Your property</h2>
+        <div id="prop-empty">
+          <p class="muted">No property selected yet. Search above, or type an address in the chat, and its key numbers will appear here.</p>
+        </div>
+        <div id="prop-body" hidden></div>
+      </section>
+
+      <section class="panel">
+        <h2>Suggested questions</h2>
+        <div id="chips" class="chips"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Key dates</h2>
+        <ul class="dates">
+          <li><span class="dot closed"></span><div><strong>2027-roll appeal window</strong><span>Closed 4 p.m., Aug. 20, 2026</span></div></li>
+          <li><span class="dot next"></span><div><strong>Next window (2028 roll)</strong><span>Summer 2027, expected</span></div></li>
+          <li><span class="dot"></span><div><strong>2027 tax bills</strong><span>Due date not yet announced. 2026 bills were due Feb. 28, 2026.</span></div></li>
+        </ul>
+      </section>
+
+      <section class="panel contact-card">
+        <h2>Talk to a person</h2>
+        <ul class="people">
+          <li><strong>Assessor's Office</strong><span>Values, exemptions, informal review</span><a href="tel:+15047548811">(504) 754-8811</a></li>
+          <li><strong>Bureau of the Treasury</strong><span>Bills and payments</span><a href="https://nola.gov/property-tax/" target="_blank" rel="noopener">nola.gov/property-tax</a></li>
+          <li><strong>Free legal help</strong><span>Heirs, title, tax sales</span><a href="https://slls.org/" target="_blank" rel="noopener">slls.org</a></li>
+        </ul>
+      </section>
+    </aside>
   </main>
 
-  <footer class="wrap foot">
-    <p>Built by Ethan Zuckerman as a student project. Facts last checked Nov. 13, 2026. General answers come from a curated knowledge base; property answers come from the Louisiana Tax Commission's 2026 and 2027 Orleans Parish rolls (values as of 1/1/2023), including each parcel's computed tax; neighborhood figures come from the Census (ACS 2020–2024, block groups). Owner names are not shown.</p>
+  <section class="section" id="how">
+    <div class="wrap">
+      <p class="eyebrow">How it works</p>
+      <h2 class="section-title">Three layers, one conversation</h2>
+      <div class="cards">
+        <article class="card">
+          <span class="num">1</span>
+          <h3>General guidance</h3>
+          <p>How fair market value becomes an assessment and a tax bill, what a mill is, homestead and the senior freeze, deadlines and appeals. Built from the Louisiana Constitution, the City, the Assessor and the state auditor.</p>
+        </article>
+        <article class="card">
+          <span class="num">2</span>
+          <h3>Your property</h3>
+          <p>Find a parcel by address or parcel ID, confirm it, then ask about it. Values, exemptions and tax come from the Louisiana Tax Commission's 2026 and 2027 Orleans rolls, checked against the formula to the cent.</p>
+        </article>
+        <article class="card">
+          <span class="num">3</span>
+          <h3>Market context</h3>
+          <p>How the property compares with similar parcels nearby, what the Census says about its neighborhood, and how Zillow's typical home value in its ZIP has moved since the roll's Jan. 1, 2023 valuation date.</p>
+        </article>
+      </div>
+      <div class="labels-demo">
+        <div class="prov prov-recorded"><span class="prov-tag">Recorded</span><p>Copied from the roll, with the field it came from.</p></div>
+        <div class="prov prov-calculated"><span class="prov-tag">Calculated</span><p>Arithmetic the Navigator did, with the formula shown.</p></div>
+        <div class="prov prov-explanation"><span class="prov-tag">Explanation</span><p>The general rule, cited to an official source.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section alt" id="data">
+    <div class="wrap">
+      <p class="eyebrow">Data &amp; sources</p>
+      <h2 class="section-title">Where every number comes from</h2>
+      <div class="data-grid">
+        <div class="data-item"><h3>State tax rolls</h3><p>Louisiana Tax Commission files for Orleans Parish: the 2026 roll and the 2027 roll filed Sept. 4, 2026, including every levy and computed tax per parcel. Values are as of Jan. 1, 2023.</p></div>
+        <div class="data-item"><h3>Official sources</h3><p>The Louisiana Constitution, the City's 2026 millage table, the Legislative Auditor's review of the 2024 reappraisal, and the City Council, read directly and logged by date.</p></div>
+        <div class="data-item"><h3>Census and Zillow</h3><p>American Community Survey 2020–2024 by block group, matched to 86% of parcels, and Zillow's home value index by ZIP code through Sept. 2026.</p></div>
+        <div class="data-item"><h3>Privacy</h3><p>Owner names, mailing addresses and sale prices are never shown. Census figures describe neighborhoods, never owners. Nothing you type is stored or sent anywhere.</p></div>
+      </div>
+      <details class="source-list">
+        <summary>See all sources</summary>
+        <ol id="all-sources"></ol>
+      </details>
+    </div>
+  </section>
+
+  <section class="section" id="limits">
+    <div class="wrap narrow">
+      <p class="eyebrow">Limits</p>
+      <h2 class="section-title">What it can't do</h2>
+      <ul class="limits">
+        <li><strong>No advice.</strong> It explains how the system works. Whether to appeal, or what your home is worth, is for you and the Assessor.</li>
+        <li><strong>The 2027 bill isn't final.</strong> The state file predates the City Council's Nov. 5, 2026 roll-forward, so the increase is shown as a range.</li>
+        <li><strong>Not in the roll:</strong> square footage, bedrooms, condition, and special-district fees such as the Downtown Development District.</li>
+        <li><strong>Some answers need confirming.</strong> When a source couldn't be re-checked, the answer says so and points you to the right office.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <div class="wrap foot-grid">
+      <div>
+        <p class="brand-foot"><strong>NOLA</strong> Assessment Navigator</p>
+        <p>A student project by Ethan Zuckerman for AI and Real Estate. Not affiliated with the Orleans Parish Assessor, the City of New Orleans or the State of Louisiana. Facts last checked Nov. 16, 2026.</p>
+      </div>
+      <div>
+        <p><strong>Official offices</strong></p>
+        <p><a href="https://www.nolaassessor.com/" target="_blank" rel="noopener">Orleans Parish Assessor</a><br /><a href="https://nola.gov/property-tax/" target="_blank" rel="noopener">Pay property tax (nola.gov)</a><br /><a href="https://council.nola.gov/resources/property-tax-assessments-and-appeals/" target="_blank" rel="noopener">Board of Review</a></p>
+      </div>
+      <div>
+        <p><strong>Help test it</strong></p>
+        <p><a href="tester.html">15-minute tester page</a><br /><a href="#top">Back to top</a></p>
+      </div>
+    </div>
   </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
   <script src="kb.js"></script>
   <script src="address.js"></script>
@@ -68,5 +218,6 @@
   <script src="property.js"></script>
   <script src="ai.js"></script>
   <script src="app.js"></script>
+  <script src="ui.js"></script>
 </body>
 </html>

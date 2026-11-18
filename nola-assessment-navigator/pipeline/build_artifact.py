@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPTS = ["kb.js", "address.js", "lookup.js", "property.js", "ai.js", "app.js"]
+SCRIPTS = ["kb.js", "address.js", "lookup.js", "property.js", "ai.js", "app.js", "ui.js"]
 
 
 def main(out):

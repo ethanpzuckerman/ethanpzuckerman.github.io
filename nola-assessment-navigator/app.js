@@ -302,8 +302,18 @@
     if (role === "user") lastQuestion = div.textContent;
     else div.dataset.q = lastQuestion;
     log.appendChild(div);
-    div.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (log.children.length > 1) revealMsg(div); // the greeting doesn't pull the page away from the top
     return div;
+  }
+
+  // Show a new message: inside the chat box where it scrolls on its own (wide screens), else in the page.
+  function revealMsg(div) {
+    const box = document.getElementById("chat-scroll");
+    const boxScrolls = box && box.scrollHeight > box.clientHeight + 1 && getComputedStyle(box).overflowY !== "visible";
+    if (!boxScrolls) { div.scrollIntoView({ behavior: "smooth", block: "start" }); return; }
+    box.scrollTo({ top: box.scrollTop + div.getBoundingClientRect().top - box.getBoundingClientRect().top - 8, behavior: "smooth" });
+    const r = box.getBoundingClientRect();
+    if (r.top < 0 || r.top > window.innerHeight * 0.6) document.getElementById("app").scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   function escapeHtml(s) {
@@ -405,6 +415,7 @@
     addMsg("bot", NolaProperty.card(rec, metaInfo) +
       `<p>Ask me about this property, like "How much tax will I pay?" or "Do I have a homestead exemption?" Answers label what's <strong>recorded</strong> in the roll, what I <strong>calculated</strong>, and the general <strong>explanation</strong>.</p>`);
     setChips(PROPERTY_SUGGESTIONS);
+    document.dispatchEvent(new CustomEvent("nav:select", { detail: { record: rec, meta: metaInfo } }));
     if (pending) {
       const q = pending;
       pending = null;
@@ -417,6 +428,7 @@
     pending = null;
     document.getElementById("selected").hidden = true;
     setChips(SUGGESTIONS);
+    document.dispatchEvent(new CustomEvent("nav:clear"));
     addMsg("bot", `<p>Property cleared. Type another address or parcel ID in the <strong>Find your property</strong> box, or ask a general question.</p>`);
     const addr = document.getElementById("addr");
     if (addr) addr.focus();
@@ -558,7 +570,7 @@ ${NolaProperty.card(selected, metaInfo)}${parts.join("")}
       const det = document.createElement("details");
       det.className = "det";
       det.innerHTML = `<summary>Full answer from the knowledge base</summary>`;
-      [...div.children].filter(el => el !== box && !el.matches(".sources, .contacts, .yours")).forEach(el => det.appendChild(el));
+      [...div.children].filter(el => el !== box && !el.matches(".sources, .contacts, .yours, .msg-actions")).forEach(el => det.appendChild(el));
       box.after(det);
     }
     remember(q, res.text);
@@ -638,7 +650,7 @@ ${NolaProperty.card(selected, metaInfo)}${parts.join("")}
       const h = e.target.closest("[data-handoff]");
       if (h) {
         const msg = h.closest(".msg");
-        const text = [...msg.children].filter(el => !el.matches(".contacts, .sources, .handoff, .ai, .det")).map(el => el.innerText).join(" ").replace(/\s+/g, " ").trim();
+        const text = [...msg.children].filter(el => !el.matches(".contacts, .sources, .handoff, .ai, .det, .msg-actions")).map(el => el.innerText).join(" ").replace(/\s+/g, " ").trim();
         h.hidden = true;
         h.closest(".contacts").insertAdjacentHTML("afterend", handoffHtml(msg.dataset.q || "", text));
         msg.querySelector(".handoff").scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -660,7 +672,7 @@ ${NolaProperty.card(selected, metaInfo)}${parts.join("")}
       input.focus();
     });
     addMsg("bot", `<p>Hi! I answer general questions about property assessments in the <strong>City of New Orleans</strong>: how values are set, how your tax bill is calculated, exemptions like homestead, the 2027 reassessment, and how to appeal.</p>
-<p>To ask about <strong>your</strong> property, find it with the box above using its address or parcel ID, then confirm the record. Property answers use the <strong>2026 and 2027 rolls</strong> from the Louisiana Tax Commission, plus Census data about the neighborhood.</p>
+<p>To ask about <strong>your</strong> property, type its address or parcel ID in the search box (or right here), then confirm the record. Property answers use the <strong>2026 and 2027 rolls</strong> from the Louisiana Tax Commission, plus Census data about the neighborhood.</p>
 <p class="disclose"><strong>I'm a student prototype, not an official government tool.</strong> Information may be out of date, so always confirm with the Assessor's Office. I can't give legal or tax advice.</p>`);
     if (window.NolaAI) {
       NolaAI.init().then(ok => {
@@ -674,7 +686,7 @@ ${NolaProperty.card(selected, metaInfo)}${parts.join("")}
     if (hash.startsWith("q=")) ask(hash.slice(2));
   }
 
-  window.NavigatorBot = { answer, score, ask, propertyAnswerHtml, GENERAL_FIRST, kbText };
+  window.NavigatorBot = { answer, score, ask, propertyAnswerHtml, GENERAL_FIRST, kbText, downloadSummary, clearProperty, entryCount: ENTRIES.length };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
   else init();
 })();
